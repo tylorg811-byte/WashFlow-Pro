@@ -1167,7 +1167,10 @@ if (logoutBtn) {
       button.classList.toggle("active", button.dataset.section === sectionId);
     });
 
-    pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
+    if (sectionId === "dashboard") {
+  updateDashboardGreeting();
+} else {
+  pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
   }
 
   navButtons.forEach(button => {
@@ -2580,10 +2583,33 @@ async function sendInvoiceEmail(index) {
 
   showToast("Invoice sent!");
 }
+
+  function updateDashboardGreeting() {
+  const title = document.getElementById("pageTitle");
+  if (!title) return;
+
+  // Only change it on dashboard
+  const currentSection = document.querySelector(".section.active")?.id;
+  if (currentSection !== "dashboard") return;
+
+  const businessName = currentBusiness?.company_name?.trim();
+  const userName =
+    currentUser?.user_metadata?.full_name ||
+    currentUser?.email?.split("@")[0] ||
+    "";
+
+  if (businessName) {
+    title.textContent = `Welcome back, ${businessName} 👋`;
+  } else if (userName) {
+    title.textContent = `Welcome back, ${userName} 👋`;
+  } else {
+    title.textContent = `Welcome back 👋`;
+  }
+}
   
 async function initApp() {
   await loadUserBusiness();
-
+  updateDashboardGreeting();
   loadBusinessSettings();
 
   await loadClients();
