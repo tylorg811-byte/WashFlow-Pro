@@ -1047,6 +1047,55 @@ html[data-theme="light"] .map-preview {
   </div>
 </div>
 
+      <div class="card">
+  <h3>Payment Options</h3>
+  <p>Choose how customers can pay invoices.</p>
+
+  <div class="field-group">
+    <div class="field">
+      <label>Preferred Payment Method</label>
+      <select id="paymentMethod">
+        <option value="custom">Custom Payment Link</option>
+        <option value="paypal">PayPal</option>
+        <option value="cashapp">Cash App</option>
+        <option value="venmo">Venmo</option>
+        <option value="square">Square</option>
+        <option value="stripe">Stripe</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Custom Payment Link</label>
+      <input id="paymentLink" placeholder="https://your-payment-link.com">
+    </div>
+
+    <div class="field">
+      <label>PayPal Link</label>
+      <input id="paypalLink" placeholder="https://paypal.me/yourbusiness">
+    </div>
+
+    <div class="field">
+      <label>Cash App Tag</label>
+      <input id="cashappTag" placeholder="$YourCashTag">
+    </div>
+
+    <div class="field">
+      <label>Venmo Handle</label>
+      <input id="venmoHandle" placeholder="@yourbusiness">
+    </div>
+
+    <div class="field">
+      <label>Square Payment Link</label>
+      <input id="squareLink" placeholder="https://square.link/u/...">
+    </div>
+
+    <div class="field">
+      <label>Stripe Payment Link</label>
+      <input id="stripeLink" placeholder="https://buy.stripe.com/...">
+    </div>
+  </div>
+</div>
+
 <div class="card">
   <h3>Email Sending</h3>
   <p>Connect Gmail so invoices can be sent from your own email account.</p>
