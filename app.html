@@ -2303,14 +2303,14 @@ async function loadJobs() {
 }
   
   async function loadUserBusiness() {
-  const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+  const { data: sessionData } = await supabaseClient.auth.getSession();
 
-  if (userError || !userData.user) {
-    window.location.href = "login.html";
-    return;
-  }
+if (!sessionData.session?.user) {
+  window.location.href = "login.html";
+  return;
+}
 
-  currentUser = userData.user;
+currentUser = sessionData.session.user;
 
   const { data: existingBusiness, error: fetchError } = await supabaseClient
     .from("businesses")
