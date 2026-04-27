@@ -3385,15 +3385,6 @@ async function deleteInvoice(index) {
   showToast("Invoice deleted!");
 }
 
-const connectGmailBtn = document.getElementById("connectGmailBtn");
-const gmailStatus = document.getElementById("gmailStatus");
-
-if (connectGmailBtn) {
-  connectGmailBtn.addEventListener("click", function() {
-    window.location.href = "/.netlify/functions/google-start";
-  });
-}
-
 const urlParams = new URLSearchParams(window.location.search);
 
 if (urlParams.get("gmail") === "connected") {
