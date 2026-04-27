@@ -2083,7 +2083,6 @@ function renderClients() {
   renderClientDropdown();
 }
 
-  renderDashboardHome();
 
 async function deleteClient(index) {
   const client = clients[index];
@@ -2125,7 +2124,6 @@ async function loadClients() {
   renderClientDropdown();
 }
 
-  renderDashboardHome();
   
 if (addClientBtn) {
   addClientBtn.addEventListener("click", async () => {
@@ -2205,7 +2203,6 @@ function loadInvoiceBranding() {
   }
 }
 
-  renderDashboardHome();
 
 if (invoiceLogoUpload) {
   invoiceLogoUpload.addEventListener("change", function() {
@@ -2713,8 +2710,6 @@ if (venmoHandle) venmoHandle.value = currentBusiness.venmo_handle || "";
 if (squareLink) squareLink.value = currentBusiness.square_link || "";
 if (stripeLink) stripeLink.value = currentBusiness.stripe_link || "";  
 }
-
-  renderDashboardHome();
 
 if (saveBusinessSettingsBtn) {
   saveBusinessSettingsBtn.addEventListener("click", saveBusinessSettings);
