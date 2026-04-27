@@ -2133,6 +2133,23 @@ function moveMapToAddress(address) {
   });
 }
 
+  function formatAddress(address) {
+  if (!address) return "";
+
+  let cleaned = address.trim();
+
+  // Auto add ", FL" if missing and looks like local
+  if (
+    cleaned &&
+    !cleaned.toLowerCase().includes("fl") &&
+    cleaned.includes(",")
+  ) {
+    cleaned += ", FL";
+  }
+
+  return cleaned;
+}
+
 function getCurrentQuote() {
   const rate = Number(serviceType.value || 0);
   const area = Number(sqft.value || 0);
@@ -2550,7 +2567,7 @@ if (addLeadBtn) {
   name: leadName.value.trim(),
   phone: leadPhone.value.trim(),
   email: leadEmail.value.trim(),
-  address: leadAddress.value.trim(),
+  address: formatAddress(leadAddress.value),
   service: leadService.value.trim(),
       created_at: new Date().toISOString()
     };
@@ -3317,7 +3334,7 @@ if (addClientBtn) {
       name,
       phone: clientPhone.value.trim(),
       email: clientEmail.value.trim(),
-      address: clientAddress.value.trim()
+      address: formatAddress(clientAddress.value),
     };
 
     const { data, error } = await supabaseClient
