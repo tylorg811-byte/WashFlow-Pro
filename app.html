@@ -777,6 +777,15 @@ html[data-theme="light"] .map-preview {
 
 </section>
 
+<section id="quotes" class="section">
+  <div class="card">
+    <h3>Saved Quotes</h3>
+    <p>View, manage, and convert your saved quotes.</p>
+
+    <div class="list" id="quoteList"></div>
+  </div>
+</section>
+    
     <!-- LEADS -->
     <section id="leads" class="section">
 
@@ -1280,8 +1289,10 @@ function deleteSavedQuote(index) {
 if (saveQuoteBtn) {
   saveQuoteBtn.addEventListener("click", function() {
     const quote = getCurrentQuote();
+
     savedQuotes.push(quote);
     saveQuotes();
+
     renderQuotes();
 
     showToast("Quote saved successfully!");
