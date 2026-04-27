@@ -599,94 +599,41 @@ html[data-theme="light"] .map-preview {
   <div class="stats">
     <div class="stat-card">
       <span>Revenue This Month</span>
-      <strong>$8,420</strong>
-      <small>↑ 18% from last month</small>
+      <strong id="dashRevenue">$0</strong>
+      <small id="dashRevenueSub">From paid invoices</small>
     </div>
 
     <div class="stat-card">
       <span>Open Quotes</span>
-      <strong>12</strong>
-      <small>$4,860 waiting</small>
+      <strong id="dashOpenQuotes">0</strong>
+      <small id="dashOpenQuotesSub">$0 waiting</small>
     </div>
 
     <div class="stat-card">
-      <span>Jobs This Week</span>
-      <strong>9</strong>
-      <small>4 already completed</small>
+      <span>Active Jobs</span>
+      <strong id="dashActiveJobs">0</strong>
+      <small id="dashActiveJobsSub">Scheduled / in progress</small>
     </div>
 
     <div class="stat-card">
-      <span>Reviews Needed</span>
-      <strong>5</strong>
-      <small>Send follow-ups</small>
+      <span>Unpaid Invoices</span>
+      <strong id="dashUnpaidInvoices">0</strong>
+      <small id="dashUnpaidInvoicesSub">$0 outstanding</small>
     </div>
   </div>
 
   <div class="dashboard-grid">
 
     <div class="card">
-      <h3>Today’s Jobs</h3>
-      <p>Quick view of what is scheduled and what needs attention.</p>
-
-      <div class="list">
-        <div class="list-item">
-          <div>
-            <strong>Johnson Residence</strong>
-            <small>Driveway + sidewalk · 10:00 AM · 1,248 sqft</small>
-            <br>
-            <span class="status orange">Scheduled</span>
-          </div>
-          <div class="amount">$225</div>
-        </div>
-
-        <div class="list-item">
-          <div>
-            <strong>Crystal Bay HOA</strong>
-            <small>Commercial flatwork · 1:30 PM · 3,900 sqft</small>
-            <br>
-            <span class="status">In Progress</span>
-          </div>
-          <div class="amount">$760</div>
-        </div>
-
-        <div class="list-item">
-          <div>
-            <strong>Martinez Home</strong>
-            <small>House wash + pool deck · 4:15 PM</small>
-            <br>
-            <span class="status green">Ready to Invoice</span>
-          </div>
-          <div class="amount">$340</div>
-        </div>
-      </div>
+      <h3>Upcoming / Active Jobs</h3>
+      <p>Real jobs created from saved quotes.</p>
+      <div class="list" id="dashboardJobsList"></div>
     </div>
 
     <div class="card">
       <h3>Recent Activity</h3>
-      <p>Updates from quotes, jobs, invoices, and photos.</p>
-
-      <div class="list">
-        <div class="list-item">
-          <div>
-            <strong>Quote accepted</strong>
-            <small>Johnson Residence · $225</small>
-          </div>
-        </div>
-
-        <div class="list-item">
-          <div>
-            <strong>Before photos uploaded</strong>
-            <small>Crystal Bay HOA</small>
-          </div>
-        </div>
-
-        <div class="list-item">
-          <div>
-            <strong>Invoice marked paid</strong>
-            <small>Roof wash · $480</small>
-          </div>
-        </div>
-      </div>
+      <p>Latest quotes, jobs, and invoices.</p>
+      <div class="list" id="dashboardActivityList"></div>
     </div>
 
   </div>
@@ -1226,7 +1173,107 @@ const jobList = document.getElementById("jobList");
 let savedQuotes = [];
 let savedJobs = [];
 let savedInvoices = [];
-  
+
+function renderDashboard() {
+  const dashRevenue = document.getElementById("dashRevenue");
+  const dashRevenueSub = document.getElementById("dashRevenueSub");
+  const dashOpenQuotes = document.getElementById("dashOpenQuotes");
+  const dashOpenQuotesSub = document.getElementById("dashOpenQuotesSub");
+  const dashActiveJobs = document.getElementById("dashActiveJobs");
+  const dashActiveJobsSub = document.getElementById("dashActiveJobsSub");
+  const dashUnpaidInvoices = document.getElementById("dashUnpaidInvoices");
+  const dashUnpaidInvoicesSub = document.getElementById("dashUnpaidInvoicesSub");
+  const dashboardJobsList = document.getElementById("dashboardJobsList");
+  const dashboardActivityList = document.getElementById("dashboardActivityList");
+
+  const paidInvoices = savedInvoices.filter(inv => inv.status === "Paid");
+  const unpaidInvoices = savedInvoices.filter(inv => inv.status !== "Paid");
+  const activeJobs = savedJobs.filter(job => job.status !== "Completed");
+
+  const monthlyRevenue = paidInvoices.reduce((sum, inv) => sum + Number(inv.total || 0), 0);
+  const openQuoteTotal = savedQuotes.reduce((sum, quote) => sum + Number(quote.total || 0), 0);
+  const unpaidTotal = unpaidInvoices.reduce((sum, inv) => sum + Number(inv.total || 0), 0);
+
+  if (dashRevenue) dashRevenue.textContent = `$${monthlyRevenue.toLocaleString()}`;
+  if (dashRevenueSub) dashRevenueSub.textContent = `${paidInvoices.length} paid invoice${paidInvoices.length === 1 ? "" : "s"}`;
+
+  if (dashOpenQuotes) dashOpenQuotes.textContent = savedQuotes.length;
+  if (dashOpenQuotesSub) dashOpenQuotesSub.textContent = `$${openQuoteTotal.toLocaleString()} waiting`;
+
+  if (dashActiveJobs) dashActiveJobs.textContent = activeJobs.length;
+  if (dashActiveJobsSub) dashActiveJobsSub.textContent = `${savedJobs.length} total job${savedJobs.length === 1 ? "" : "s"}`;
+
+  if (dashUnpaidInvoices) dashUnpaidInvoices.textContent = unpaidInvoices.length;
+  if (dashUnpaidInvoicesSub) dashUnpaidInvoicesSub.textContent = `$${unpaidTotal.toLocaleString()} outstanding`;
+
+  if (dashboardJobsList) {
+    dashboardJobsList.innerHTML = "";
+
+    if (activeJobs.length === 0) {
+      dashboardJobsList.innerHTML = `
+        <div class="list-item">
+          <small>No active jobs yet. Convert a quote into a job.</small>
+        </div>
+      `;
+    } else {
+      activeJobs.slice(0, 5).forEach(job => {
+        dashboardJobsList.innerHTML += `
+          <div class="list-item">
+            <div>
+              <strong>${job.customer || "Unnamed Customer"}</strong>
+              <small>${job.service || "Service"} · ${job.address || "No address"}</small>
+              <br>
+              <span class="status orange">${job.status || "Scheduled"}</span>
+            </div>
+            <div class="amount">$${Number(job.total || 0).toLocaleString()}</div>
+          </div>
+        `;
+      });
+    }
+  }
+
+  if (dashboardActivityList) {
+    const activity = [
+      ...savedQuotes.map(q => ({
+        title: "Quote created",
+        text: `${q.customer || "Customer"} · $${Number(q.total || 0).toLocaleString()}`,
+        date: q.created_at || q.createdAt || ""
+      })),
+      ...savedJobs.map(j => ({
+        title: "Job created",
+        text: `${j.customer || "Customer"} · ${j.status || "Scheduled"}`,
+        date: j.created_at || ""
+      })),
+      ...savedInvoices.map(i => ({
+        title: `Invoice ${i.status || "created"}`,
+        text: `${i.customer || "Customer"} · $${Number(i.total || 0).toLocaleString()}`,
+        date: i.created_at || ""
+      }))
+    ];
+
+    dashboardActivityList.innerHTML = "";
+
+    if (activity.length === 0) {
+      dashboardActivityList.innerHTML = `
+        <div class="list-item">
+          <small>No recent activity yet.</small>
+        </div>
+      `;
+    } else {
+      activity.slice(0, 6).forEach(item => {
+        dashboardActivityList.innerHTML += `
+          <div class="list-item">
+            <div>
+              <strong>${item.title}</strong>
+              <small>${item.text}</small>
+            </div>
+          </div>
+        `;
+      });
+    }
+  }
+}
+
 function saveQuotes() {
   localStorage.setItem("washflow-quotes", JSON.stringify(savedQuotes));
 }
@@ -1316,6 +1363,8 @@ function renderJobs() {
     jobList.appendChild(div);
   });
 }
+
+  renderDashboard();
 
 async function completeJob(index) {
   const job = savedJobs[index];
@@ -1538,6 +1587,8 @@ function renderQuotes() {
     quoteList.appendChild(div);
   });
 }
+
+  renderDashboard();
 
 async function convertSavedQuoteToJob(index) {
   const quote = savedQuotes[index];
@@ -2248,6 +2299,8 @@ function renderInvoices() {
     invoiceList.appendChild(div);
   });
 }
+
+  renderDashboard();
 
 async function markInvoicePaid(index) {
   const invoice = savedInvoices[index];
