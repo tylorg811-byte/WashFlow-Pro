@@ -2587,14 +2587,14 @@ function renderLeads() {
 
 if (addLeadBtn) {
   addLeadBtn.addEventListener("click", function() {
-   const lead = {
+const lead = {
   name: leadName.value.trim(),
   phone: leadPhone.value.trim(),
   email: leadEmail.value.trim(),
   address: formatAddress(leadAddress.value),
   service: leadService.value.trim(),
-  source: leadStatus.value = "New Lead";
-  status: leadPriority.value = "Normal";
+  source: leadSource.value,
+  status: leadStatus.value,
   priority: leadPriority.value,
   follow_up_date: leadFollowUpDate.value,
   last_contacted: "",
@@ -2611,12 +2611,16 @@ if (addLeadBtn) {
     saveLeads();
     renderLeads();
 
-    leadName.value = "";
-    leadPhone.value = "";
-    leadEmail.value = "";
-    leadService.value = "";
-    leadStatus.value = "New Lead";
-    leadNotes.value = "";
+  leadName.value = "";
+leadPhone.value = "";
+leadEmail.value = "";
+leadAddress.value = "";
+leadService.value = "";
+leadSource.value = "Facebook";
+leadStatus.value = "New Lead";
+leadPriority.value = "Normal";
+leadFollowUpDate.value = "";
+leadNotes.value = "";
 
     showToast("Lead added!");
     addActivity("New lead added");
