@@ -2305,13 +2305,14 @@ async function loadJobs() {
   async function loadUserBusiness() {
   const { data: sessionData } = await supabaseClient.auth.getSession();
 
-if (!sessionData.session?.user) {
-  window.location.href = "login.html";
-  return;
-}
+  if (!sessionData.session?.user) {
+    window.location.href = "login.html";
+    return;
+  }
 
-currentUser = sessionData.session.user;
+  currentUser = sessionData.session.user;
 
+  // Try to get existing business
   const { data: existingBusiness, error: fetchError } = await supabaseClient
     .from("businesses")
     .select("*")
@@ -2323,19 +2324,29 @@ currentUser = sessionData.session.user;
     return;
   }
 
-  // 👇 CREATE BUSINESS IF IT DOESN’T EXIST
+  // 👇 CREATE BUSINESS FROM SIGNUP DATA
+  const meta = currentUser.user_metadata || {};
+
   const { data: newBusiness, error: createError } = await supabaseClient
     .from("businesses")
     .insert({
       owner_id: currentUser.id,
-      company_name: "My Business"
+      company_name: meta.business_name || "My Business",
+      phone: meta.phone || "",
+      service_area: "",
+      google_review_link: "",
+      driveway_rate: 0.18,
+      house_wash_rate: 0.22,
+      roof_wash_rate: 0.30,
+      minimum_job_price: 125,
+      plan: meta.plan || "Growth"
     })
     .select()
     .single();
 
   if (createError) {
     console.error(createError);
-    showToast("Could not create business profile", "error");
+    alert("Failed to create business profile");
     return;
   }
 
