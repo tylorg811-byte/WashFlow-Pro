@@ -1265,6 +1265,11 @@ html[data-theme="light"] .map-preview {
       </div>
 
       <div class="field">
+  <label>Address</label>
+  <input id="leadAddress" placeholder="123 Main Street">
+</div>
+
+      <div class="field">
         <label>Service Needed</label>
         <input id="leadService" placeholder="Driveway cleaning, house wash, roof wash...">
       </div>
@@ -2422,6 +2427,7 @@ function renderQuotes() {
   const leadName = document.getElementById("leadName");
 const leadPhone = document.getElementById("leadPhone");
 const leadEmail = document.getElementById("leadEmail");
+const leadAddress = document.getElementById("leadAddress");
 const leadService = document.getElementById("leadService");
 const leadSource = document.getElementById("leadSource");
 const leadStatus = document.getElementById("leadStatus");
@@ -2471,7 +2477,9 @@ function renderLeads() {
         <br>
         <span class="status ${statusClass}">${lead.status || "New Lead"}</span>
         <br>
-        <small>${lead.phone || "No phone"} · ${lead.email || "No email"}</small>
+       <small>${lead.phone || "No phone"} · ${lead.email || "No email"}</small>
+<br>
+<small>${lead.address || "No address"}</small>
         <br>
         <small>${lead.notes || "No notes yet."}</small>
       </div>
@@ -2480,6 +2488,9 @@ function renderLeads() {
         <button class="btn btn-primary" onclick="convertLeadToQuote(${index})">
           Quote
         </button>
+        <button class="btn btn-soft" onclick="convertLeadToClient(${index})">
+  Client
+</button>
         <button class="btn btn-soft" onclick="markLeadContacted(${index})">
           Contacted
         </button>
@@ -2495,14 +2506,12 @@ function renderLeads() {
 
 if (addLeadBtn) {
   addLeadBtn.addEventListener("click", function() {
-    const lead = {
-      name: leadName.value.trim(),
-      phone: leadPhone.value.trim(),
-      email: leadEmail.value.trim(),
-      service: leadService.value.trim(),
-      source: leadSource.value,
-      status: leadStatus.value,
-      notes: leadNotes.value.trim(),
+   const lead = {
+  name: leadName.value.trim(),
+  phone: leadPhone.value.trim(),
+  email: leadEmail.value.trim(),
+  address: leadAddress.value.trim(),
+  service: leadService.value.trim(),
       created_at: new Date().toISOString()
     };
 
@@ -2548,16 +2557,58 @@ function convertLeadToQuote(index) {
   if (!lead) return;
 
   customerName.value = lead.name || "";
-  jobAddress.value = "";
-  notes.value = lead.notes || "";
-  
-  showSection("quote");
+jobAddress.value = lead.address || "";
+notes.value = lead.notes || "";
 
+if (lead.address) {
   setTimeout(() => {
-    customerName.focus();
-  }, 100);
+    moveMapToAddress(lead.address);
+  }, 300);
+}
 
   showToast("Lead moved into quote tool");
+}
+
+  async function convertLeadToClient(index) {
+  const lead = savedLeads[index];
+  if (!lead) return;
+
+  if (!currentBusiness?.id) {
+    showToast("Business not loaded", "error");
+    return;
+  }
+
+  const newClient = {
+    business_id: currentBusiness.id,
+    name: lead.name || "",
+    phone: lead.phone || "",
+    email: lead.email || "",
+    address: lead.address || ""
+  };
+
+  const { data, error } = await supabaseClient
+    .from("clients")
+    .insert(newClient)
+    .select()
+    .single();
+
+  if (error) {
+    console.error(error);
+    showToast("Could not convert lead to client", "error");
+    return;
+  }
+
+  clients.unshift(data);
+  renderClients();
+  renderClientDropdown();
+
+  savedLeads.splice(index, 1);
+  saveLeads();
+  renderLeads();
+
+  showToast("Lead converted to client!");
+  addActivity("Lead converted to client");
+  showSection("clients");
 }
 
   let activeQuoteIndex = null;
