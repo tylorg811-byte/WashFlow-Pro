@@ -1549,11 +1549,31 @@ if (quickQuoteBtn) {
     setTheme(nextTheme);
   });
 
-  const customerName = document.getElementById("customerName");
+const customerName = document.getElementById("customerName");
 const jobAddress = document.getElementById("jobAddress");
 const notes = document.getElementById("notes");
 const convertQuoteBtn = document.getElementById("convertQuoteBtn");
 const jobList = document.getElementById("jobList");
+const serviceType = document.getElementById("serviceType");
+const sqft = document.getElementById("sqft");
+const minimum = document.getElementById("minimum");
+const quoteTotal = document.getElementById("quoteTotal");
+
+  function updateQuoteTotal() {
+  const rate = Number(serviceType.value || 0);
+  const area = Number(sqft.value || 0);
+  const min = Number(minimum.value || 0);
+
+  const total = Math.max(min, area * rate);
+
+  if (quoteTotal) {
+    quoteTotal.textContent = `$${Math.round(total).toLocaleString()}`;
+  }
+}
+  [serviceType, sqft, minimum].forEach(el => {
+  if (!el) return;
+  el.addEventListener("input", updateQuoteTotal);
+});
 
 let savedQuotes = [];
 let savedJobs = [];
@@ -1723,7 +1743,7 @@ function updateSqftFromPolygon() {
   const sqftInput = document.getElementById("sqft");
   if (sqftInput) {
     sqftInput.value = areaSqft;
-    sqftInput.dispatchEvent(new Event("input"));
+   updateQuoteTotal();
   }
 
   showToast(`Measured ${areaSqft.toLocaleString()} sqft`);
