@@ -1595,6 +1595,10 @@ const customQuoteReason = document.getElementById("customQuoteReason");
   const calculatedTotal = Math.max(min, area * rate);
   const total = custom > 0 ? custom : calculatedTotal;
 
+    if (custom > 0) {
+  quoteTotal.textContent += " (Custom)";
+}
+    
   if (quoteTotal) {
     quoteTotal.textContent = `$${Math.round(total).toLocaleString()}`;
   }
