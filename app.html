@@ -549,6 +549,73 @@ html[data-theme="light"] .map-preview {
 .toast.error {
   border-left: 5px solid #ef4444;
 }
+
+    <style>
+  /* all your existing CSS above */
+
+  @media (max-width: 900px) {
+    .app {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: auto;
+      height: 74px;
+      padding: 8px;
+      z-index: 1000;
+      border-right: none;
+      border-top: 1px solid var(--line);
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .brand,
+    #themeToggle,
+    #logoutBtn {
+      display: none;
+    }
+
+    .nav {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+    }
+
+    .nav button {
+      text-align: center;
+      font-size: 0.68rem;
+      padding: 8px 4px;
+      border-radius: 12px;
+    }
+
+    .nav button:nth-child(n+6) {
+      display: none;
+    }
+
+    .main {
+      padding: 16px;
+      padding-bottom: 96px;
+    }
+
+    .topbar {
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .topbar h1 {
+      font-size: 1.7rem;
+    }
+
+    .topbar > div:last-child {
+      display: flex;
+      gap: 8px;
+    }
+  }
   </style>
 </head>
 
