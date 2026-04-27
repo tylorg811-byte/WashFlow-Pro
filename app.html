@@ -1736,6 +1736,7 @@ const customerName = document.getElementById("customerName");
 const jobAddress = document.getElementById("jobAddress");
 const notes = document.getElementById("notes");
 const convertQuoteBtn = document.getElementById("convertQuoteBtn");
+const saveQuoteBtn = document.getElementById("saveQuoteBtn");
 const jobList = document.getElementById("jobList");
 const serviceType = document.getElementById("serviceType");
 const sqft = document.getElementById("sqft");
@@ -1745,6 +1746,42 @@ const customQuoteToggle = document.getElementById("customQuoteToggle");
 const customQuoteBox = document.getElementById("customQuoteBox");
 const customQuotePrice = document.getElementById("customQuotePrice");
 const customQuoteReason = document.getElementById("customQuoteReason");
+
+  if (saveQuoteBtn) {
+  saveQuoteBtn.addEventListener("click", async function() {
+    const quote = getCurrentQuote();
+
+    if (!currentBusiness?.id) {
+      showToast("Business not loaded", "error");
+      return;
+    }
+
+    const { data, error } = await supabaseClient
+      .from("quotes")
+      .insert({
+        ...quote,
+        business_id: currentBusiness.id,
+        status: "Saved Quote"
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error(error);
+      showToast("Could not save quote", "error");
+      return;
+    }
+
+    savedQuotes.unshift(data);
+    saveQuotes();
+    renderQuotes();
+    updateDashboardStats();
+
+    showToast("Quote saved!");
+    addActivity("Quote saved");
+    showSection("quotes");
+  });
+}
 
   function updateQuoteTotal() {
   const rate = Number(serviceType.value || 0);
