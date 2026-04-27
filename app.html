@@ -1240,8 +1240,6 @@ if (quoteClientSelect) {
 if (jobAddress) jobAddress.value = client.address || "";
     }
   });
-
-  const clientAddress = document.getElementById("clientAddress");
 }
 
 renderClientDropdown();
@@ -1252,14 +1250,14 @@ renderClientDropdown();
   });
 });
 
-  const clientName = document.getElementById("clientName");
+  let clients = JSON.parse(localStorage.getItem("washflow-clients")) || [];
+  
+const clientName = document.getElementById("clientName");
 const clientAddress = document.getElementById("clientAddress");
 const clientPhone = document.getElementById("clientPhone");
 const clientEmail = document.getElementById("clientEmail");
 const addClientBtn = document.getElementById("addClientBtn");
 const clientList = document.getElementById("clientList");
-
-let clients = JSON.parse(localStorage.getItem("washflow-clients")) || [];
 
 function saveClients() {
   localStorage.setItem("washflow-clients", JSON.stringify(clients));
@@ -1333,6 +1331,7 @@ if (addClientBtn) {
 }
 
 renderClients();
+renderClientDropdown();
 </script>
 
   <div id="toast" class="toast"></div>
