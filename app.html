@@ -1847,17 +1847,7 @@ function getCurrentQuote() {
     minimum: min,
     total: Math.round(total),
     notes: notes.value.trim(),
-    return {
-  customer: customerName.value.trim() || "Unnamed Customer",
-  email: getSelectedClientEmail(),
-  address: jobAddress.value.trim(),
-  service: serviceType.options[serviceType.selectedIndex].text,
-  sqft: area,
-  minimum: min,
-  total: Math.round(total),
-  notes: notes.value.trim(),
-  polygon: getPolygonCoords()
-};
+    polygon: getPolygonCoords()
   };
 }
 
