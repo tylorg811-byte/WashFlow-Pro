@@ -1008,7 +1008,9 @@ html[data-theme="light"] .map-preview {
       <h3>Map Quote Tool</h3>
       <p>Satellite measuring will connect to Google Maps later. This is the quote workflow UI.</p>
 
-      <div id="quoteMap" class="map-preview"></div>
+      <div id="quoteMap" class="map-preview" style="position:relative;">
+  <div id="mapCrosshair"></div>
+</div>
       <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
   <button class="btn btn-primary" type="button" id="startDrawBtn">Draw Area</button>
   <button class="btn btn-soft" type="button" id="clearMapBtn">Clear Drawing</button>
