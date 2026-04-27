@@ -1556,10 +1556,14 @@ let savedInvoices = [];
 
 function updateChecklist() {
   // Business profile
-  const hasBusiness =
-    businessCompanyName?.value &&
-    businessPhone?.value &&
-    businessServiceArea?.value;
+ const companyInput = document.getElementById("businessCompanyName");
+const phoneInput = document.getElementById("businessPhone");
+const areaInput = document.getElementById("businessServiceArea");
+
+const hasBusiness =
+  companyInput?.value &&
+  phoneInput?.value &&
+  areaInput?.value;;
 
   // Invoice branding
   const hasBranding =
@@ -3158,6 +3162,7 @@ async function initApp() {
   renderJobs();
   renderInvoices();
   renderDashboardHome();
+  updateChecklist();
 }
 
 initApp();
