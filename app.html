@@ -1262,9 +1262,7 @@ if (logoutBtn) {
 };
 
   function showSection(sectionId) {
-  const mainSections = document.querySelectorAll("main > section.section");
-
-  mainSections.forEach(section => {
+  document.querySelectorAll("main > section.section").forEach(section => {
     section.classList.remove("active");
     section.style.display = "none";
   });
@@ -1276,26 +1274,24 @@ if (logoutBtn) {
     target.style.display = "block";
   }
 
-  navButtons.forEach(button => {
+  document.querySelectorAll(".nav button").forEach(button => {
     button.classList.toggle("active", button.dataset.section === sectionId);
   });
 
-  if (sectionId === "dashboard") {
-  pageTitle.textContent = "Dashboard";
+  if (pageTitle) {
+    pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
+  }
 
-  if (typeof updateDashboardGreeting === "function") {
+  if (sectionId === "dashboard" && typeof updateDashboardGreeting === "function") {
     updateDashboardGreeting();
   }
-} else {
-  pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
 }
-  }
 
-navButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      showSection(button.dataset.section);
-    });
+document.querySelectorAll(".nav button").forEach(button => {
+  button.addEventListener("click", function() {
+    showSection(this.dataset.section);
   });
+});
 
 const quickClientBtn = document.getElementById("quickClientBtn");
 const quickQuoteBtn = document.getElementById("quickQuoteBtn");
