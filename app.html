@@ -2119,6 +2119,8 @@ function renderQuotes() {
   return;
 }
 
+  <button class="btn btn-soft" onclick="editQuote(${index})" style="margin-top:8px;">Edit</button>
+
   savedQuotes.forEach((quote, index) => {
     const div = document.createElement("div");
     div.className = "list-item";
