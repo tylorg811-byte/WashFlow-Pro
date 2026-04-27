@@ -628,6 +628,81 @@ html[data-theme="light"] .map-preview {
       gap: 8px;
     }
   }
+
+    .dashboard-hero {
+  margin-bottom: 18px;
+  padding: 22px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(34,211,238,0.22), transparent 32%),
+    linear-gradient(135deg, var(--panel), var(--panel-soft));
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.dashboard-hero h2 {
+  font-size: 1.9rem;
+  letter-spacing: -0.05em;
+  margin-bottom: 6px;
+}
+
+.dashboard-hero p {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.quick-action {
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.quick-action strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.quick-action small {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.progress-wrap {
+  margin-top: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--panel-soft);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.progress-bar {
+  height: 100%;
+  width: 35%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+}
+
+@media (max-width: 900px) {
+  .dashboard-hero h2 {
+    font-size: 1.55rem;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+}
   </style>
 </head>
 
@@ -682,6 +757,35 @@ html[data-theme="light"] .map-preview {
     <!-- DASHBOARD -->
    <section id="dashboard" class="section active">
 
+<div class="dashboard-hero">
+  <h2>Welcome back 👋</h2>
+  <p>Here’s what’s happening inside your business today.</p>
+
+  <div class="progress-wrap">
+    <div class="progress-bar"></div>
+  </div>
+</div>
+
+<div class="quick-actions">
+  <div class="quick-action">
+    <strong>+ New Quote</strong>
+    <small>Create a quote and convert it into a job.</small>
+    <button class="btn btn-primary" type="button" onclick="showSection('quote')">Create Quote</button>
+  </div>
+
+  <div class="quick-action">
+    <strong>+ Add Client</strong>
+    <small>Save customer info for faster quotes.</small>
+    <button class="btn btn-soft" type="button" onclick="showSection('clients')">Add Client</button>
+  </div>
+
+  <div class="quick-action">
+    <strong>Send Invoice</strong>
+    <small>View jobs and generate invoices.</small>
+    <button class="btn btn-soft" type="button" onclick="showSection('jobs')">View Jobs</button>
+  </div>
+</div>
+     
   <div class="stats">
     <div class="stat-card">
       <span>Revenue This Month</span>
