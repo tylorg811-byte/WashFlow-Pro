@@ -1214,7 +1214,9 @@ function showToast(message, type = "success") {
 }
 
   const quoteClientSelect = document.getElementById("quoteClientSelect");
-
+  
+let clients = JSON.parse(localStorage.getItem("washflow-clients")) || [];
+  
 function renderClientDropdown() {
   if (!quoteClientSelect) return;
 
@@ -1237,11 +1239,9 @@ if (quoteClientSelect) {
     const client = clients[selectedIndex];
 
     if (customerName) customerName.value = client.name || "";
-if (jobAddress) jobAddress.value = client.address || "";
-    }
+    if (jobAddress) jobAddress.value = client.address || "";
   });
 }
-
 renderClientDropdown();
 
   document.querySelectorAll("[data-ai-action]").forEach(button => {
@@ -1249,8 +1249,6 @@ renderClientDropdown();
     showSection("quote");
   });
 });
-
-  let clients = JSON.parse(localStorage.getItem("washflow-clients")) || [];
   
 const clientName = document.getElementById("clientName");
 const clientAddress = document.getElementById("clientAddress");
