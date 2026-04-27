@@ -659,27 +659,41 @@ html[data-theme="light"] .map-preview {
       <h3>Setup Checklist</h3>
       <p>Recommended steps before sending invoices.</p>
 
-      <div class="list">
-        <div class="list-item">
-          <div>
-            <strong>Business profile</strong>
-            <small>Add company name, phone, service area, and review link.</small>
-          </div>
-        </div>
+      <div class="list" id="dashboardChecklist">
 
-        <div class="list-item">
-          <div>
-            <strong>Invoice branding</strong>
-            <small>Upload logo, brand color, and footer message.</small>
-          </div>
-        </div>
+  <div class="list-item" id="checkBusinessProfile">
+    <div>
+      <strong>Business profile</strong>
+      <small>Add company name, phone, service area, and review link.</small>
+    </div>
+    <span class="status orange">Not Done</span>
+  </div>
 
-        <div class="list-item">
-          <div>
-            <strong>Connect Gmail</strong>
-            <small>Send invoices from the business owner’s Gmail account.</small>
-          </div>
-        </div>
+  <div class="list-item" id="checkInvoiceBranding">
+    <div>
+      <strong>Invoice branding</strong>
+      <small>Upload logo, brand color, and footer message.</small>
+    </div>
+    <span class="status orange">Not Done</span>
+  </div>
+
+  <div class="list-item" id="checkPayments">
+    <div>
+      <strong>Payment options</strong>
+      <small>Add a payment link so customers can pay invoices.</small>
+    </div>
+    <span class="status orange">Not Done</span>
+  </div>
+
+  <div class="list-item" id="checkFirstClient">
+    <div>
+      <strong>First client</strong>
+      <small>Add at least one customer.</small>
+    </div>
+    <span class="status orange">Not Done</span>
+  </div>
+
+</div>
       </div>
     </div>
 
