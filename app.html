@@ -2821,6 +2821,10 @@ async function initApp() {
   await loadJobs();
   await loadInvoices();
 
+  renderClients();
+  renderQuotes();
+  renderJobs();
+  renderInvoices();
   renderDashboardHome();
 }
 
