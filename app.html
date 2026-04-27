@@ -1547,6 +1547,44 @@ let savedQuotes = [];
 let savedJobs = [];
 let savedInvoices = [];
 
+function updateChecklist() {
+  // Business profile
+  const hasBusiness =
+    businessCompanyName?.value &&
+    businessPhone?.value &&
+    businessServiceArea?.value;
+
+  // Invoice branding
+  const hasBranding =
+    invoiceBranding.logo || invoiceBranding.footer;
+
+  // Payments
+  const hasPayments =
+    document.getElementById("paymentLink")?.value ||
+    document.getElementById("paypalLink")?.value ||
+    document.getElementById("cashappTag")?.value ||
+    document.getElementById("venmoHandle")?.value ||
+    document.getElementById("squareLink")?.value ||
+    document.getElementById("stripeLink")?.value;
+
+  // First client
+  const hasClient = clients.length > 0;
+
+  // Update UI helper
+  function setStatus(id, done) {
+    const el = document.querySelector(`#${id} .status`);
+    if (!el) return;
+
+    el.textContent = done ? "Done" : "Not Done";
+    el.className = "status " + (done ? "green" : "orange");
+  }
+
+  setStatus("checkBusinessProfile", hasBusiness);
+  setStatus("checkInvoiceBranding", hasBranding);
+  setStatus("checkPayments", hasPayments);
+  setStatus("checkFirstClient", hasClient);
+}
+  
   function updateDashboardStats() {
   const statCards = document.querySelectorAll(".stat-card strong");
   const statSubs = document.querySelectorAll(".stat-card small");
@@ -2355,6 +2393,8 @@ async function loadClients() {
   renderClientDropdown();
 }
 
+  updateChecklist();
+
   
 if (addClientBtn) {
   addClientBtn.addEventListener("click", async () => {
@@ -2400,6 +2440,7 @@ if (addClientBtn) {
     clientAddress.value = "";
 
     showToast("Client saved!");
+    updateChecklist();
     addActivity("New client added");
   });
 }
@@ -2506,6 +2547,7 @@ async function saveInvoiceBranding() {
 
   renderInvoices();
   showToast("Invoice branding saved!");
+  updateChecklist();
 }
 
 if (saveInvoiceBrandingBtn) {
