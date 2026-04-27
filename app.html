@@ -2771,22 +2771,12 @@ async function sendInvoiceEmail(index) {
   }
 }
 
-  function renderDashboardHome() {
+ function renderDashboardHome() {
   updateDashboardStats();
-    updateSetupChecklist();
-  }
-
-  const hasData =
-    savedQuotes.length > 0 ||
-    savedJobs.length > 0 ||
-    savedInvoices.length > 0 ||
-    clients.length > 0;
-
-  // For now, dashboard stays onboarding-style until we add live lists next.
-  // This keeps it clean for new users and sellable as a SaaS.
+  updateSetupChecklist();
 }
 
-  function updateSetupChecklist() {
+function updateSetupChecklist() {
   function setCheck(id, done) {
     const item = document.getElementById(id);
     if (!item) return;
@@ -2818,24 +2808,21 @@ async function sendInvoiceEmail(index) {
 
   setCheck("checkFirstClient", clients.length > 0);
 }
-  
+
 async function initApp() {
   await loadUserBusiness();
 
   updateDashboardGreeting();
   loadBusinessSettings();
   loadInvoiceBranding();
-  
 
   await loadClients();
   await loadQuotes();
   await loadJobs();
   await loadInvoices();
 
-  updateDashboardStats();
+  renderDashboardHome();
 }
-
-initApp();
 
 initApp();
   
