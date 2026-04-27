@@ -2116,6 +2116,14 @@ const houseWashRate = document.getElementById("houseWashRate");
 const roofWashRate = document.getElementById("roofWashRate");
 const minimumJobPriceSetting = document.getElementById("minimumJobPriceSetting");
 
+const paymentMethod = document.getElementById("paymentMethod");
+const paymentLink = document.getElementById("paymentLink");
+const paypalLink = document.getElementById("paypalLink");
+const cashappTag = document.getElementById("cashappTag");
+const venmoHandle = document.getElementById("venmoHandle");
+const squareLink = document.getElementById("squareLink");
+const stripeLink = document.getElementById("stripeLink");
+
 const saveBusinessSettingsBtn = document.getElementById("saveBusinessSettingsBtn");
   const invoiceList = document.getElementById("invoiceList");
 
@@ -2487,6 +2495,13 @@ async function saveBusinessSettings() {
     house_wash_rate: Number(houseWashRate.value || 0),
     roof_wash_rate: Number(roofWashRate.value || 0),
     minimum_job_price: Number(minimumJobPriceSetting.value || 0)
+    payment_method: paymentMethod.value,
+payment_link: paymentLink.value.trim(),
+paypal_link: paypalLink.value.trim(),
+cashapp_tag: cashappTag.value.trim(),
+venmo_handle: venmoHandle.value.trim(),
+square_link: squareLink.value.trim(),
+stripe_link: stripeLink.value.trim()
   };
 
   const { error } = await supabaseClient
@@ -2517,6 +2532,14 @@ async function saveBusinessSettings() {
   if (houseWashRate) houseWashRate.value = currentBusiness.house_wash_rate || 0.22;
   if (roofWashRate) roofWashRate.value = currentBusiness.roof_wash_rate || 0.30;
   if (minimumJobPriceSetting) minimumJobPriceSetting.value = currentBusiness.minimum_job_price || 125;
+
+  if (paymentMethod) paymentMethod.value = currentBusiness.payment_method || "custom";
+if (paymentLink) paymentLink.value = currentBusiness.payment_link || "";
+if (paypalLink) paypalLink.value = currentBusiness.paypal_link || "";
+if (cashappTag) cashappTag.value = currentBusiness.cashapp_tag || "";
+if (venmoHandle) venmoHandle.value = currentBusiness.venmo_handle || "";
+if (squareLink) squareLink.value = currentBusiness.square_link || "";
+if (stripeLink) stripeLink.value = currentBusiness.stripe_link || "";  
 }
 
 if (saveBusinessSettingsBtn) {
