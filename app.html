@@ -1755,6 +1755,23 @@ function updateSqftFromPolygon() {
   showToast(`Measured ${areaSqft.toLocaleString()} sqft`);
 }
 
+function getPolygonCoords() {
+  if (!quotePolygon) return null;
+
+  const path = quotePolygon.getPath();
+  const coords = [];
+
+  for (let i = 0; i < path.getLength(); i++) {
+    const point = path.getAt(i);
+    coords.push({
+      lat: point.lat(),
+      lng: point.lng()
+    });
+  }
+
+  return coords;
+}
+  
   function loadPolygon(coords) {
   if (!coords || !quoteMap || !window.google) return;
 
