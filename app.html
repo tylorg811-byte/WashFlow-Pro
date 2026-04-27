@@ -1719,6 +1719,7 @@ async function createInvoiceFromJob(index) {
   renderInvoices();
 
   showToast("Invoice created!");
+  addActivity("Invoice created");
   showSection("invoices");
 }
 
@@ -1807,6 +1808,7 @@ savedJobs.unshift(data);
 renderJobs();
 
 showToast("Converted to job!");
+addActivity("Quote converted into job");
 showSection("jobs");
   });
 }
@@ -2045,6 +2047,7 @@ if (error) {
 savedQuotes.unshift(data);
 renderQuotes();
 showToast("Quote saved!");
+addActivity("New quote created");
 showSection("quotes");
   });
 }
@@ -2359,6 +2362,7 @@ if (addClientBtn) {
     clientAddress.value = "";
 
     showToast("Client saved!");
+    addActivity("New client added");
   });
 }
 
