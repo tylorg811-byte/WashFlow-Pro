@@ -1130,7 +1130,7 @@ const jobList = document.getElementById("jobList");
 
 let savedQuotes = [];
 let savedJobs = [];
-let savedInvoices = JSON.parse(localStorage.getItem("washflow-invoices")) || [];
+let savedInvoices = [];
   
 function saveQuotes() {
   localStorage.setItem("washflow-quotes", JSON.stringify(savedQuotes));
@@ -1140,8 +1140,8 @@ async function saveJobs() {
   return;
 }
 
-  function saveInvoices() {
-  localStorage.setItem("washflow-invoices", JSON.stringify(savedInvoices));
+  async function saveInvoices() {
+  return;
 }
 
 function getCurrentQuote() {
@@ -2222,6 +2222,25 @@ async function loadJobs() {
   }
 
   currentBusiness = business;
+}
+
+async function loadInvoices() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("invoices")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load invoices", "error");
+    return;
+  }
+
+  savedInvoices = data || [];
+  renderInvoices();
 }
   
 loadInvoiceBranding();
