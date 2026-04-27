@@ -1938,7 +1938,7 @@ if (addClientBtn) {
   });
 }
 
-let invoiceBranding = JSON.parse(localStorage.getItem("washflow-invoice-branding")) || {
+let invoiceBranding = {
   logo: "",
   color: "#22d3ee",
   footer: "Thank you for supporting our business!"
@@ -1952,6 +1952,14 @@ const invoiceFooter = document.getElementById("invoiceFooter");
 const saveInvoiceBrandingBtn = document.getElementById("saveInvoiceBrandingBtn");
 
 function loadInvoiceBranding() {
+  if (currentBusiness) {
+    invoiceBranding = {
+      logo: currentBusiness.invoice_logo || "",
+      color: currentBusiness.invoice_color || "#22d3ee",
+      footer: currentBusiness.invoice_footer || "Thank you for supporting our business!"
+    };
+  }
+
   if (invoiceColor) invoiceColor.value = invoiceBranding.color || "#22d3ee";
   if (invoiceFooter) invoiceFooter.value = invoiceBranding.footer || "";
 
@@ -1968,26 +1976,68 @@ if (invoiceLogoUpload) {
 
     const reader = new FileReader();
 
-    reader.onload = function(event) {
-      invoiceBranding.logo = event.target.result;
-      invoiceLogoPreview.src = invoiceBranding.logo;
-      invoiceLogoPreviewWrap.style.display = "block";
-      localStorage.setItem("washflow-invoice-branding", JSON.stringify(invoiceBranding));
-      showToast("Logo uploaded!");
-    };
+    reader.onload = async function(event) {
+  invoiceBranding.logo = event.target.result;
+
+  if (invoiceLogoPreview) invoiceLogoPreview.src = invoiceBranding.logo;
+  if (invoiceLogoPreviewWrap) invoiceLogoPreviewWrap.style.display = "block";
+
+  if (!currentBusiness?.id) {
+    showToast("Business not loaded", "error");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("businesses")
+    .update({ invoice_logo: invoiceBranding.logo })
+    .eq("id", currentBusiness.id);
+
+  if (error) {
+    console.error(error);
+    showToast("Could not save logo", "error");
+    return;
+  }
+
+  currentBusiness.invoice_logo = invoiceBranding.logo;
+  showToast("Logo uploaded!");
+};
 
     reader.readAsDataURL(file);
   });
 }
 
-function saveInvoiceBranding() {
+async function saveInvoiceBranding() {
+  if (!currentBusiness?.id) {
+    showToast("Business not loaded", "error");
+    return;
+  }
+
   invoiceBranding = {
     logo: invoiceBranding.logo || "",
     color: invoiceColor.value,
     footer: invoiceFooter.value.trim()
   };
 
-  localStorage.setItem("washflow-invoice-branding", JSON.stringify(invoiceBranding));
+  const { error } = await supabaseClient
+    .from("businesses")
+    .update({
+      invoice_logo: invoiceBranding.logo,
+      invoice_color: invoiceBranding.color,
+      invoice_footer: invoiceBranding.footer
+    })
+    .eq("id", currentBusiness.id);
+
+  if (error) {
+    console.error(error);
+    showToast("Could not save invoice branding", "error");
+    return;
+  }
+
+  currentBusiness.invoice_logo = invoiceBranding.logo;
+  currentBusiness.invoice_color = invoiceBranding.color;
+  currentBusiness.invoice_footer = invoiceBranding.footer;
+
+  renderInvoices();
   showToast("Invoice branding saved!");
 }
 
@@ -2290,12 +2340,13 @@ loadInvoiceBranding();
   
 async function initApp() {
   await loadUserBusiness();
-
   await loadClients();
   await loadQuotes();
   await loadJobs();
   await loadInvoices();
 }
+
+initApp();
 
 initApp();
   
