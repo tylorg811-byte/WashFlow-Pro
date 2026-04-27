@@ -783,7 +783,7 @@ renderClients();
       <h3>Quote Details</h3>
       <p>Change the square footage or service type and the quote updates automatically.</p>
 
-      <form class="quote-form" id="quoteForm">
+      <form class="quote-form" id="quoteForm" onsubmit="return false;">
         <div class="field">
           <label for="customerName">Customer Name</label>
           <input id="customerName" value="Johnson Residence">
@@ -836,7 +836,7 @@ renderClients();
           <strong id="quoteTotal">$225</strong>
         </div>
 
-       <button class="btn btn-primary" type="submit">Save Quote</button>
+       <button class="btn btn-primary" type="button" id="saveQuoteBtn">Save Quote</button>
 <button class="btn btn-soft" type="button" id="convertQuoteBtn">Convert to Job</button>
       </form>
     </div>
@@ -1252,6 +1252,18 @@ if (convertQuoteBtn) {
 }
 
 renderJobs();
+
+  const saveQuoteBtn = document.getElementById("saveQuoteBtn");
+
+if (saveQuoteBtn) {
+  saveQuoteBtn.addEventListener("click", function() {
+    const quote = getCurrentQuote();
+    savedQuotes.push(quote);
+    saveQuotes();
+
+    alert("Quote saved.");
+  });
+}
 </script>
 
 </body>
