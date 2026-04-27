@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <title>Login | WashFlow Pro</title>
   <meta name="description" content="Login to WashFlow Pro, the all-in-one pressure washing business app for quoting, jobs, clients, photos, invoices, and more." />
@@ -336,16 +337,26 @@
   </main>
 
   <script>
-    const loginForm = document.getElementById("loginForm");
-    const loginNotice = document.getElementById("loginNotice");
+const SUPABASE_URL = "https://ehckicrcukzdbdhbgkhe.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_8XCfgwdnx0ZghIB4ndS_bw_DXHvQeV0";
 
-    loginForm.addEventListener("submit", function(event) {
-      event.preventDefault();
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+ async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-      loginNotice.style.display = "block";
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
 
-      setTimeout(() => {
-        window.location.href = "app.html";
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  window.location.href = "app.html";
+}
       }, 900);
     });
   </script>
