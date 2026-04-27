@@ -558,6 +558,7 @@ html[data-theme="light"] .map-preview {
     <div class="nav">
       <button class="active" data-section="dashboard">📊 Dashboard</button>
       <button data-section="quote">🗺️ Map Quote</button>
+      <button data-section="quotes">📄 Quotes</button>
       <button data-section="leads">🎯 Leads</button>
       <button data-section="clients">👥 Clients</button>
       <button data-section="jobs">🧼 Jobs</button>
@@ -1049,15 +1050,16 @@ html[data-theme="light"] .map-preview {
   const themeToggle = document.getElementById("themeToggle");
 
   const pageTitles = {
-    dashboard: "Dashboard",
-    quote: "Map Quote Tool",
-    leads: "Leads",
-    clients: "Clients",
-    jobs: "Jobs",
-    photos: "Photos",
-    invoices: "Invoices",
-    settings: "Settings"
-  };
+  dashboard: "Dashboard",
+  quote: "Map Quote Tool",
+  quotes: "Quotes",
+  leads: "Leads",
+  clients: "Clients",
+  jobs: "Jobs",
+  photos: "Photos",
+  invoices: "Invoices",
+  settings: "Settings"
+};
 
   function showSection(sectionId) {
     sections.forEach(section => {
@@ -1188,6 +1190,91 @@ if (convertQuoteBtn) {
 
 renderJobs();
 
+  const quoteList = document.getElementById("quoteList");
+
+function renderQuotes() {
+  if (!quoteList) return;
+
+  quoteList.innerHTML = "";
+
+  if (savedQuotes.length === 0) {
+    quoteList.innerHTML = `
+      <div class="list-item">
+        <small>No saved quotes yet. Create one from the Map Quote Tool.</small>
+      </div>
+    `;
+    return;
+  }
+
+  savedQuotes.forEach((quote, index) => {
+    const div = document.createElement("div");
+    div.className = "list-item";
+
+    div.innerHTML = `
+      <div>
+        <strong>${quote.customer}</strong>
+        <small>${quote.service} · ${quote.sqft} sqft · ${quote.address || "No address"}</small>
+        <br>
+        <span class="status">Saved Quote</span>
+      </div>
+
+      <div>
+        <div class="amount">$${quote.total.toLocaleString()}</div>
+        <button class="btn btn-primary" onclick="convertSavedQuoteToJob(${index})" style="margin-top:8px;">Convert</button>
+        <button class="btn btn-soft" onclick="copySavedQuote(${index})" style="margin-top:8px;">Copy</button>
+        <button class="btn btn-soft" onclick="deleteSavedQuote(${index})" style="margin-top:8px;">Delete</button>
+      </div>
+    `;
+
+    quoteList.appendChild(div);
+  });
+}
+
+function convertSavedQuoteToJob(index) {
+  const quote = savedQuotes[index];
+
+  savedJobs.push({
+    ...quote,
+    status: "Scheduled"
+  });
+
+  saveJobs();
+  renderJobs();
+
+  savedQuotes.splice(index, 1);
+  saveQuotes();
+  renderQuotes();
+
+  showToast("Quote converted to job!");
+  showSection("jobs");
+}
+
+function copySavedQuote(index) {
+  const quote = savedQuotes[index];
+
+  const message = `Hey ${quote.customer},
+
+I put together your quote for ${quote.service}.
+
+Estimated total: $${quote.total.toLocaleString()}
+
+Address: ${quote.address || "No address listed"}
+Measured area: ${quote.sqft.toLocaleString()} sqft
+
+${quote.notes || ""}
+
+If this looks good, I can get you scheduled.`;
+
+  navigator.clipboard.writeText(message);
+  showToast("Quote message copied!");
+}
+
+function deleteSavedQuote(index) {
+  savedQuotes.splice(index, 1);
+  saveQuotes();
+  renderQuotes();
+  showToast("Quote deleted!");
+}
   const saveQuoteBtn = document.getElementById("saveQuoteBtn");
 
 if (saveQuoteBtn) {
@@ -1195,8 +1282,10 @@ if (saveQuoteBtn) {
     const quote = getCurrentQuote();
     savedQuotes.push(quote);
     saveQuotes();
+    renderQuotes();
 
     showToast("Quote saved successfully!");
+    showSection("quotes");
   });
 }
 
@@ -1448,6 +1537,8 @@ if (addClientBtn) {
   });
 }
 
+renderJobs();
+renderQuotes();
 renderClients();
 renderClientDropdown();
 </script>
