@@ -1400,13 +1400,19 @@ function renderJobs() {
   jobList.innerHTML = "";
 
   if (savedJobs.length === 0) {
-    jobList.innerHTML = `
-      <div class="list-item">
-        <small>No jobs yet. Convert a quote into a job.</small>
+  jobList.innerHTML = `
+    <div class="list-item">
+      <div>
+        <strong>No jobs yet</strong>
+        <small>Convert a quote into a job when the customer approves it.</small>
       </div>
-    `;
-    return;
-  }
+      <button class="btn btn-primary" type="button" onclick="showSection('quote')">
+        Create Quote
+      </button>
+    </div>
+  `;
+  return;
+}
 
   savedJobs.forEach((job, index) => {
     const div = document.createElement("div");
@@ -1640,13 +1646,19 @@ function renderQuotes() {
   quoteList.innerHTML = "";
 
   if (savedQuotes.length === 0) {
-    quoteList.innerHTML = `
-      <div class="list-item">
-        <small>No saved quotes yet. Create one from the Map Quote Tool.</small>
+  quoteList.innerHTML = `
+    <div class="list-item">
+      <div>
+        <strong>No saved quotes yet</strong>
+        <small>Create your first quote from the Map Quote Tool.</small>
       </div>
-    `;
-    return;
-  }
+      <button class="btn btn-primary" type="button" onclick="showSection('quote')">
+        Create Quote
+      </button>
+    </div>
+  `;
+  return;
+}
 
   savedQuotes.forEach((quote, index) => {
     const div = document.createElement("div");
@@ -2056,14 +2068,17 @@ function renderClients() {
   clientList.innerHTML = "";
 
   if (clients.length === 0) {
-    clientList.innerHTML = `
-      <div class="list-item">
-        <small>No clients yet. Add your first one.</small>
+  clientList.innerHTML = `
+    <div class="list-item">
+      <div>
+        <strong>No clients yet</strong>
+        <small>Add your first customer to start building quotes faster.</small>
       </div>
-    `;
-    renderClientDropdown();
-    return;
-  }
+    </div>
+  `;
+  renderClientDropdown();
+  return;
+}
 
   clients.forEach((client, index) => {
     const div = document.createElement("div");
@@ -2306,13 +2321,19 @@ function renderInvoices() {
   invoiceList.innerHTML = "";
 
   if (savedInvoices.length === 0) {
-    invoiceList.innerHTML = `
-      <div class="list-item">
-        <small>No invoices yet. Create one from a completed job.</small>
+  invoiceList.innerHTML = `
+    <div class="list-item">
+      <div>
+        <strong>No invoices yet</strong>
+        <small>Create an invoice from a completed or scheduled job.</small>
       </div>
-    `;
-    return;
-  }
+      <button class="btn btn-primary" type="button" onclick="showSection('jobs')">
+        View Jobs
+      </button>
+    </div>
+  `;
+  return;
+}
 
   savedInvoices.forEach((invoice, index) => {
     const div = document.createElement("div");
