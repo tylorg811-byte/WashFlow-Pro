@@ -1777,6 +1777,7 @@ if (customQuoteToggle) {
 let savedQuotes = [];
 let savedJobs = [];
 let savedInvoices = [];
+let savedLeads = [];
 
 function updateChecklist() {
   const companyInput = document.getElementById("businessCompanyName");
@@ -2374,6 +2375,147 @@ function renderQuotes() {
 
     quoteList.appendChild(div);
   });
+}
+
+  const leadName = document.getElementById("leadName");
+const leadPhone = document.getElementById("leadPhone");
+const leadEmail = document.getElementById("leadEmail");
+const leadService = document.getElementById("leadService");
+const leadSource = document.getElementById("leadSource");
+const leadStatus = document.getElementById("leadStatus");
+const leadNotes = document.getElementById("leadNotes");
+const addLeadBtn = document.getElementById("addLeadBtn");
+const leadList = document.getElementById("leadList");
+
+function saveLeads() {
+  localStorage.setItem("washflow-leads", JSON.stringify(savedLeads));
+}
+
+function loadLeads() {
+  savedLeads = JSON.parse(localStorage.getItem("washflow-leads") || "[]");
+}
+
+function renderLeads() {
+  if (!leadList) return;
+
+  leadList.innerHTML = "";
+
+  if (!savedLeads.length) {
+    leadList.innerHTML = `
+      <div class="list-item">
+        <div>
+          <strong>No leads yet</strong>
+          <small>Add your first lead from Facebook, Google, your website, or referrals.</small>
+        </div>
+        <span class="status">Ready</span>
+      </div>
+    `;
+    return;
+  }
+
+  savedLeads.forEach((lead, index) => {
+    const div = document.createElement("div");
+    div.className = "list-item";
+
+    const statusClass =
+      lead.status === "Ready to Book" ? "green" :
+      lead.status === "Lost" ? "orange" :
+      "";
+
+    div.innerHTML = `
+      <div>
+        <strong>${lead.name || "Unnamed Lead"}</strong>
+        <small>${lead.service || "Service needed"} · ${lead.source || "Unknown source"}</small>
+        <br>
+        <span class="status ${statusClass}">${lead.status || "New Lead"}</span>
+        <br>
+        <small>${lead.phone || "No phone"} · ${lead.email || "No email"}</small>
+        <br>
+        <small>${lead.notes || "No notes yet."}</small>
+      </div>
+
+      <div class="quote-actions">
+        <button class="btn btn-primary" onclick="convertLeadToQuote(${index})">
+          Quote
+        </button>
+        <button class="btn btn-soft" onclick="markLeadContacted(${index})">
+          Contacted
+        </button>
+        <button class="btn btn-soft" onclick="deleteLead(${index})">
+          Delete
+        </button>
+      </div>
+    `;
+
+    leadList.appendChild(div);
+  });
+}
+
+if (addLeadBtn) {
+  addLeadBtn.addEventListener("click", function() {
+    const lead = {
+      name: leadName.value.trim(),
+      phone: leadPhone.value.trim(),
+      email: leadEmail.value.trim(),
+      service: leadService.value.trim(),
+      source: leadSource.value,
+      status: leadStatus.value,
+      notes: leadNotes.value.trim(),
+      created_at: new Date().toISOString()
+    };
+
+    if (!lead.name) {
+      showToast("Lead name is required", "error");
+      return;
+    }
+
+    savedLeads.unshift(lead);
+    saveLeads();
+    renderLeads();
+
+    leadName.value = "";
+    leadPhone.value = "";
+    leadEmail.value = "";
+    leadService.value = "";
+    leadStatus.value = "New Lead";
+    leadNotes.value = "";
+
+    showToast("Lead added!");
+    addActivity("New lead added");
+  });
+}
+
+function markLeadContacted(index) {
+  savedLeads[index].status = "Contacted";
+  saveLeads();
+  renderLeads();
+  showToast("Lead marked contacted");
+}
+
+function deleteLead(index) {
+  if (!confirm("Delete this lead?")) return;
+
+  savedLeads.splice(index, 1);
+  saveLeads();
+  renderLeads();
+  showToast("Lead deleted");
+}
+
+function convertLeadToQuote(index) {
+  const lead = savedLeads[index];
+  if (!lead) return;
+
+  customerName.value = lead.name || "";
+  jobAddress.value = "";
+  notes.value = lead.notes || "";
+  
+  showSection("quote");
+
+  setTimeout(() => {
+    customerName.focus();
+  }, 100);
+
+  showToast("Lead moved into quote tool");
 }
 
   let activeQuoteIndex = null;
@@ -3778,6 +3920,8 @@ async function initApp() {
   renderInvoices();
   renderDashboardHome();
   updateChecklist();
+  loadLeads();
+renderLeads();
 }
 
 initApp();
