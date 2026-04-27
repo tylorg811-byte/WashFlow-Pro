@@ -1656,6 +1656,26 @@ function initQuoteMap() {
     mapTypeControl: true
   });
 
+  const addressInput = document.getElementById("jobAddress");
+
+if (addressInput) {
+  const autocomplete = new google.maps.places.Autocomplete(addressInput);
+
+  autocomplete.addListener("place_changed", function () {
+    const place = autocomplete.getPlace();
+
+    if (!place.geometry) {
+      showToast("Address not found", "error");
+      return;
+    }
+
+    const location = place.geometry.location;
+
+    quoteMap.setCenter(location);
+    quoteMap.setZoom(20);
+  });
+}
+
   quoteDrawingManager = new google.maps.drawing.DrawingManager({
     drawingMode: google.maps.drawing.OverlayType.POLYGON,
     drawingControl: true,
@@ -2244,6 +2264,12 @@ function renderClientDropdown() {
 
 if (quoteClientSelect) {
   quoteClientSelect.addEventListener("change", function() {
+if (client.address) {
+  document.getElementById("jobAddress").value = client.address;
+
+  const event = new Event("input");
+  document.getElementById("jobAddress").dispatchEvent(event);
+}
     const selectedIndex = quoteClientSelect.value;
 
     if (selectedIndex === "") return;
