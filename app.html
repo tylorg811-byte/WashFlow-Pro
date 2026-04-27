@@ -596,7 +596,7 @@ html[data-theme="light"] .map-preview {
   white-space: nowrap;
 }
 
-    .main {
+    .mn {
       padding: 16px;
       padding-bottom: 96px;
     }
@@ -1094,14 +1094,15 @@ html[data-theme="light"] .map-preview {
   <strong>✨ AI Smart Assist</strong>
   <p>Want help improving this quote before sending it?</p>
 
-  <div class="assist-actions">
-    <button type="button" data-ai-action="addons">Suggest Add-ons</button>
-    <button type="button" data-ai-action="quote">Write Quote Message</button>
-    <button type="button" data-ai-action="price">Check Price</button>
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+  <button class="btn btn-soft">Suggest Add-ons</button>
+  <button class="btn btn-soft">Write Quote Message</button>
+  <button class="btn btn-soft">Check Price</button>
+
   </div>
 </div>
         
-        <div class="card" style="margin-top:20px;">
+        <div class="card" style="margin-bottom:20px;">
   <h3 style="margin-bottom:8px;">Estimated Quote</h3>
   <div class="amount" id="quoteTotal">$225</div>
 </div>
