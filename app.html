@@ -1299,6 +1299,21 @@ html[data-theme="light"] .map-preview {
       </div>
 
       <div class="field">
+  <label>Priority</label>
+  <select id="leadPriority">
+    <option value="Normal">Normal</option>
+    <option value="Hot">Hot</option>
+    <option value="Urgent">Urgent</option>
+    <option value="Low">Low</option>
+  </select>
+</div>
+
+<div class="field">
+  <label>Next Follow-Up Date</label>
+  <input id="leadFollowUpDate" type="date">
+</div>
+
+      <div class="field">
         <label>Notes</label>
         <textarea id="leadNotes" placeholder="Customer asked for pricing, wants service this week, needs follow-up..."></textarea>
       </div>
@@ -2491,6 +2506,8 @@ const leadStatus = document.getElementById("leadStatus");
 const leadNotes = document.getElementById("leadNotes");
 const addLeadBtn = document.getElementById("addLeadBtn");
 const leadList = document.getElementById("leadList");
+const leadPriority = document.getElementById("leadPriority");
+const leadFollowUpDate = document.getElementById("leadFollowUpDate");
 
 function saveLeads() {
   localStorage.setItem("washflow-leads", JSON.stringify(savedLeads));
@@ -2534,6 +2551,10 @@ function renderLeads() {
         <br>
         <span class="status ${statusClass}">${lead.status || "New Lead"}</span>
         <br>
+<small>Priority: ${lead.priority || "Normal"} · Follow-up: ${lead.follow_up_date || "Not set"}</small>
+<br>
+<small>Last contacted: ${lead.last_contacted || "Never"}</small>
+        <br>
        <small>${lead.phone || "No phone"} · ${lead.email || "No email"}</small>
 <br>
 <small>${lead.address || "No address"}</small>
@@ -2551,6 +2572,9 @@ function renderLeads() {
         <button class="btn btn-soft" onclick="markLeadContacted(${index})">
           Contacted
         </button>
+        <button class="btn btn-soft" onclick="smartLeadFollowUp(${index})">
+  AI Follow-Up
+</button>
         <button class="btn btn-soft" onclick="deleteLead(${index})">
           Delete
         </button>
@@ -2569,8 +2593,14 @@ if (addLeadBtn) {
   email: leadEmail.value.trim(),
   address: formatAddress(leadAddress.value),
   service: leadService.value.trim(),
-      created_at: new Date().toISOString()
-    };
+  source: leadStatus.value = "New Lead";
+  status: leadPriority.value = "Normal";
+  priority: leadPriority.value,
+  follow_up_date: leadFollowUpDate.value,
+  last_contacted: "",
+  notes: leadNotes.value.trim(),
+  created_at: new Date().toISOString()
+};
 
     if (!lead.name) {
       showToast("Lead name is required", "error");
@@ -2595,9 +2625,32 @@ if (addLeadBtn) {
 
 function markLeadContacted(index) {
   savedLeads[index].status = "Contacted";
+  savedLeads[index].last_contacted = new Date().toLocaleDateString();
+
   saveLeads();
   renderLeads();
+
   showToast("Lead marked contacted");
+  addActivity("Lead contacted");
+}
+
+  function smartLeadFollowUp(index) {
+  const lead = savedLeads[index];
+  if (!lead) return;
+
+  const message = `Hey ${lead.name},
+
+Just wanted to follow up with you about ${lead.service || "the service you were interested in"}.
+
+I’d be happy to take a look, answer any questions, or put together a quick quote for you.
+
+${lead.address ? `I have the address as: ${lead.address}` : ""}
+
+Let me know what works best for you.`;
+
+  navigator.clipboard.writeText(message);
+
+  showToast("AI follow-up copied!");
 }
 
 function deleteLead(index) {
