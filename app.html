@@ -2719,15 +2719,20 @@ async function sendInvoiceEmail(index) {
   
 async function initApp() {
   await loadUserBusiness();
+
   updateDashboardGreeting();
   loadBusinessSettings();
+  loadInvoiceBranding();
 
   await loadClients();
   await loadQuotes();
   await loadJobs();
   await loadInvoices();
+
   updateDashboardStats();
 }
+
+initApp();
 
 initApp();
   
