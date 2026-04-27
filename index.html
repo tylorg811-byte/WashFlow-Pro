@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>WashFlow Pro | All-in-One App for Pressure Washing Businesses</title>
+  <meta name="description" content="WashFlow Pro helps pressure washing businesses quote faster, measure jobs with maps, manage clients, schedule jobs, upload photos, send invoices, and grow from one simple app." />
+
+  <meta name="theme-color" content="#07111f" />
+
+  <meta property="og:title" content="WashFlow Pro | Built for Pressure Washing Businesses" />
+  <meta property="og:description" content="Quote jobs faster, manage customers, upload before/after photos, send invoices, and run your pressure washing business from one app." />
+  <meta property="og:type" content="website" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background: #07111f;
+      color: #ffffff;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(0, 187, 255, 0.18), transparent 35%),
+        radial-gradient(circle at top right, rgba(0, 255, 179, 0.13), transparent 35%),
+        linear-gradient(180deg, #07111f 0%, #081827 48%, #06101c 100%);
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+      padding: 18px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(7, 17, 31, 0.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      font-size: 1.35rem;
+    }
+
+    .logo-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background:
+        linear-gradient(135deg, #00d4ff, #00ffb3);
+      display: grid;
+      place-items: center;
+      color: #07111f;
+      font-weight: 1000;
+      box-shadow: 0 0 35px rgba(0, 212, 255, 0.38);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.82);
+    }
+
+    .nav-links a:hover {
+      color: #00e6ff;
+    }
+
+    .nav-cta {
+      padding: 11px 18px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #00d4ff, #00ffb3);
+      color: #06101c;
+      font-weight: 900;
+      box-shadow: 0 0 26px rgba(0, 212, 255, 0.28);
+    }
+
+    .hero {
+      padding: 90px 6% 70px;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 50px;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      color: #91f7ff;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.25);
+      margin-bottom: 22px;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 6.4rem);
+      line-height: 0.94;
+      letter-spacing: -0.08em;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, #ffffff, #80f7ff, #00ffb3);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      max-width: 650px;
+      font-size: 1.16rem;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 30px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 22px;
+      border-radius: 16px;
+      font-weight: 900;
+      transition: 0.25s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00d4ff, #00ffb3);
+      color: #06101c;
+      box-shadow: 0 14px 45px rgba(0, 212, 255, 0.28);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+    }
+
+    .trust-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: rgba(255,255,255,0.65);
+      font-size: 0.92rem;
+    }
+
+    .trust-row span {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .app-preview {
+      position: relative;
+      min-height: 600px;
+    }
+
+    .phone {
+      width: min(390px, 100%);
+      margin: 0 auto;
+      border-radius: 42px;
+      padding: 16px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 35px 90px rgba(0,0,0,0.45);
+    }
+
+    .phone-screen {
+      border-radius: 32px;
+      overflow: hidden;
+      background: #081421;
+      border: 1px solid rgba(255,255,255,0.1);
+      min-height: 560px;
+      padding: 20px;
+    }
+
+    .mock-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .mock-title strong {
+      display: block;
+      font-size: 1.15rem;
+    }
+
+    .mock-title small {
+      color: rgba(255,255,255,0.55);
+    }
+
+    .status-pill {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(0,255,179,0.12);
+      color: #78ffd6;
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+
+    .map-card {
+      height: 180px;
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(0,212,255,0.23), rgba(0,255,179,0.13)),
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 14px);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 16px;
+    }
+
+    .map-card:after {
+      content: "";
+      position: absolute;
+      inset: 42px 75px 35px 55px;
+      border: 3px solid #00ffb3;
+      border-radius: 28% 42% 33% 47%;
+      background: rgba(0,255,179,0.12);
+      box-shadow: 0 0 25px rgba(0,255,179,0.45);
+    }
+
+    .quote-total {
+      padding: 20px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 16px;
+    }
+
+    .quote-total small {
+      color: rgba(255,255,255,0.6);
+      font-weight: 800;
+    }
+
+    .quote-total h3 {
+      font-size: 2.25rem;
+      margin-top: 4px;
+      color: #88fff0;
+    }
+
+    .mock-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mock-item {
+      padding: 13px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      color: rgba(255,255,255,0.82);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 80px 6%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .section-head {
+      max-width: 780px;
+      margin-bottom: 38px;
+    }
+
+    .section-head h2 {
+      font-size: clamp(2rem, 4vw, 4rem);
+      line-height: 1;
+      letter-spacing: -0.06em;
+      margin-bottom: 16px;
+    }
+
+    .section-head p {
+      color: rgba(255,255,255,0.68);
+      font-size: 1.05rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .feature-card {
+      padding: 26px;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.065);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 25px 65px rgba(0,0,0,0.18);
+    }
+
+    .feature-card .icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: rgba(0,212,255,0.13);
+      margin-bottom: 18px;
+      font-size: 1.4rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.95rem;
+    }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .step {
+      padding: 24px;
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(0,212,255,0.1), rgba(255,255,255,0.045));
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .step-number {
+      color: #00ffb3;
+      font-weight: 1000;
+      margin-bottom: 12px;
+    }
+
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .plan {
+      padding: 28px;
+      border-radius: 30px;
+      background: rgba(255,255,255,0.065);
+      border: 1px solid rgba(255,255,255,0.11);
+      position: relative;
+    }
+
+    .plan.popular {
+      border-color: rgba(0,255,179,0.65);
+      box-shadow: 0 0 45px rgba(0,255,179,0.15);
+      transform: translateY(-8px);
+    }
+
+    .badge {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(0,255,179,0.16);
+      color: #80ffd9;
+      font-size: 0.75rem;
+      font-weight: 1000;
+    }
+
+    .plan h3 {
+      font-size: 1.35rem;
+      margin-bottom: 8px;
+    }
+
+    .price {
+      font-size: 2.7rem;
+      font-weight: 1000;
+      margin: 15px 0;
+      letter-spacing: -0.06em;
+    }
+
+    .price small {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0;
+    }
+
+    .plan ul {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+      margin: 22px 0;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .plan li:before {
+      content: "✓ ";
+      color: #00ffb3;
+      font-weight: 900;
+    }
+
+    .cta-band {
+      margin: 80px 6% 0;
+      padding: 56px 6%;
+      border-radius: 38px;
+      background:
+        radial-gradient(circle at top right, rgba(0,255,179,0.22), transparent 35%),
+        linear-gradient(135deg, rgba(0,212,255,0.18), rgba(255,255,255,0.06));
+      border: 1px solid rgba(255,255,255,0.13);
+      text-align: center;
+    }
+
+    .cta-band h2 {
+      font-size: clamp(2rem, 5vw, 4.5rem);
+      line-height: 1;
+      letter-spacing: -0.07em;
+      margin-bottom: 18px;
+    }
+
+    .cta-band p {
+      max-width: 720px;
+      margin: 0 auto 28px;
+      color: rgba(255,255,255,0.72);
+    }
+
+    footer {
+      padding: 45px 6%;
+      color: rgba(255,255,255,0.55);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding-top: 60px;
+      }
+
+      .app-preview {
+        min-height: auto;
+      }
+
+      .features-grid,
+      .plans,
+      .workflow {
+        grid-template-columns: 1fr;
+      }
+
+      .plan.popular {
+        transform: none;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .nav {
+        padding: 14px 5%;
+      }
+
+      .brand {
+        font-size: 1.1rem;
+      }
+
+      .logo-mark {
+        width: 36px;
+        height: 36px;
+      }
+
+      .hero {
+        padding: 48px 5% 50px;
+      }
+
+      section {
+        padding: 58px 5%;
+      }
+
+      .hero h1 {
+        font-size: 3rem;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .phone-screen {
+        min-height: 500px;
+      }
+
+      footer {
+        padding-bottom: 90px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <nav class="nav">
+      <a href="index.html" class="brand">
+        <span class="logo-mark">W</span>
+        <span>WashFlow Pro</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How It Works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="login.html">Login</a>
+        <a href="signup.html" class="nav-cta">Start Free Trial</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div>
+        <div class="eyebrow">Built for pressure washing businesses</div>
+
+        <h1>
+          Quote faster. <br />
+          Book more. <br />
+          <span>Run everything.</span>
+        </h1>
+
+        <p>
+          WashFlow Pro is the all-in-one app for pressure washers to measure jobs with maps,
+          create quotes, manage clients, schedule jobs, upload before-and-after photos,
+          send invoices, and grow without complicated software.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="signup.html" class="btn btn-primary">Start Free Trial</a>
+          <a href="#features" class="btn btn-secondary">See Features</a>
+        </div>
+
+        <div class="trust-row">
+          <span>Map-based quoting</span>
+          <span>Client CRM</span>
+          <span>Job photos</span>
+          <span>Invoices</span>
+        </div>
+      </div>
+
+      <div class="app-preview">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="mock-top">
+              <div class="mock-title">
+                <strong>New Quote</strong>
+                <small>Driveway cleaning</small>
+              </div>
+              <span class="status-pill">Ready</span>
+            </div>
+
+            <div class="map-card"></div>
+
+            <div class="quote-total">
+              <small>Measured Area</small>
+              <h3>1,248 sqft</h3>
+              <small>Estimated Quote: $225</small>
+            </div>
+
+            <div class="mock-list">
+              <div class="mock-item">
+                <span>Service</span>
+                <strong>Driveway</strong>
+              </div>
+              <div class="mock-item">
+                <span>Status</span>
+                <strong>Draft</strong>
+              </div>
+              <div class="mock-item">
+                <span>Next Step</span>
+                <strong>Send Quote</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="features">
+      <div class="section-head">
+        <h2>Everything a pressure washing business needs in one place.</h2>
+        <p>
+          Instead of jumping between notes, texts, photos, spreadsheets, invoices, and maps,
+          WashFlow Pro keeps the full job flow connected.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="icon">🗺️</div>
+          <h3>Map Quote Tool</h3>
+          <p>Measure driveways, patios, roofs, pool decks, and flatwork from satellite view and calculate pricing by square footage.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="icon">👥</div>
+          <h3>Leads & Clients</h3>
+          <p>Track new leads, customer info, job history, notes, quotes, invoices, and follow-ups from one clean dashboard.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="icon">📋</div>
+          <h3>Quotes & Jobs</h3>
+          <p>Create quotes, save drafts, convert approved quotes into scheduled jobs, and keep every job organized.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="icon">📸</div>
+          <h3>Job Photos</h3>
+          <p>Upload before-and-after photos directly to each job so proof, progress, and results are always organized.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="icon">💬</div>
+          <h3>Texts & Reviews</h3>
+          <p>Send on-my-way texts, job updates, and review requests so customers stay informed and your reputation grows.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="icon">💵</div>
+          <h3>Invoices & Payments</h3>
+          <p>Create invoices, track paid and unpaid jobs, and keep your money organized without hunting through messages.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="section-head">
+        <h2>From quote to paid job, faster.</h2>
+        <p>
+          WashFlow Pro is designed around the real pressure washing workflow:
+          measure, quote, book, wash, prove the work, and get paid.
+        </p>
+      </div>
+
+      <div class="workflow">
+        <div class="step">
+          <div class="step-number">01</div>
+          <h3>Enter the address</h3>
+          <p>Pull up the property and start the quote from your phone or computer.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">02</div>
+          <h3>Measure the job</h3>
+          <p>Use the map tool to calculate square footage and build a price fast.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">03</div>
+          <h3>Send the quote</h3>
+          <p>Save it, send it, and convert approved quotes into scheduled jobs.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">04</div>
+          <h3>Finish & follow up</h3>
+          <p>Upload photos, invoice the customer, and send a review request.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="section-head">
+        <h2>Simple pricing built for growing businesses.</h2>
+        <p>
+          Start with the essentials, then unlock more automation as your business grows.
+        </p>
+      </div>
+
+      <div class="plans">
+        <div class="plan">
+          <h3>Starter</h3>
+          <p>For solo operators getting organized.</p>
+          <div class="price">$29<small>/mo</small></div>
+          <ul>
+            <li>Map quoting</li>
+            <li>Clients and leads</li>
+            <li>Quotes and jobs</li>
+            <li>Basic invoices</li>
+            <li>Manual customer texts</li>
+          </ul>
+          <a href="signup.html" class="btn btn-secondary">Start Starter</a>
+        </div>
+
+        <div class="plan popular">
+          <span class="badge">Most Popular</span>
+          <h3>Growth</h3>
+          <p>For busy pressure washers who want more automation.</p>
+          <div class="price">$49<small>/mo</small></div>
+          <ul>
+            <li>Everything in Starter</li>
+            <li>Photo galleries</li>
+            <li>Review requests</li>
+            <li>Job reminders</li>
+            <li>Analytics dashboard</li>
+          </ul>
+          <a href="signup.html" class="btn btn-primary">Start Growth</a>
+        </div>
+
+        <div class="plan">
+          <h3>Pro</h3>
+          <p>For teams and growing companies.</p>
+          <div class="price">$79<small>/mo</small></div>
+          <ul>
+            <li>Everything in Growth</li>
+            <li>Team members</li>
+            <li>Route planning</li>
+            <li>Recurring jobs</li>
+            <li>Advanced reporting</li>
+          </ul>
+          <a href="signup.html" class="btn btn-secondary">Start Pro</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="cta-band">
+      <h2>Build quotes in minutes. Run jobs from anywhere.</h2>
+      <p>
+        Give your pressure washing business the system it needs to stay organized,
+        look professional, and close more work.
+      </p>
+      <a href="signup.html" class="btn btn-primary">Start Free Trial</a>
+    </div>
+
+    <footer>
+      <p>© 2026 WashFlow Pro. All rights reserved.</p>
+      <p>
+        <a href="#features">Features</a> ·
+        <a href="#pricing">Pricing</a> ·
+        <a href="login.html">Login</a>
+      </p>
+    </footer>
+
+  </div>
+</body>
+</html>
