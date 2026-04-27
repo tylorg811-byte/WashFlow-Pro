@@ -153,7 +153,6 @@
       display: block;
     }
 
-<style>
 /* DASHBOARD CARDS */
 
 .stats {
@@ -511,84 +510,6 @@ html[data-theme="light"] .map-preview {
   font-weight: 800;
   cursor: pointer;
 }
-
-const clientName = document.getElementById("clientName");
-const clientAddress = document.getElementById("clientAddress");
-const clientPhone = document.getElementById("clientPhone");
-const clientEmail = document.getElementById("clientEmail");
-const addClientBtn = document.getElementById("addClientBtn");
-const clientList = document.getElementById("clientList");
-
-let clients = JSON.parse(localStorage.getItem("washflow-clients")) || [];
-
-function saveClients() {
-  localStorage.setItem("washflow-clients", JSON.stringify(clients));
-}
-
-function renderClients() {
-  clientList.innerHTML = "";
-
- if (clients.length === 0) {
-    clientList.innerHTML = `
-      <div class="list-item">
-        <small>No clients yet. Add your first one.</small>
-      </div>
-    `;
-    return;
-  }
-
-
-  clients.forEach((client, index) => {
-    const div = document.createElement("div");
-    div.className = "list-item";
-
-    div.innerHTML = `
-      <div>
-        <strong>${client.name}</strong>
-        <small>${client.phone || ""} ${client.email || ""}</small>
-      </div>
-      <button onclick="deleteClient(${index})" class="btn btn-soft">Delete</button>
-    `;
-
-    clientList.appendChild(div);
-  });
-}
-
-function deleteClient(index) {
-  clients.splice(index, 1);
-  saveClients();
-  renderClients();
-}
-
-if (addClientBtn) {
-  addClientBtn.addEventListener("click", () => {
-     name = clientName.value.trim();
-
-    if (!name) {
-      alert("Client name required");
-      return;
-    }
-
-     newClient = {
-  name,
-  phone: clientPhone.value.trim(),
-  email: clientEmail.value.trim(),
-  address: clientAddress.value.trim()
-};
-
-    clients.push(newClient);
-
-    saveClients();
-    renderClients();
-
-    clientName.value = "";
-    clientPhone.value = "";
-    clientEmail.value = "";
-    clientAddress.value = "";
-  });
-}
-
-renderClients();
 
   /* TOAST NOTIFICATION */
 
@@ -1330,6 +1251,88 @@ renderClientDropdown();
     showSection("quote");
   });
 });
+
+  const clientName = document.getElementById("clientName");
+const clientAddress = document.getElementById("clientAddress");
+const clientPhone = document.getElementById("clientPhone");
+const clientEmail = document.getElementById("clientEmail");
+const addClientBtn = document.getElementById("addClientBtn");
+const clientList = document.getElementById("clientList");
+
+let clients = JSON.parse(localStorage.getItem("washflow-clients")) || [];
+
+function saveClients() {
+  localStorage.setItem("washflow-clients", JSON.stringify(clients));
+}
+
+function renderClients() {
+  if (!clientList) return;
+
+  clientList.innerHTML = "";
+
+  if (clients.length === 0) {
+    clientList.innerHTML = `
+      <div class="list-item">
+        <small>No clients yet. Add your first one.</small>
+      </div>
+    `;
+    renderClientDropdown();
+    return;
+  }
+
+  clients.forEach((client, index) => {
+    const div = document.createElement("div");
+    div.className = "list-item";
+
+    div.innerHTML = `
+      <div>
+        <strong>${client.name}</strong>
+        <small>${client.phone || ""} ${client.email || ""} ${client.address || ""}</small>
+      </div>
+      <button onclick="deleteClient(${index})" class="btn btn-soft">Delete</button>
+    `;
+
+    clientList.appendChild(div);
+  });
+
+  renderClientDropdown();
+}
+
+function deleteClient(index) {
+  clients.splice(index, 1);
+  saveClients();
+  renderClients();
+}
+
+if (addClientBtn) {
+  addClientBtn.addEventListener("click", () => {
+    const name = clientName.value.trim();
+
+    if (!name) {
+      alert("Client name required");
+      return;
+    }
+
+    const newClient = {
+      name,
+      phone: clientPhone.value.trim(),
+      email: clientEmail.value.trim(),
+      address: clientAddress.value.trim()
+    };
+
+    clients.push(newClient);
+
+    saveClients();
+    renderClients();
+
+    clientName.value = "";
+    clientPhone.value = "";
+    clientEmail.value = "";
+    clientAddress.value = "";
+  });
+}
+
+renderClients();
 </script>
 
   <div id="toast" class="toast"></div>
