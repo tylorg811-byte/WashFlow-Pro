@@ -1110,13 +1110,18 @@ const jobList = document.getElementById("jobList");
 
 let savedQuotes = JSON.parse(localStorage.getItem("washflow-quotes")) || [];
 let savedJobs = JSON.parse(localStorage.getItem("washflow-jobs")) || [];
-
+let savedInvoices = JSON.parse(localStorage.getItem("washflow-invoices")) || [];
+  
 function saveQuotes() {
   localStorage.setItem("washflow-quotes", JSON.stringify(savedQuotes));
 }
 
 function saveJobs() {
   localStorage.setItem("washflow-jobs", JSON.stringify(savedJobs));
+}
+
+  function saveInvoices() {
+  localStorage.setItem("washflow-invoices", JSON.stringify(savedInvoices));
 }
 
 function getCurrentQuote() {
@@ -1155,17 +1160,40 @@ function renderJobs() {
     const div = document.createElement("div");
     div.className = "list-item";
 
+    const statusClass = job.status === "Completed" ? "green" : "orange";
+
     div.innerHTML = `
       <div>
         <strong>${job.customer}</strong>
         <small>${job.service} · ${job.sqft} sqft · ${job.address || "No address"}</small>
         <br>
-        <span class="status orange">${job.status}</span>
+        <span class="status ${statusClass}">${job.status}</span>
+        <br>
+        <small>${job.notes || "No job notes added."}</small>
       </div>
 
       <div>
         <div class="amount">$${job.total.toLocaleString()}</div>
-        <button class="btn btn-soft" onclick="completeJob(${index})" style="margin-top:8px;">Complete</button>
+
+        <button class="btn btn-primary" onclick="completeJob(${index})" style="margin-top:8px;">
+          Complete
+        </button>
+
+        <button class="btn btn-soft" onclick="createInvoiceFromJob(${index})" style="margin-top:8px;">
+          Create Invoice
+        </button>
+
+        <button class="btn btn-soft" onclick="smartJobSummary(${index})" style="margin-top:8px;">
+          AI Summary
+        </button>
+
+        <button class="btn btn-soft" onclick="smartJobCompleteMessage(${index})" style="margin-top:8px;">
+          AI Complete Msg
+        </button>
+
+        <button class="btn btn-soft" onclick="smartReviewRequest(${index})" style="margin-top:8px;">
+          AI Review
+        </button>
       </div>
     `;
 
@@ -1179,6 +1207,107 @@ function completeJob(index) {
   renderJobs();
 }
 
+function showJobAIResult(title, text) {
+  let box = document.getElementById("jobAIResultBox");
+
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "jobAIResultBox";
+    box.className = "card";
+    box.style.marginTop = "16px";
+
+    box.innerHTML = `
+      <h3 id="jobAIResultTitle">✨ Job AI</h3>
+      <p id="jobAIResultText" style="white-space:pre-line; color:var(--text); font-weight:600; line-height:1.6;"></p>
+      <button class="btn btn-soft" type="button" onclick="copyJobAIResult()">Copy AI Result</button>
+    `;
+
+    document.getElementById("jobs").appendChild(box);
+  }
+
+  document.getElementById("jobAIResultTitle").textContent = title;
+  document.getElementById("jobAIResultText").textContent = text;
+}
+
+function copyJobAIResult() {
+  const text = document.getElementById("jobAIResultText")?.innerText || "";
+  navigator.clipboard.writeText(text);
+  showToast("Job AI result copied!");
+}
+
+function createInvoiceFromJob(index) {
+  const job = savedJobs[index];
+
+  const invoice = {
+    customer: job.customer,
+    address: job.address,
+    service: job.service,
+    sqft: job.sqft,
+    total: job.total,
+    notes: job.notes,
+    status: "Draft",
+    createdAt: new Date().toLocaleDateString()
+  };
+
+  savedInvoices.push(invoice);
+  saveInvoices();
+
+  showToast("Invoice created!");
+  showSection("invoices");
+}
+
+function smartJobSummary(index) {
+  const job = savedJobs[index];
+
+  const message = `Job Summary:
+
+Customer: ${job.customer}
+Service: ${job.service}
+Address: ${job.address || "No address listed"}
+Square Feet: ${job.sqft.toLocaleString()} sqft
+Total: $${job.total.toLocaleString()}
+Status: ${job.status}
+
+Summary:
+Completed professional exterior cleaning for ${job.customer}. This job helped improve curb appeal, remove buildup, and leave the property looking cleaner and better maintained.
+
+Notes:
+${job.notes || "No additional notes."}`;
+
+  showJobAIResult("✨ AI Job Summary", message);
+  showToast("AI job summary created!");
+}
+
+function smartJobCompleteMessage(index) {
+  const job = savedJobs[index];
+
+  const message = `Hey ${job.customer},
+
+Your ${job.service} job is complete and everything came out great.
+
+The total is $${job.total.toLocaleString()}.
+
+Thank you again for trusting us with your property. I appreciate the opportunity to help get it cleaned up.`;
+
+  showJobAIResult("✨ AI Completion Message", message);
+  showToast("AI completion message created!");
+}
+
+function smartReviewRequest(index) {
+  const job = savedJobs[index];
+
+  const message = `Hey ${job.customer},
+
+Thank you again for choosing us for your ${job.service}. It was a pleasure working on your property.
+
+If you were happy with the service, a quick Google review would mean a lot and really helps our small business grow.
+
+Thank you again!`;
+
+  showJobAIResult("✨ AI Review Request", message);
+  showToast("AI review request created!");
+}
+  
 if (convertQuoteBtn) {
   convertQuoteBtn.addEventListener("click", function() {
     const quote = getCurrentQuote();
