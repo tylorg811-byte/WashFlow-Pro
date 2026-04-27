@@ -2044,7 +2044,17 @@ async function saveInvoiceBranding() {
 if (saveInvoiceBrandingBtn) {
   saveInvoiceBrandingBtn.addEventListener("click", saveInvoiceBranding);
 }
+const businessCompanyName = document.getElementById("businessCompanyName");
+const businessPhone = document.getElementById("businessPhone");
+const businessServiceArea = document.getElementById("businessServiceArea");
+const businessReviewLink = document.getElementById("businessReviewLink");
 
+const drivewayRate = document.getElementById("drivewayRate");
+const houseWashRate = document.getElementById("houseWashRate");
+const roofWashRate = document.getElementById("roofWashRate");
+const minimumJobPriceSetting = document.getElementById("minimumJobPriceSetting");
+
+const saveBusinessSettingsBtn = document.getElementById("saveBusinessSettingsBtn");
   const invoiceList = document.getElementById("invoiceList");
 
 function renderInvoices() {
@@ -2335,11 +2345,64 @@ async function loadInvoices() {
   savedInvoices = data || [];
   renderInvoices();
 }
+
+async function saveBusinessSettings() {
+  if (!currentBusiness?.id) {
+    showToast("Business not loaded", "error");
+    return;
+  }
+
+  const updates = {
+    company_name: businessCompanyName.value.trim(),
+    phone: businessPhone.value.trim(),
+    service_area: businessServiceArea.value.trim(),
+    google_review_link: businessReviewLink.value.trim(),
+    driveway_rate: Number(drivewayRate.value || 0),
+    house_wash_rate: Number(houseWashRate.value || 0),
+    roof_wash_rate: Number(roofWashRate.value || 0),
+    minimum_job_price: Number(minimumJobPriceSetting.value || 0)
+  };
+
+  const { error } = await supabaseClient
+    .from("businesses")
+    .update(updates)
+    .eq("id", currentBusiness.id);
+
+  if (error) {
+    console.error(error);
+    showToast("Could not save settings", "error");
+    return;
+  }
+
+  Object.assign(currentBusiness, updates);
+
+  showToast("Business settings saved!");
+}
+  
+  function loadBusinessSettings() {
+  if (!currentBusiness) return;
+
+  if (businessCompanyName) businessCompanyName.value = currentBusiness.company_name || "";
+  if (businessPhone) businessPhone.value = currentBusiness.phone || "";
+  if (businessServiceArea) businessServiceArea.value = currentBusiness.service_area || "";
+  if (businessReviewLink) businessReviewLink.value = currentBusiness.google_review_link || "";
+  
+  if (drivewayRate) drivewayRate.value = currentBusiness.driveway_rate || 0.18;
+  if (houseWashRate) houseWashRate.value = currentBusiness.house_wash_rate || 0.22;
+  if (roofWashRate) roofWashRate.value = currentBusiness.roof_wash_rate || 0.30;
+  if (minimumJobPriceSetting) minimumJobPriceSetting.value = currentBusiness.minimum_job_price || 125;
+    if (saveBusinessSettingsBtn) {
+  saveBusinessSettingsBtn.addEventListener("click", saveBusinessSettings);
+}
   
 loadInvoiceBranding();
   
-async function initApp() {
+  async function initApp() {
   await loadUserBusiness();
+
+  loadInvoiceBranding();
+  loadBusinessSettings();
+
   await loadClients();
   await loadQuotes();
   await loadJobs();
