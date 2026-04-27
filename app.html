@@ -943,46 +943,12 @@ html[data-theme="light"] .map-preview {
 
     <!-- INVOICES -->
     <section id="invoices" class="section">
-
   <div class="card">
     <h3>Invoices</h3>
-    <p>Track what’s paid, unpaid, and ready to send.</p>
+    <p>Track draft, sent, paid, and unpaid invoices.</p>
 
-    <div class="list">
-
-      <div class="list-item">
-        <div>
-          <strong>INV-1004 · Martinez Home</strong>
-          <small>House wash + pool deck</small>
-          <br>
-          <span class="status orange">Unpaid</span>
-        </div>
-        <div class="amount">$340</div>
-      </div>
-
-      <div class="list-item">
-        <div>
-          <strong>INV-1003 · Robinson Home</strong>
-          <small>Roof wash</small>
-          <br>
-          <span class="status green">Paid</span>
-        </div>
-        <div class="amount">$480</div>
-      </div>
-
-      <div class="list-item">
-        <div>
-          <strong>INV-1002 · Crystal Bay HOA</strong>
-          <small>Commercial flatwork</small>
-          <br>
-          <span class="status">Sent</span>
-        </div>
-        <div class="amount">$760</div>
-      </div>
-
-    </div>
+    <div class="list" id="invoiceList"></div>
   </div>
-
 </section>
 
     <!-- SETTINGS -->
@@ -1279,10 +1245,11 @@ function createInvoiceFromJob(index) {
   };
 
   savedInvoices.push(invoice);
-  saveInvoices();
+saveInvoices();
+renderInvoices();
 
-  showToast("Invoice created!");
-  showSection("invoices");
+showToast("Invoice created!");
+showSection("invoices");
 }
 
 function smartJobSummary(index) {
@@ -1842,6 +1809,169 @@ function saveInvoiceBranding() {
 
 if (saveInvoiceBrandingBtn) {
   saveInvoiceBrandingBtn.addEventListener("click", saveInvoiceBranding);
+}
+
+  const invoiceList = document.getElementById("invoiceList");
+
+function renderInvoices() {
+  if (!invoiceList) return;
+
+  invoiceList.innerHTML = "";
+
+  if (savedInvoices.length === 0) {
+    invoiceList.innerHTML = `
+      <div class="list-item">
+        <small>No invoices yet. Create one from a completed job.</small>
+      </div>
+    `;
+    return;
+  }
+
+  savedInvoices.forEach((invoice, index) => {
+    const div = document.createElement("div");
+    div.className = "list-item";
+    div.style.alignItems = "stretch";
+
+    const statusClass = invoice.status === "Paid" ? "green" : "orange";
+
+    div.innerHTML = `
+      <div style="width:100%;">
+        <div style="
+          height:7px;
+          width:100%;
+          border-radius:999px;
+          background:${invoiceBranding.color || "#22d3ee"};
+          margin-bottom:14px;
+        "></div>
+
+        ${invoiceBranding.logo ? `
+          <img src="${invoiceBranding.logo}" style="
+            max-width:150px;
+            max-height:80px;
+            object-fit:contain;
+            background:white;
+            padding:8px;
+            border-radius:12px;
+            margin-bottom:12px;
+          ">
+        ` : ""}
+
+        <strong>${invoice.customer}</strong>
+        <small>
+          ${invoice.service} · ${invoice.sqft} sqft · ${invoice.address || "No address"}
+        </small>
+
+        <br>
+        <span class="status ${statusClass}">${invoice.status}</span>
+
+        <p style="margin-top:12px; color:var(--muted); font-weight:700;">
+          ${invoice.notes || "No invoice notes added."}
+        </p>
+
+        <p style="margin-top:10px; font-weight:800;">
+          ${invoiceBranding.footer || "Thank you for your business!"}
+        </p>
+      </div>
+
+      <div style="min-width:160px;">
+        <div class="amount">$${invoice.total.toLocaleString()}</div>
+
+        <button class="btn btn-primary" onclick="markInvoicePaid(${index})" style="margin-top:8px;">
+          Mark Paid
+        </button>
+
+        <button class="btn btn-soft" onclick="copyInvoiceMessage(${index})" style="margin-top:8px;">
+          Copy
+        </button>
+
+        <button class="btn btn-soft" onclick="smartInvoiceMessage(${index})" style="margin-top:8px;">
+          AI Message
+        </button>
+
+        <button class="btn btn-soft" onclick="deleteInvoice(${index})" style="margin-top:8px;">
+          Delete
+        </button>
+      </div>
+    `;
+
+    invoiceList.appendChild(div);
+  });
+}
+
+function markInvoicePaid(index) {
+  savedInvoices[index].status = "Paid";
+  saveInvoices();
+  renderInvoices();
+  showToast("Invoice marked paid!");
+}
+
+function copyInvoiceMessage(index) {
+  const invoice = savedInvoices[index];
+
+  const message = `Hey ${invoice.customer},
+
+Here is your invoice for ${invoice.service}.
+
+Total Due: $${invoice.total.toLocaleString()}
+
+Service Address: ${invoice.address || "No address listed"}
+
+${invoiceBranding.footer || "Thank you for your business!"}`;
+
+  navigator.clipboard.writeText(message);
+  showToast("Invoice message copied!");
+}
+
+function smartInvoiceMessage(index) {
+  const invoice = savedInvoices[index];
+
+  const message = `Hey ${invoice.customer},
+
+Your invoice for ${invoice.service} is ready.
+
+The total comes out to $${invoice.total.toLocaleString()}.
+
+Thank you again for trusting us with your property. We appreciate your business and look forward to helping again in the future.
+
+${invoiceBranding.footer || ""}`;
+
+  showInvoiceAIResult("✨ AI Invoice Message", message);
+  showToast("AI invoice message created!");
+}
+
+function showInvoiceAIResult(title, text) {
+  let box = document.getElementById("invoiceAIResultBox");
+
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "invoiceAIResultBox";
+    box.className = "card";
+    box.style.marginTop = "16px";
+
+    box.innerHTML = `
+      <h3 id="invoiceAIResultTitle">✨ Invoice AI</h3>
+      <p id="invoiceAIResultText" style="white-space:pre-line; color:var(--text); font-weight:600; line-height:1.6;"></p>
+      <button class="btn btn-soft" type="button" onclick="copyInvoiceAIResult()">Copy AI Result</button>
+    `;
+
+    document.getElementById("invoices").appendChild(box);
+  }
+
+  document.getElementById("invoiceAIResultTitle").textContent = title;
+  document.getElementById("invoiceAIResultText").textContent = text;
+}
+
+function copyInvoiceAIResult() {
+  const text = document.getElementById("invoiceAIResultText")?.innerText || "";
+  navigator.clipboard.writeText(text);
+  showToast("Invoice AI result copied!");
+}
+
+function deleteInvoice(index) {
+  savedInvoices.splice(index, 1);
+  saveInvoices();
+  renderInvoices();
+  showToast("Invoice deleted!");
 }
 
 loadInvoiceBranding();
