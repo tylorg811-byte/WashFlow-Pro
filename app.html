@@ -405,8 +405,6 @@ html[data-theme="light"] .map-preview {
   }
 }
 
-    </script>
-
     /* PHOTO GALLERY */
 
 .photo-grid {
@@ -514,37 +512,8 @@ html[data-theme="light"] .map-preview {
   cursor: pointer;
 }
 
-    document.querySelectorAll("[data-ai-action]").forEach(button => {
-  button.addEventListener("click", function() {
-    const action = button.dataset.aiAction;
-
-    showSection("ai");
-
-    if (aiTask && aiInput && aiOutput) {
-      const taskMap = {
-        addons: "addons",
-        quote: "quote",
-        price: "addons",
-        notes: "notes",
-        followup: "followup",
-        review: "review",
-        summary: "summary",
-        social: "summary",
-        proof: "summary"
-      };
-
-      aiTask.value = taskMap[action] || "quote";
-
-      aiInput.value =
-        "Use the current job details and create a helpful pressure washing business response.";
-
-      aiOutput.textContent =
-        "Smart Assist opened. Review the task and click Generate with AI.";
-    }
-  });
-});
-
-    const clientName = document.getElementById("clientName");
+const clientName = document.getElementById("clientName");
+const clientAddress = document.getElementById("clientAddress");
 const clientPhone = document.getElementById("clientPhone");
 const clientEmail = document.getElementById("clientEmail");
 const addClientBtn = document.getElementById("addClientBtn");
@@ -559,15 +528,15 @@ function saveClients() {
 function renderClients() {
   clientList.innerHTML = "";
 
-  if (clients.length === 0) {
+ if (clients.length === 0) {
     clientList.innerHTML = `
       <div class="list-item">
         <small>No clients yet. Add your first one.</small>
       </div>
     `;
     return;
-    renderClientDropdown();
   }
+
 
   clients.forEach((client, index) => {
     const div = document.createElement("div");
@@ -593,14 +562,14 @@ function deleteClient(index) {
 
 if (addClientBtn) {
   addClientBtn.addEventListener("click", () => {
-    const name = clientName.value.trim();
+     name = clientName.value.trim();
 
     if (!name) {
       alert("Client name required");
       return;
     }
 
-    const newClient = {
+     newClient = {
   name,
   phone: clientPhone.value.trim(),
   email: clientEmail.value.trim(),
@@ -794,7 +763,7 @@ renderClients();
 
   </div>
 
-</section>>
+</section>
 
     <!-- MAP QUOTE -->
   <section id="quote" class="section">
@@ -983,7 +952,6 @@ renderClients();
 
     <!-- PHOTOS -->
     <section id="photos" class="section">
-      <section id="photos" class="section">
 
   <div class="card">
     <h3>Job Photos</h3>
@@ -1356,6 +1324,12 @@ if (jobAddress) jobAddress.value = client.address || "";
 }
 
 renderClientDropdown();
+
+  document.querySelectorAll("[data-ai-action]").forEach(button => {
+  button.addEventListener("click", function() {
+    showSection("quote");
+  });
+});
 </script>
 
   <div id="toast" class="toast"></div>
