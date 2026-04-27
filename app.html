@@ -2312,19 +2312,34 @@ async function loadJobs() {
 
   currentUser = userData.user;
 
-  const { data: business, error: businessError } = await supabaseClient
+  const { data: existingBusiness, error: fetchError } = await supabaseClient
     .from("businesses")
     .select("*")
     .eq("owner_id", currentUser.id)
     .single();
 
-  if (businessError) {
-    console.error(businessError);
-    showToast("Could not load business profile", "error");
+  if (existingBusiness) {
+    currentBusiness = existingBusiness;
     return;
   }
 
-  currentBusiness = business;
+  // 👇 CREATE BUSINESS IF IT DOESN’T EXIST
+  const { data: newBusiness, error: createError } = await supabaseClient
+    .from("businesses")
+    .insert({
+      owner_id: currentUser.id,
+      company_name: "My Business"
+    })
+    .select()
+    .single();
+
+  if (createError) {
+    console.error(createError);
+    showToast("Could not create business profile", "error");
+    return;
+  }
+
+  currentBusiness = newBusiness;
 }
 
 async function loadInvoices() {
