@@ -795,6 +795,104 @@ html[data-theme="light"] .map-preview {
   pointer-events: none;
   box-shadow: 0 0 8px rgba(0,0,0,0.6);
 }
+
+    .quote-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  justify-content: flex-end;
+}
+
+.quote-actions .amount {
+  width: 100%;
+  font-weight: 800;
+  font-size: 1.1rem;
+  text-align: right;
+}
+
+.quote-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9999;
+}
+
+.quote-modal.show {
+  display: flex;
+}
+
+.quote-modal-card {
+  width: 100%;
+  max-width: 620px;
+  background: #101827;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.quote-modal-card label {
+  display: block;
+  margin-top: 16px;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.quote-modal-card input,
+.quote-modal-card textarea {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  padding: 12px;
+  font: inherit;
+  outline: none;
+}
+
+.quote-modal-card textarea {
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+@media (max-width: 700px) {
+  .quote-actions {
+    justify-content: flex-start;
+  }
+
+  .quote-actions .amount {
+    text-align: left;
+  }
+
+  .quote-actions button {
+    flex: 1 1 100%;
+  }
+}
     
   </style>
 </head>
@@ -2192,14 +2290,14 @@ function renderQuotes() {
 
   quoteList.innerHTML = "";
 
-  if (savedQuotes.length === 0) {
+  if (!savedQuotes.length) {
     quoteList.innerHTML = `
       <div class="list-item">
         <div>
           <strong>No saved quotes yet</strong>
           <small>Create your first quote from the Map Quote Tool.</small>
         </div>
-        <button class="btn btn-primary" type="button" onclick="showSection('quote')">
+        <button class="btn btn-primary" onclick="showSection('quote')">
           Create Quote
         </button>
       </div>
@@ -2209,47 +2307,122 @@ function renderQuotes() {
 
   savedQuotes.forEach((quote, index) => {
     const div = document.createElement("div");
-    div.className = "list-item";
-    div.style.alignItems = "stretch";
+    div.className = "list-item quote-card";
 
-    const isCustom = quote.custom_price || quote.custom_price_reason;
+    const address = quote.address || "No address";
+    const amount = `$${Number(quote.total || 0).toLocaleString()}`;
 
     div.innerHTML = `
-      <div style="flex:1;">
-        <strong>${quote.customer}</strong>
-        <small>${quote.service} · ${Number(quote.sqft || 0).toLocaleString()} sqft</small>
-        <small style="display:block; margin-top:4px;">${quote.address || "No address"}</small>
-
-        <div style="margin-top:8px;">
-          <span class="status">Saved Quote</span>
-          ${isCustom ? `<span class="status orange">Custom Price</span>` : ""}
-        </div>
-
-        ${quote.custom_price_reason ? `
-          <small style="display:block; margin-top:8px;">
-            Note: ${quote.custom_price_reason}
-          </small>
-        ` : ""}
+      <div>
+        <strong>${quote.customer || "Unnamed Customer"}</strong>
+        <small>${quote.service || "Service"} · ${quote.sqft || 0} sqft · ${address}</small>
+        <br>
+        <span class="status">Saved Quote</span>
       </div>
 
-      <div style="min-width:220px;">
-        <div class="amount" style="font-size:1.5rem; margin-bottom:10px;">
-          $${Number(quote.total || 0).toLocaleString()}
-        </div>
+      <div class="quote-actions">
+        <div class="amount">${amount}</div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-          <button class="btn btn-primary" onclick="convertSavedQuoteToJob(${index})">Convert</button>
-          <button class="btn btn-soft" onclick="editQuote(${index})">Edit</button>
-          <button class="btn btn-soft" onclick="copySavedQuote(${index})">Copy</button>
-          <button class="btn btn-soft" onclick="smartQuoteMessage(${index})">AI Msg</button>
-          <button class="btn btn-soft" onclick="smartQuoteFollowUp(${index})">Follow-Up</button>
-          <button class="btn btn-soft" onclick="deleteSavedQuote(${index})">Delete</button>
-        </div>
+        <button class="btn btn-primary" onclick="openSendQuoteModal(${index})">
+          Send Quote
+        </button>
+
+        <button class="btn btn-soft" onclick="convertSavedQuoteToJob(${index})">
+          Convert
+        </button>
+
+        <button class="btn btn-soft" onclick="editQuote(${index})">
+          Edit
+        </button>
+
+        <button class="btn btn-soft" onclick="deleteSavedQuote(${index})">
+          Delete
+        </button>
       </div>
     `;
 
     quoteList.appendChild(div);
   });
+}
+
+  let activeQuoteIndex = null;
+
+function openSendQuoteModal(index) {
+  activeQuoteIndex = index;
+
+  const quote = savedQuotes[index];
+  if (!quote) return;
+
+  const customerName = quote.customer || "there";
+  const service = quote.service || "the requested service";
+  const sqft = quote.sqft || 0;
+  const address = quote.address || "your property";
+  const total = Number(quote.total || 0).toLocaleString();
+
+  const emailBody = `Hi ${customerName},
+
+Thank you for reaching out. I put together your quote for ${service} at ${address}.
+
+Quote Details:
+- Service: ${service}
+- Property Size: ${sqft} sqft
+- Estimated Total: $${total}
+
+This quote includes the work discussed and is ready to move forward whenever you are.
+
+If everything looks good, I can get you scheduled and convert this quote into an active job.
+
+Thank you,
+WashFlow Pro`;
+
+  document.getElementById("sendQuoteCustomer").textContent = customerName;
+  document.getElementById("sendQuoteSubject").value = `Your WashFlow Pro Quote - $${total}`;
+  document.getElementById("sendQuoteEmailBody").value = emailBody;
+
+  document.getElementById("sendQuoteModal").classList.add("show");
+}
+
+function closeSendQuoteModal() {
+  activeQuoteIndex = null;
+  document.getElementById("sendQuoteModal").classList.remove("show");
+}
+
+function regenerateQuoteEmail() {
+  if (activeQuoteIndex === null) return;
+
+  const quote = savedQuotes[activeQuoteIndex];
+  if (!quote) return;
+
+  const customerName = quote.customer || "there";
+  const service = quote.service || "the requested service";
+  const address = quote.address || "your property";
+  const total = Number(quote.total || 0).toLocaleString();
+
+  const upgradedMessage = `Hi ${customerName},
+
+I hope you're doing well.
+
+I reviewed the details for ${service} at ${address}, and I put together a clear quote for you.
+
+Your estimated total is $${total}.
+
+This quote is designed to give you a professional, reliable service with clear pricing and no confusion. If you would like to move forward, I can get this converted into a job and get you on the schedule.
+
+Please let me know if you have any questions or if you would like me to make any adjustments.
+
+Thank you,
+WashFlow Pro`;
+
+  document.getElementById("sendQuoteEmailBody").value = upgradedMessage;
+}
+
+function sendQuoteEmail() {
+  if (activeQuoteIndex === null) return;
+
+  const subject = encodeURIComponent(document.getElementById("sendQuoteSubject").value);
+  const body = encodeURIComponent(document.getElementById("sendQuoteEmailBody").value);
+
+  window.location.href = `mailto:?subject=${subject}&body=${body}`;
 }
 
   function editQuote(index) {
@@ -3541,5 +3714,26 @@ initApp();
 }
   
 </script>
+
+    <div id="sendQuoteModal" class="quote-modal">
+  <div class="quote-modal-card">
+    <button class="modal-close" onclick="closeSendQuoteModal()">×</button>
+
+    <span class="status">AI Smart Assistant</span>
+    <h2>Send Quote</h2>
+    <p>AI generated a clean email for <strong id="sendQuoteCustomer"></strong>.</p>
+
+    <label>Email Subject</label>
+    <input id="sendQuoteSubject" type="text">
+
+    <label>Email Message</label>
+    <textarea id="sendQuoteEmailBody" rows="12"></textarea>
+
+    <div class="modal-actions">
+      <button class="btn btn-soft" onclick="regenerateQuoteEmail()">Regenerate AI Email</button>
+      <button class="btn btn-primary" onclick="sendQuoteEmail()">Send Quote</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
