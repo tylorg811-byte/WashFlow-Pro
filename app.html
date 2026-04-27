@@ -2386,18 +2386,18 @@ async function saveBusinessSettings() {
   if (businessPhone) businessPhone.value = currentBusiness.phone || "";
   if (businessServiceArea) businessServiceArea.value = currentBusiness.service_area || "";
   if (businessReviewLink) businessReviewLink.value = currentBusiness.google_review_link || "";
-  
+
   if (drivewayRate) drivewayRate.value = currentBusiness.driveway_rate || 0.18;
   if (houseWashRate) houseWashRate.value = currentBusiness.house_wash_rate || 0.22;
   if (roofWashRate) roofWashRate.value = currentBusiness.roof_wash_rate || 0.30;
   if (minimumJobPriceSetting) minimumJobPriceSetting.value = currentBusiness.minimum_job_price || 125;
-    if (saveBusinessSettingsBtn) {
+}
+
+if (saveBusinessSettingsBtn) {
   saveBusinessSettingsBtn.addEventListener("click", saveBusinessSettings);
 }
-  
-loadInvoiceBranding();
-  
-  async function initApp() {
+
+async function initApp() {
   await loadUserBusiness();
 
   loadInvoiceBranding();
@@ -2408,8 +2408,6 @@ loadInvoiceBranding();
   await loadJobs();
   await loadInvoices();
 }
-
-initApp();
 
 initApp();
   
