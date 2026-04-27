@@ -543,6 +543,80 @@ html[data-theme="light"] .map-preview {
     }
   });
 });
+
+    const clientName = document.getElementById("clientName");
+const clientPhone = document.getElementById("clientPhone");
+const clientEmail = document.getElementById("clientEmail");
+const addClientBtn = document.getElementById("addClientBtn");
+const clientList = document.getElementById("clientList");
+
+let clients = JSON.parse(localStorage.getItem("washflow-clients")) || [];
+
+function saveClients() {
+  localStorage.setItem("washflow-clients", JSON.stringify(clients));
+}
+
+function renderClients() {
+  clientList.innerHTML = "";
+
+  if (clients.length === 0) {
+    clientList.innerHTML = `
+      <div class="list-item">
+        <small>No clients yet. Add your first one.</small>
+      </div>
+    `;
+    return;
+  }
+
+  clients.forEach((client, index) => {
+    const div = document.createElement("div");
+    div.className = "list-item";
+
+    div.innerHTML = `
+      <div>
+        <strong>${client.name}</strong>
+        <small>${client.phone || ""} ${client.email || ""}</small>
+      </div>
+      <button onclick="deleteClient(${index})" class="btn btn-soft">Delete</button>
+    `;
+
+    clientList.appendChild(div);
+  });
+}
+
+function deleteClient(index) {
+  clients.splice(index, 1);
+  saveClients();
+  renderClients();
+}
+
+if (addClientBtn) {
+  addClientBtn.addEventListener("click", () => {
+    const name = clientName.value.trim();
+
+    if (!name) {
+      alert("Client name required");
+      return;
+    }
+
+    const newClient = {
+      name,
+      phone: clientPhone.value.trim(),
+      email: clientEmail.value.trim()
+    };
+
+    clients.push(newClient);
+
+    saveClients();
+    renderClients();
+
+    clientName.value = "";
+    clientPhone.value = "";
+    clientEmail.value = "";
+  });
+}
+
+renderClients();
   </style>
 </head>
 
@@ -816,45 +890,35 @@ html[data-theme="light"] .map-preview {
 </section>
 
     <!-- CLIENTS -->
-    <section id="clients" class="section">
+   <section id="clients" class="section">
 
   <div class="card">
     <h3>Clients</h3>
-    <p>Keep customer info, notes, quotes, jobs, invoices, and photos together.</p>
+    <p>Add and manage your customers.</p>
 
-    <div class="list">
-
-      <div class="list-item">
-        <div>
-          <strong>Johnson Residence</strong>
-          <small>johnson@email.com · (555) 123-4567 · 3 jobs completed</small>
-          <br>
-          <span class="status green">Active Client</span>
-        </div>
-        <div class="amount">$825 lifetime</div>
+    <div class="field-group" style="margin-bottom:16px;">
+      <div class="field">
+        <label>Name</label>
+        <input id="clientName" placeholder="John Smith">
       </div>
 
-      <div class="list-item">
-        <div>
-          <strong>Crystal Bay HOA</strong>
-          <small>manager@crystalbay.com · Commercial account · 8 jobs completed</small>
-          <br>
-          <span class="status">Commercial</span>
-        </div>
-        <div class="amount">$5,420 lifetime</div>
+      <div class="field">
+        <label>Phone</label>
+        <input id="clientPhone" placeholder="(555) 555-5555">
       </div>
 
-      <div class="list-item">
-        <div>
-          <strong>Martinez Home</strong>
-          <small>House wash, pool deck, driveway · 2 jobs completed</small>
-          <br>
-          <span class="status green">Repeat Client</span>
-        </div>
-        <div class="amount">$640 lifetime</div>
+      <div class="field">
+        <label>Email</label>
+        <input id="clientEmail" placeholder="john@email.com">
       </div>
 
+      <button class="btn btn-primary" type="button" id="addClientBtn">
+        + Add Client
+      </button>
     </div>
+
+    <div class="list" id="clientList"></div>
+
   </div>
 
 </section>
