@@ -1127,6 +1127,7 @@ function getCurrentQuote() {
 
   return {
     customer: customerName.value.trim() || "Unnamed Customer",
+    email: getSelectedClientEmail(),
     address: jobAddress.value.trim(),
     service: serviceType.options[serviceType.selectedIndex].text,
     sqft: area,
@@ -1236,6 +1237,7 @@ function createInvoiceFromJob(index) {
   const invoice = {
     customer: job.customer,
     address: job.address,
+    email: job.email || ""
     service: job.service,
     sqft: job.sqft,
     total: job.total,
@@ -1520,6 +1522,13 @@ function showToast(message, type = "success") {
 }
 
   const quoteClientSelect = document.getElementById("quoteClientSelect");
+
+  function getSelectedClientEmail() {
+  const index = quoteClientSelect?.value;
+  if (index === "" || index == null) return "";
+
+  return clients[index]?.email || "";
+}
   
 let clients = JSON.parse(localStorage.getItem("washflow-clients")) || [];
   
