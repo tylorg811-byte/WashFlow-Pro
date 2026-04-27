@@ -836,8 +836,8 @@ renderClients();
           <strong id="quoteTotal">$225</strong>
         </div>
 
-        <button class="btn btn-primary" type="submit">Save Quote</button>
-        <button class="btn btn-soft" type="button">Send Quote</button>
+       <button class="btn btn-primary" type="submit">Save Quote</button>
+<button class="btn btn-soft" type="button" id="convertQuoteBtn">Convert to Job</button>
       </form>
     </div>
 
@@ -928,51 +928,9 @@ renderClients();
 
   <div class="card">
     <h3>Jobs</h3>
-    <p>Manage scheduled, active, completed, and follow-up jobs.</p>
+    <p>Saved quotes can be converted into jobs here.</p>
 
-    <div class="list">
-
-      <div class="list-item">
-        <div>
-          <strong>Johnson Residence</strong>
-          <small>Driveway + sidewalk · Today at 10:00 AM</small>
-          <br>
-          <span class="status orange">Scheduled</span>
-        </div>
-        <div class="amount">$225</div>
-      </div>
-
-      <div class="list-item">
-        <div>
-          <strong>Crystal Bay HOA</strong>
-          <small>Commercial flatwork · Today at 1:30 PM</small>
-          <br>
-          <span class="status">In Progress</span>
-        </div>
-        <div class="amount">$760</div>
-      </div>
-
-      <div class="list-item">
-        <div>
-          <strong>Martinez Home</strong>
-          <small>House wash + pool deck · Completed today</small>
-          <br>
-          <span class="status green">Ready to Invoice</span>
-        </div>
-        <div class="amount">$340</div>
-      </div>
-
-      <div class="list-item">
-        <div>
-          <strong>Robinson Home</strong>
-          <small>Roof wash · Tomorrow at 9:00 AM</small>
-          <br>
-          <span class="status orange">Needs Confirmation</span>
-        </div>
-        <div class="amount">$480</div>
-      </div>
-
-    </div>
+    <div class="list" id="jobList"></div>
   </div>
 
 </section>
@@ -1197,6 +1155,103 @@ renderClients();
     const nextTheme = currentTheme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
   });
+
+  const customerName = document.getElementById("customerName");
+const jobAddress = document.getElementById("jobAddress");
+const notes = document.getElementById("notes");
+const convertQuoteBtn = document.getElementById("convertQuoteBtn");
+const jobList = document.getElementById("jobList");
+
+let savedQuotes = JSON.parse(localStorage.getItem("washflow-quotes")) || [];
+let savedJobs = JSON.parse(localStorage.getItem("washflow-jobs")) || [];
+
+function saveQuotes() {
+  localStorage.setItem("washflow-quotes", JSON.stringify(savedQuotes));
+}
+
+function saveJobs() {
+  localStorage.setItem("washflow-jobs", JSON.stringify(savedJobs));
+}
+
+function getCurrentQuote() {
+  const rate = Number(serviceType.value || 0);
+  const area = Number(sqft.value || 0);
+  const min = Number(minimum.value || 0);
+  const total = Math.max(min, area * rate);
+
+  return {
+    customer: customerName.value.trim() || "Unnamed Customer",
+    address: jobAddress.value.trim(),
+    service: serviceType.options[serviceType.selectedIndex].text,
+    sqft: area,
+    minimum: min,
+    total: Math.round(total),
+    notes: notes.value.trim(),
+    createdAt: new Date().toLocaleDateString()
+  };
+}
+
+function renderJobs() {
+  if (!jobList) return;
+
+  jobList.innerHTML = "";
+
+  if (savedJobs.length === 0) {
+    jobList.innerHTML = `
+      <div class="list-item">
+        <small>No jobs yet. Convert a quote into a job.</small>
+      </div>
+    `;
+    return;
+  }
+
+  savedJobs.forEach((job, index) => {
+    const div = document.createElement("div");
+    div.className = "list-item";
+
+    div.innerHTML = `
+      <div>
+        <strong>${job.customer}</strong>
+        <small>${job.service} · ${job.sqft} sqft · ${job.address || "No address"}</small>
+        <br>
+        <span class="status orange">${job.status}</span>
+      </div>
+
+      <div>
+        <div class="amount">$${job.total.toLocaleString()}</div>
+        <button class="btn btn-soft" onclick="completeJob(${index})" style="margin-top:8px;">Complete</button>
+      </div>
+    `;
+
+    jobList.appendChild(div);
+  });
+}
+
+function completeJob(index) {
+  savedJobs[index].status = "Completed";
+  saveJobs();
+  renderJobs();
+}
+
+if (convertQuoteBtn) {
+  convertQuoteBtn.addEventListener("click", function() {
+    const quote = getCurrentQuote();
+
+    const job = {
+      ...quote,
+      status: "Scheduled"
+    };
+
+    savedJobs.push(job);
+    saveJobs();
+    renderJobs();
+
+    alert("Quote converted to job.");
+    showSection("jobs");
+  });
+}
+
+renderJobs();
 </script>
 
 </body>
