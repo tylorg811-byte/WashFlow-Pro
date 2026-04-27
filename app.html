@@ -781,6 +781,21 @@ html[data-theme="light"] .map-preview {
     grid-template-columns: 1fr;
   }
 }
+
+    #mapCrosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  border: 2px solid white;
+  border-radius: 50%;
+  z-index: 5;
+  pointer-events: none;
+  box-shadow: 0 0 8px rgba(0,0,0,0.6);
+}
+    
   </style>
 </head>
 
