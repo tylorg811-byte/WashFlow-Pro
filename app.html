@@ -1440,6 +1440,7 @@ function renderJobs() {
 }
 
   renderDashboard();
+  renderDashboardHome();
   updateDashboardStats();
 
 async function completeJob(index) {
@@ -1665,6 +1666,7 @@ function renderQuotes() {
 }
 
   renderDashboard();
+  renderDashboardHome();
   updateDashboardStats();
 
 async function convertSavedQuoteToJob(index) {
@@ -2074,6 +2076,8 @@ function renderClients() {
   renderClientDropdown();
 }
 
+  renderDashboardHome();
+
 async function deleteClient(index) {
   const client = clients[index];
   if (!client?.id) return;
@@ -2378,6 +2382,7 @@ function renderInvoices() {
 }
 
   renderDashboard();
+  renderDashboardHome();
   updateDashboardStats();
 
 async function markInvoicePaid(index) {
@@ -2760,6 +2765,19 @@ async function sendInvoiceEmail(index) {
   } else {
     title.textContent = `Welcome back 👋`;
   }
+}
+
+  function renderDashboardHome() {
+  updateDashboardStats();
+
+  const hasData =
+    savedQuotes.length > 0 ||
+    savedJobs.length > 0 ||
+    savedInvoices.length > 0 ||
+    clients.length > 0;
+
+  // For now, dashboard stays onboarding-style until we add live lists next.
+  // This keeps it clean for new users and sellable as a SaaS.
 }
   
 async function initApp() {
