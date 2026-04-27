@@ -2081,27 +2081,30 @@ function moveMapToAddress(address) {
   if (!address || !quoteMap || !window.google) return;
 
   const cleanAddress = address.trim();
-
   if (cleanAddress.length < 6) return;
 
-  const geocoder = new google.maps.Geocoder();
+  const service = new google.maps.places.PlacesService(quoteMap);
 
-  geocoder.geocode(
+  service.findPlaceFromQuery(
     {
-      address: cleanAddress,
-      componentRestrictions: {
-        country: "US"
-      }
+      query: cleanAddress,
+      fields: ["name", "formatted_address", "geometry"]
     },
     function(results, status) {
-      if (status === "OK" && results[0]) {
-        const location = results[0].geometry.location;
+      if (
+        status === google.maps.places.PlacesServiceStatus.OK &&
+        results &&
+        results[0] &&
+        results[0].geometry
+      ) {
+        const place = results[0];
 
-        if (results[0].geometry.viewport) {
-          quoteMap.fitBounds(results[0].geometry.viewport);
+        jobAddress.value = place.formatted_address || cleanAddress;
+
+        if (place.geometry.viewport) {
+          quoteMap.fitBounds(place.geometry.viewport);
         } else {
-          quoteMap.setCenter(location);
-          quoteMap.setZoom(20);
+          quoteMap.setCenter(place.geometry.location);
         }
 
         setTimeout(() => {
@@ -2109,15 +2112,16 @@ function moveMapToAddress(address) {
         }, 300);
 
         showToast("Map moved to address");
-      } else {
-        console.warn("Geocode failed:", status, cleanAddress);
-        showToast("Could not find address. Try adding city and state.", "error");
+        return;
       }
+
+      console.warn("Places address search failed:", status, cleanAddress);
+      showToast("Could not find address from typed text", "error");
     }
   );
 }
 
-  if (jobAddress) {
+ if (jobAddress) {
   jobAddress.addEventListener("keydown", function(e) {
     if (e.key === "Enter") {
       e.preventDefault();
