@@ -1046,6 +1046,32 @@ html[data-theme="light"] .map-preview {
 
   </div>
 
+<div class="card">
+  <h3>Invoice Branding</h3>
+  <p>Customize how your invoices look for your business.</p>
+
+  <div class="field-group">
+    <div class="field">
+      <label>Business Logo URL</label>
+      <input id="invoiceLogo" placeholder="Paste logo image URL">
+    </div>
+
+    <div class="field">
+      <label>Brand Color</label>
+      <input id="invoiceColor" type="color" value="#22d3ee">
+    </div>
+
+    <div class="field">
+      <label>Invoice Footer Message</label>
+      <textarea id="invoiceFooter">Thank you for supporting our business!</textarea>
+    </div>
+
+    <button class="btn btn-primary" type="button" id="saveInvoiceBrandingBtn">
+      Save Invoice Branding
+    </button>
+  </div>
+</div>
+      
 </section>
 
   </main>
@@ -1758,6 +1784,40 @@ if (addClientBtn) {
   });
 }
 
+let invoiceBranding = JSON.parse(localStorage.getItem("washflow-invoice-branding")) || {
+  logo: "",
+  color: "#22d3ee",
+  footer: "Thank you for supporting our business!"
+};
+
+const invoiceLogo = document.getElementById("invoiceLogo");
+const invoiceColor = document.getElementById("invoiceColor");
+const invoiceFooter = document.getElementById("invoiceFooter");
+const saveInvoiceBrandingBtn = document.getElementById("saveInvoiceBrandingBtn");
+
+function loadInvoiceBranding() {
+  if (invoiceLogo) invoiceLogo.value = invoiceBranding.logo || "";
+  if (invoiceColor) invoiceColor.value = invoiceBranding.color || "#22d3ee";
+  if (invoiceFooter) invoiceFooter.value = invoiceBranding.footer || "";
+}
+
+function saveInvoiceBranding() {
+  invoiceBranding = {
+    logo: invoiceLogo.value.trim(),
+    color: invoiceColor.value,
+    footer: invoiceFooter.value.trim()
+  };
+
+  localStorage.setItem("washflow-invoice-branding", JSON.stringify(invoiceBranding));
+  showToast("Invoice branding saved!");
+}
+
+if (saveInvoiceBrandingBtn) {
+  saveInvoiceBrandingBtn.addEventListener("click", saveInvoiceBranding);
+}
+
+loadInvoiceBranding();
+  
 renderJobs();
 renderQuotes();
 renderClients();
