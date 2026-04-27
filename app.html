@@ -2325,7 +2325,9 @@ function renderQuotes() {
         <strong>${quote.customer || "Unnamed Customer"}</strong>
         <small>${quote.service || "Service"} · ${quote.sqft || 0} sqft · ${address}</small>
         <br>
-        <span class="status">Saved Quote</span>
+        <span class="status ${quote.status === "Sent" ? "green" : ""}">
+  ${quote.status || "Saved Quote"}
+</span>
       </div>
 
       <div class="quote-actions">
@@ -2453,13 +2455,32 @@ async function sendQuoteEmail() {
 
     const data = await res.json();
 
-    if (data.success) {
-      showToast("Quote sent successfully 🚀", "success");
-      closeSendQuoteModal();
-    } else {
+    if (!data.success) {
       console.error(data);
       showToast("Failed to send quote", "error");
+      return;
     }
+
+    savedQuotes[activeQuoteIndex].status = "Sent";
+    savedQuotes[activeQuoteIndex].sent_at = new Date().toISOString();
+
+    if (quote.id) {
+      await supabaseClient
+        .from("quotes")
+        .update({
+          status: "Sent",
+          sent_at: new Date().toISOString()
+        })
+        .eq("id", quote.id);
+    }
+
+    saveQuotes();
+    renderQuotes();
+    updateDashboardStats();
+
+    showToast("Quote sent successfully 🚀", "success");
+    closeSendQuoteModal();
+    addActivity("Quote sent to customer");
 
   } catch (err) {
     console.error(err);
