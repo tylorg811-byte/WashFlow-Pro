@@ -2323,37 +2323,33 @@ if (convertQuoteBtn) {
   convertQuoteBtn.addEventListener("click", async function() {
     const quote = getCurrentQuote();
 
-    const job = {
-      ...quote,
-      status: "Scheduled"
-    };
+    if (!currentBusiness?.id) {
+      showToast("Business not loaded", "error");
+      return;
+    }
 
-   if (!currentBusiness?.id) {
-  showToast("Business not loaded", "error");
-  return;
-}
+    const { data, error } = await supabaseClient
+      .from("jobs")
+      .insert({
+        ...quote,
+        business_id: currentBusiness.id,
+        status: "Scheduled"
+      })
+      .select()
+      .single();
 
-const { data, error } = await supabaseClient
-  .from("jobs")
-  .insert({
-    ...job,
-    business_id: currentBusiness.id
-  })
-  .select()
-  .single();
+    if (error) {
+      console.error(error);
+      showToast("Could not convert quote", "error");
+      return;
+    }
 
-if (error) {
-  console.error(error);
-  showToast("Could not convert quote to job", "error");
-  return;
-}
+    savedJobs.unshift(data);
+    renderJobs();
 
-savedJobs.unshift(data);
-renderJobs();
-
-showToast("Converted to job!");
-addActivity("Quote converted into job");
-showSection("jobs");
+    showToast("Converted to job!");
+    addActivity("Quote converted into job");
+    showSection("jobs");
   });
 }
 
