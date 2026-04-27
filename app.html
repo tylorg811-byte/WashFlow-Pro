@@ -1270,27 +1270,44 @@ function copyJobAIResult() {
   showToast("Job AI result copied!");
 }
 
-function createInvoiceFromJob(index) {
+async function createInvoiceFromJob(index) {
   const job = savedJobs[index];
 
+  if (!currentBusiness?.id) {
+    showToast("Business not loaded", "error");
+    return;
+  }
+
   const invoice = {
+    business_id: currentBusiness.id,
+    job_id: job.id || null,
     customer: job.customer,
-    address: job.address,
+    address: job.address || "",
     email: job.email || "",
     service: job.service,
     sqft: job.sqft,
     total: job.total,
-    notes: job.notes,
-    status: "Draft",
-    createdAt: new Date().toLocaleDateString()
+    notes: job.notes || "",
+    status: "Draft"
   };
 
-  savedInvoices.push(invoice);
-saveInvoices();
-renderInvoices();
+  const { data, error } = await supabaseClient
+    .from("invoices")
+    .insert(invoice)
+    .select()
+    .single();
 
-showToast("Invoice created!");
-showSection("invoices");
+  if (error) {
+    console.error(error);
+    showToast("Could not create invoice", "error");
+    return;
+  }
+
+  savedInvoices.unshift(data);
+  renderInvoices();
+
+  showToast("Invoice created!");
+  showSection("invoices");
 }
 
 function smartJobSummary(index) {
@@ -2065,9 +2082,22 @@ function renderInvoices() {
   });
 }
 
-function markInvoicePaid(index) {
+async function markInvoicePaid(index) {
+  const invoice = savedInvoices[index];
+  if (!invoice?.id) return;
+
+  const { error } = await supabaseClient
+    .from("invoices")
+    .update({ status: "Paid" })
+    .eq("id", invoice.id);
+
+  if (error) {
+    console.error(error);
+    showToast("Could not mark invoice paid", "error");
+    return;
+  }
+
   savedInvoices[index].status = "Paid";
-  saveInvoices();
   renderInvoices();
   showToast("Invoice marked paid!");
 }
@@ -2134,9 +2164,22 @@ function copyInvoiceAIResult() {
   showToast("Invoice AI result copied!");
 }
 
-function deleteInvoice(index) {
+async function deleteInvoice(index) {
+  const invoice = savedInvoices[index];
+  if (!invoice?.id) return;
+
+  const { error } = await supabaseClient
+    .from("invoices")
+    .delete()
+    .eq("id", invoice.id);
+
+  if (error) {
+    console.error(error);
+    showToast("Could not delete invoice", "error");
+    return;
+  }
+
   savedInvoices.splice(index, 1);
-  saveInvoices();
   renderInvoices();
   showToast("Invoice deleted!");
 }
@@ -2248,12 +2291,13 @@ loadInvoiceBranding();
 async function initApp() {
   await loadUserBusiness();
 
-  renderInvoices();
-
   await loadClients();
   await loadQuotes();
   await loadJobs();
+  await loadInvoices();
 }
+
+initApp();
   
 </script>
 </body>
