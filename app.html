@@ -2131,6 +2131,8 @@ async function loadClients() {
   renderClients();
   renderClientDropdown();
 }
+
+  renderDashboardHome();
   
 if (addClientBtn) {
   addClientBtn.addEventListener("click", async () => {
@@ -2209,6 +2211,8 @@ function loadInvoiceBranding() {
     invoiceLogoPreviewWrap.style.display = "block";
   }
 }
+
+  renderDashboardHome();
 
 if (invoiceLogoUpload) {
   invoiceLogoUpload.addEventListener("change", function() {
@@ -2721,6 +2725,8 @@ if (squareLink) squareLink.value = currentBusiness.square_link || "";
 if (stripeLink) stripeLink.value = currentBusiness.stripe_link || "";  
 }
 
+  renderDashboardHome();
+
 if (saveBusinessSettingsBtn) {
   saveBusinessSettingsBtn.addEventListener("click", saveBusinessSettings);
 }
@@ -2783,6 +2789,8 @@ async function sendInvoiceEmail(index) {
 
   function renderDashboardHome() {
   updateDashboardStats();
+    updateSetupChecklist();
+  }
 
   const hasData =
     savedQuotes.length > 0 ||
@@ -2793,6 +2801,39 @@ async function sendInvoiceEmail(index) {
   // For now, dashboard stays onboarding-style until we add live lists next.
   // This keeps it clean for new users and sellable as a SaaS.
 }
+
+  function updateSetupChecklist() {
+  function setCheck(id, done) {
+    const item = document.getElementById(id);
+    if (!item) return;
+
+    const badge = item.querySelector(".status");
+    if (!badge) return;
+
+    badge.textContent = done ? "Done" : "Not Done";
+    badge.className = done ? "status green" : "status orange";
+  }
+
+  setCheck("checkBusinessProfile",
+    !!currentBusiness?.company_name &&
+    !!currentBusiness?.phone &&
+    !!currentBusiness?.service_area
+  );
+
+  setCheck("checkInvoiceBranding",
+    !!currentBusiness?.invoice_logo ||
+    !!currentBusiness?.invoice_footer
+  );
+
+  setCheck("checkPayments",
+    !!currentBusiness?.payment_link ||
+    !!currentBusiness?.paypal_link ||
+    !!currentBusiness?.square_link ||
+    !!currentBusiness?.stripe_link
+  );
+
+  setCheck("checkFirstClient", clients.length > 0);
+}
   
 async function initApp() {
   await loadUserBusiness();
@@ -2800,6 +2841,7 @@ async function initApp() {
   updateDashboardGreeting();
   loadBusinessSettings();
   loadInvoiceBranding();
+  
 
   await loadClients();
   await loadQuotes();
