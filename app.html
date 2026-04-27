@@ -998,8 +998,9 @@ html[data-theme="light"] .map-preview {
 <div class="map-note" style="position:relative; left:auto; right:auto; bottom:auto; margin-top:12px;">
   Search the address, then draw around the driveway, roof, patio, or pool deck to calculate square footage.
 </div>
-      </div>
     </div>
+
+    <div class="card">
 
     <div class="card">
       <h3>Quote Details</h3>
@@ -1636,6 +1637,71 @@ async function saveJobs() {
 
   async function saveInvoices() {
   return;
+}
+
+  let quoteMap = null;
+let quoteDrawingManager = null;
+let quotePolygon = null;
+
+function initQuoteMap() {
+  const mapEl = document.getElementById("quoteMap");
+  if (!mapEl || !window.google) return;
+
+  quoteMap = new google.maps.Map(mapEl, {
+    center: { lat: 28.8674, lng: -82.5186 },
+    zoom: 19,
+    mapTypeId: "satellite",
+    streetViewControl: false,
+    fullscreenControl: true,
+    mapTypeControl: true
+  });
+
+  quoteDrawingManager = new google.maps.drawing.DrawingManager({
+    drawingMode: google.maps.drawing.OverlayType.POLYGON,
+    drawingControl: true,
+    drawingControlOptions: {
+      position: google.maps.ControlPosition.TOP_CENTER,
+      drawingModes: ["polygon"]
+    },
+    polygonOptions: {
+      fillColor: "#22d3ee",
+      fillOpacity: 0.25,
+      strokeColor: "#34d399",
+      strokeWeight: 3,
+      clickable: true,
+      editable: true,
+      zIndex: 1
+    }
+  });
+
+  quoteDrawingManager.setMap(quoteMap);
+
+  google.maps.event.addListener(quoteDrawingManager, "overlaycomplete", function(event) {
+    if (quotePolygon) quotePolygon.setMap(null);
+
+    quotePolygon = event.overlay;
+    quoteDrawingManager.setDrawingMode(null);
+
+    updateSqftFromPolygon();
+
+    google.maps.event.addListener(quotePolygon.getPath(), "set_at", updateSqftFromPolygon);
+    google.maps.event.addListener(quotePolygon.getPath(), "insert_at", updateSqftFromPolygon);
+  });
+}
+
+function updateSqftFromPolygon() {
+  if (!quotePolygon || !google.maps.geometry) return;
+
+  const areaMeters = google.maps.geometry.spherical.computeArea(quotePolygon.getPath());
+  const areaSqft = Math.round(areaMeters * 10.7639);
+
+  const sqftInput = document.getElementById("sqft");
+  if (sqftInput) {
+    sqftInput.value = areaSqft;
+    sqftInput.dispatchEvent(new Event("input"));
+  }
+
+  showToast(`Measured ${areaSqft.toLocaleString()} sqft`);
 }
 
 function getCurrentQuote() {
