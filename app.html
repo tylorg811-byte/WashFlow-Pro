@@ -2877,39 +2877,6 @@ Suggested Text:
   showQuoteAIResult("✨ AI Upsell Suggestions", message);
   showToast("AI upsells created!");
 }
-  const saveQuoteBtn = document.getElementById("saveQuoteBtn");
-
-if (saveQuoteBtn) {
-  saveQuoteBtn.addEventListener("click", async function() {
-    const quote = getCurrentQuote();
-
-    if (!currentBusiness?.id) {
-  showToast("Business not loaded", "error");
-  return;
-}
-
-const { data, error } = await supabaseClient
-  .from("quotes")
-  .insert({
-    ...quote,
-    business_id: currentBusiness.id
-  })
-  .select()
-  .single();
-
-if (error) {
-  console.error(error);
-  showToast("Failed to save quote", "error");
-  return;
-}
-
-savedQuotes.unshift(data);
-renderQuotes();
-showToast("Quote saved!");
-addActivity("New quote created");
-showSection("quotes");
-  });
-}
 
   const toast = document.getElementById("toast");
 
