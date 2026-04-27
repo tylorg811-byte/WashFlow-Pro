@@ -2080,15 +2080,51 @@ function getPolygonCoords() {
 function moveMapToAddress(address) {
   if (!address || !quoteMap || !window.google) return;
 
+  const cleanAddress = address.trim();
+
+  if (cleanAddress.length < 6) return;
+
   const geocoder = new google.maps.Geocoder();
 
-  geocoder.geocode({ address }, function(results, status) {
-    if (status === "OK" && results[0]) {
-      quoteMap.setCenter(results[0].geometry.location);
-      quoteMap.setZoom(20);
-      showToast("Map moved to client address");
-    } else {
-      showToast("Could not find that address", "error");
+  geocoder.geocode(
+    {
+      address: cleanAddress,
+      componentRestrictions: {
+        country: "US"
+      }
+    },
+    function(results, status) {
+      if (status === "OK" && results[0]) {
+        const location = results[0].geometry.location;
+
+        if (results[0].geometry.viewport) {
+          quoteMap.fitBounds(results[0].geometry.viewport);
+        } else {
+          quoteMap.setCenter(location);
+          quoteMap.setZoom(20);
+        }
+
+        setTimeout(() => {
+          quoteMap.setZoom(21);
+        }, 300);
+
+        showToast("Map moved to address");
+      } else {
+        console.warn("Geocode failed:", status, cleanAddress);
+        showToast("Could not find address. Try adding city and state.", "error");
+      }
+    }
+  );
+}
+
+  if (jobAddress) {
+  jobAddress.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+
+      if (jobAddress.value.trim()) {
+        moveMapToAddress(jobAddress.value.trim());
+      }
     }
   });
 }
