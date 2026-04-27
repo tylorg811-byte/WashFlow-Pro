@@ -2119,8 +2119,6 @@ function renderQuotes() {
   return;
 }
 
-  <button class="btn btn-soft" onclick="editQuote(${index})" style="margin-top:8px;">Edit</button>
-
   savedQuotes.forEach((quote, index) => {
     const div = document.createElement("div");
     div.className = "list-item";
@@ -2135,14 +2133,15 @@ function renderQuotes() {
 
       <div>
         <div class="amount">$${quote.total.toLocaleString()}</div>
-  <button class="btn btn-primary" onclick="convertSavedQuoteToJob(${index})" style="margin-top:8px;">Convert</button>
-<button class="btn btn-soft" onclick="copySavedQuote(${index})" style="margin-top:8px;">Copy</button>
-<button class="btn btn-soft" onclick="smartQuoteMessage(${index})" style="margin-top:8px;">AI Message</button>
-<button class="btn btn-soft" onclick="smartQuoteFollowUp(${index})" style="margin-top:8px;">AI Follow-Up</button>
-<button class="btn btn-soft" onclick="smartQuoteUpsells(${index})" style="margin-top:8px;">AI Upsells</button>
-<button class="btn btn-soft" onclick="deleteSavedQuote(${index})" style="margin-top:8px;">Delete</button>
-      </div>
-    `;
+      <button class="btn btn-primary" onclick="convertSavedQuoteToJob(${index})" style="margin-top:8px;">Convert</button>
+    <button class="btn btn-soft" onclick="copySavedQuote(${index})" style="margin-top:8px;">Copy</button>
+    <button class="btn btn-soft" onclick="smartQuoteMessage(${index})" style="margin-top:8px;">AI Message</button>
+    <button class="btn btn-soft" onclick="smartQuoteFollowUp(${index})" style="margin-top:8px;">AI Follow-Up</button>
+    <button class="btn btn-soft" onclick="smartQuoteUpsells(${index})" style="margin-top:8px;">AI Upsells</button>
+    <button class="btn btn-soft" onclick="editQuote(${index})" style="margin-top:8px;">Edit</button>
+    <button class="btn btn-soft" onclick="deleteSavedQuote(${index})" style="margin-top:8px;">Delete</button>
+  </div>
+`;
 
     quoteList.appendChild(div);
   });
