@@ -475,6 +475,74 @@ html[data-theme="light"] .map-preview {
     grid-template-columns: 1fr;
   }
 }
+
+    /* AI SMART ASSIST */
+
+.smart-assist {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--brand-soft), rgba(16,185,129,0.1));
+  border: 1px solid var(--line);
+}
+
+.smart-assist strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 1rem;
+}
+
+.smart-assist p {
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.assist-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.assist-actions button {
+  padding: 9px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+    document.querySelectorAll("[data-ai-action]").forEach(button => {
+  button.addEventListener("click", function() {
+    const action = button.dataset.aiAction;
+
+    showSection("ai");
+
+    if (aiTask && aiInput && aiOutput) {
+      const taskMap = {
+        addons: "addons",
+        quote: "quote",
+        price: "addons",
+        notes: "notes",
+        followup: "followup",
+        review: "review",
+        summary: "summary",
+        social: "summary",
+        proof: "summary"
+      };
+
+      aiTask.value = taskMap[action] || "quote";
+
+      aiInput.value =
+        "Use the current job details and create a helpful pressure washing business response.";
+
+      aiOutput.textContent =
+        "Smart Assist opened. Review the task and click Generate with AI.";
+    }
+  });
+});
   </style>
 </head>
 
@@ -678,6 +746,17 @@ html[data-theme="light"] .map-preview {
           <textarea id="notes">Customer wants driveway and sidewalk completed this week.</textarea>
         </div>
 
+        <div class="smart-assist">
+  <strong>✨ AI Smart Assist</strong>
+  <p>Want help improving this quote before sending it?</p>
+
+  <div class="assist-actions">
+    <button type="button" data-ai-action="addons">Suggest Add-ons</button>
+    <button type="button" data-ai-action="quote">Write Quote Message</button>
+    <button type="button" data-ai-action="price">Check Price</button>
+  </div>
+</div>
+        
         <div class="total-box">
           <span>Estimated Quote</span>
           <strong id="quoteTotal">$225</strong>
@@ -844,6 +923,17 @@ html[data-theme="light"] .map-preview {
 
     <div class="photo-grid">
 
+<div class="smart-assist">
+  <strong>✨ AI Smart Assist</strong>
+  <p>Turn before-and-after photos into a customer message, job summary, or social post.</p>
+
+  <div class="assist-actions">
+    <button type="button" data-ai-action="summary">Job Summary</button>
+    <button type="button" data-ai-action="social">Social Caption</button>
+    <button type="button" data-ai-action="proof">Customer Proof Message</button>
+  </div>
+</div>
+      
       <div class="photo-card">
         <div>
           Before · Driveway
