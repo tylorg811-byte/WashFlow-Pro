@@ -571,6 +571,11 @@ html[data-theme="light"] .map-preview {
     <div style="margin-top:auto;">
       <button class="btn btn-soft" id="themeToggle">Toggle Theme</button>
     </div>
+
+<button class="btn btn-soft" id="logoutBtn" style="margin-top:10px;">
+  Logout
+</button>
+    
   </aside>
 
   <!-- MAIN CONTENT -->
@@ -1077,7 +1082,15 @@ let currentBusiness = null;
   const sections = document.querySelectorAll(".section");
   const pageTitle = document.getElementById("pageTitle");
   const themeToggle = document.getElementById("themeToggle");
+  const logoutBtn = document.getElementById("logoutBtn");
 
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async function() {
+    await supabaseClient.auth.signOut();
+    window.location.href = "login.html";
+  });
+}
+  
   const pageTitles = {
   dashboard: "Dashboard",
   quote: "Map Quote Tool",
