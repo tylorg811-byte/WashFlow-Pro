@@ -2147,6 +2147,36 @@ function renderQuotes() {
   });
 }
 
+  function editQuote(index) {
+  const quote = savedQuotes[index];
+  if (!quote) return;
+
+  customerName.value = quote.customer || "";
+  jobAddress.value = quote.address || "";
+  notes.value = quote.notes || "";
+  sqft.value = quote.sqft || 0;
+  minimum.value = quote.minimum || 0;
+
+  for (let i = 0; i < serviceType.options.length; i++) {
+    if (serviceType.options[i].text === quote.service) {
+      serviceType.selectedIndex = i;
+      break;
+    }
+  }
+
+  updateQuoteTotal();
+  showSection("quote");
+
+  setTimeout(() => {
+    if (quote.polygon) {
+      loadPolygon(quote.polygon);
+      showToast("Loaded saved measurement");
+    } else {
+      clearMapDrawing();
+    }
+  }, 500);
+}
+
 
 async function convertSavedQuoteToJob(index) {
   const quote = savedQuotes[index];
