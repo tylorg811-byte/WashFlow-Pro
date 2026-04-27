@@ -1129,15 +1129,15 @@ const convertQuoteBtn = document.getElementById("convertQuoteBtn");
 const jobList = document.getElementById("jobList");
 
 let savedQuotes = [];
-let savedJobs = JSON.parse(localStorage.getItem("washflow-jobs")) || [];
+let savedJobs = [];
 let savedInvoices = JSON.parse(localStorage.getItem("washflow-invoices")) || [];
   
 function saveQuotes() {
   localStorage.setItem("washflow-quotes", JSON.stringify(savedQuotes));
 }
 
-function saveJobs() {
-  localStorage.setItem("washflow-jobs", JSON.stringify(savedJobs));
+async function saveJobs() {
+  return;
 }
 
   function saveInvoices() {
@@ -1222,10 +1222,24 @@ function renderJobs() {
   });
 }
 
-function completeJob(index) {
+async function completeJob(index) {
+  const job = savedJobs[index];
+  if (!job?.id) return;
+
+  const { error } = await supabaseClient
+    .from("jobs")
+    .update({ status: "Completed" })
+    .eq("id", job.id);
+
+  if (error) {
+    console.error(error);
+    showToast("Could not complete job", "error");
+    return;
+  }
+
   savedJobs[index].status = "Completed";
-  saveJobs();
   renderJobs();
+  showToast("Job completed!");
 }
 
 function showJobAIResult(title, text) {
@@ -1340,12 +1354,31 @@ if (convertQuoteBtn) {
       status: "Scheduled"
     };
 
-    savedJobs.push(job);
-    saveJobs();
-    renderJobs();
+   if (!currentBusiness?.id) {
+  showToast("Business not loaded", "error");
+  return;
+}
 
-    showToast("Converted to job!");
-    showSection("jobs");
+const { data, error } = await supabaseClient
+  .from("jobs")
+  .insert({
+    ...job,
+    business_id: currentBusiness.id
+  })
+  .select()
+  .single();
+
+if (error) {
+  console.error(error);
+  showToast("Could not convert quote to job", "error");
+  return;
+}
+
+savedJobs.unshift(data);
+renderJobs();
+
+showToast("Converted to job!");
+showSection("jobs");
   });
 }
 
@@ -1394,19 +1427,49 @@ function renderQuotes() {
   });
 }
 
-function convertSavedQuoteToJob(index) {
+async function convertSavedQuoteToJob(index) {
   const quote = savedQuotes[index];
 
-  savedJobs.push({
-    ...quote,
-    status: "Scheduled"
-  });
+  if (!currentBusiness?.id) {
+    showToast("Business not loaded", "error");
+    return;
+  }
 
-  saveJobs();
+  const { data, error } = await supabaseClient
+    .from("jobs")
+    .insert({
+      business_id: currentBusiness.id,
+      quote_id: quote.id || null,
+      customer: quote.customer,
+      email: quote.email || "",
+      address: quote.address || "",
+      service: quote.service,
+      sqft: quote.sqft,
+      minimum: quote.minimum,
+      total: quote.total,
+      notes: quote.notes || "",
+      status: "Scheduled"
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error(error);
+    showToast("Could not convert quote", "error");
+    return;
+  }
+
+  savedJobs.unshift(data);
   renderJobs();
 
+  if (quote.id) {
+    await supabaseClient
+      .from("quotes")
+      .delete()
+      .eq("id", quote.id);
+  }
+
   savedQuotes.splice(index, 1);
-  saveQuotes();
   renderQuotes();
 
   showToast("Quote converted to job!");
@@ -2117,6 +2180,25 @@ if (urlParams.get("gmail") === "connected") {
   renderQuotes();
 }
 
+async function loadJobs() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("jobs")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load jobs", "error");
+    return;
+  }
+
+  savedJobs = data || [];
+  renderJobs();
+}
+  
   async function loadUserBusiness() {
   const { data: userData, error: userError } = await supabaseClient.auth.getUser();
 
@@ -2147,11 +2229,12 @@ loadInvoiceBranding();
 async function initApp() {
   await loadUserBusiness();
 
-  renderJobs();
   renderInvoices();
 
   await loadClients();
   await loadQuotes();
+  await loadJobs();
+}
 }
   
 </script>
