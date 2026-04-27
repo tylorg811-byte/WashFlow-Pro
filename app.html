@@ -1737,6 +1737,7 @@ function initQuoteMap() {
 
     google.maps.event.addListener(quotePolygon.getPath(), "set_at", updateSqftFromPolygon);
     google.maps.event.addListener(quotePolygon.getPath(), "insert_at", updateSqftFromPolygon);
+    google.maps.event.addListener(quotePolygon.getPath(), "remove_at", updateSqftFromPolygon);
   });
 }
 
