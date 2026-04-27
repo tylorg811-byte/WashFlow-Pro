@@ -703,6 +703,22 @@ html[data-theme="light"] .map-preview {
     grid-template-columns: 1fr;
   }
 }
+
+    .stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: "";
+  position: absolute;
+  width: 95px;
+  height: 95px;
+  right: -30px;
+  top: -30px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+}
   </style>
 </head>
 
@@ -786,30 +802,29 @@ html[data-theme="light"] .map-preview {
   </div>
 </div>
      
-  <div class="stats">
-    <div class="stat-card">
-      <span>Revenue This Month</span>
-      <strong>$0</strong>
-      <small>From paid invoices</small>
-    </div>
+  <div class="stat-card">
+  <span>💰 Revenue This Month</span>
+  <strong>$0</strong>
+  <small>From paid invoices</small>
+</div>
 
-    <div class="stat-card">
-      <span>Open Quotes</span>
-      <strong>0</strong>
-      <small>$0 waiting</small>
-    </div>
+<div class="stat-card">
+  <span>📄 Open Quotes</span>
+  <strong>0</strong>
+  <small>$0 waiting</small>
+</div>
 
-    <div class="stat-card">
-      <span>Active Jobs</span>
-      <strong>0</strong>
-      <small>Scheduled / in progress</small>
-    </div>
+<div class="stat-card">
+  <span>🧼 Active Jobs</span>
+  <strong>0</strong>
+  <small>Scheduled / in progress</small>
+</div>
 
-    <div class="stat-card">
-      <span>Unpaid Invoices</span>
-      <strong>0</strong>
-      <small>$0 outstanding</small>
-    </div>
+<div class="stat-card">
+  <span>⚠️ Unpaid Invoices</span>
+  <strong>0</strong>
+  <small>$0 outstanding</small>
+</div>
   </div>
 
   <div class="dashboard-grid">
