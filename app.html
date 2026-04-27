@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <title>WashFlow Pro App</title>
   <meta name="theme-color" content="#0f172a" />
@@ -1040,14 +1041,38 @@ html[data-theme="light"] .map-preview {
     </button>
   </div>
 </div>
+
+<div class="card">
+  <h3>Email Sending</h3>
+  <p>Connect Gmail so invoices can be sent from your own email account.</p>
+
+  <button class="btn btn-primary" type="button" id="connectGmailBtn">
+    Connect Gmail
+  </button>
+
+  <p id="gmailStatus" style="margin-top:12px; color:var(--muted); font-weight:700;">
+    Gmail not connected yet.
+  </p>
+</div>
       
 </section>
 
+
+    
   </main>
 
 </div>
 
+<div id="toast" class="toast"></div>
+  
 <script>
+  const SUPABASE_URL = "https://ehckicrcukzdbdhbgkhe.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_8XCfgwdnx0ZghIB4ndS_bw_DXHvQeV0";
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let currentBusiness = null;
   const navButtons = document.querySelectorAll(".nav button");
   const sections = document.querySelectorAll(".section");
   const pageTitle = document.getElementById("pageTitle");
@@ -1103,7 +1128,7 @@ const notes = document.getElementById("notes");
 const convertQuoteBtn = document.getElementById("convertQuoteBtn");
 const jobList = document.getElementById("jobList");
 
-let savedQuotes = JSON.parse(localStorage.getItem("washflow-quotes")) || [];
+let savedQuotes = [];
 let savedJobs = JSON.parse(localStorage.getItem("washflow-jobs")) || [];
 let savedInvoices = JSON.parse(localStorage.getItem("washflow-invoices")) || [];
   
@@ -1498,13 +1523,30 @@ if (saveQuoteBtn) {
   saveQuoteBtn.addEventListener("click", function() {
     const quote = getCurrentQuote();
 
-    savedQuotes.push(quote);
-    saveQuotes();
+    if (!currentBusiness?.id) {
+  showToast("Business not loaded", "error");
+  return;
+}
 
-    renderQuotes();
+const { data, error } = await supabaseClient
+  .from("quotes")
+  .insert({
+    ...quote,
+    business_id: currentBusiness.id
+  })
+  .select()
+  .single();
 
-    showToast("Quote saved successfully!");
-    showSection("quotes");
+if (error) {
+  console.error(error);
+  showToast("Failed to save quote", "error");
+  return;
+}
+
+savedQuotes.unshift(data);
+renderQuotes();
+showToast("Quote saved!");
+showSection("quotes");
   });
 }
 
@@ -1530,7 +1572,7 @@ function showToast(message, type = "success") {
   return clients[index]?.email || "";
 }
   
-let clients = JSON.parse(localStorage.getItem("washflow-clients")) || [];
+let clients = [];
   
 function renderClientDropdown() {
   if (!quoteClientSelect) return;
@@ -1692,8 +1734,8 @@ const clientEmail = document.getElementById("clientEmail");
 const addClientBtn = document.getElementById("addClientBtn");
 const clientList = document.getElementById("clientList");
 
-function saveClients() {
-  localStorage.setItem("washflow-clients", JSON.stringify(clients));
+async function saveClients() {
+  return;
 }
 
 function renderClients() {
@@ -1729,14 +1771,28 @@ function renderClients() {
   renderClientDropdown();
 }
 
-function deleteClient(index) {
+async function deleteClient(index) {
+  const client = clients[index];
+  if (!client?.id) return;
+
+  const { error } = await supabaseClient
+    .from("clients")
+    .delete()
+    .eq("id", client.id);
+
+  if (error) {
+    console.error(error);
+    showToast("Could not delete client", "error");
+    return;
+  }
+
   clients.splice(index, 1);
-  saveClients();
   renderClients();
+  showToast("Client deleted!");
 }
 
 if (addClientBtn) {
-  addClientBtn.addEventListener("click", () => {
+  addClientBtn.addEventListener("click", async () => {
     const name = clientName.value.trim();
 
     if (!name) {
@@ -1744,22 +1800,61 @@ if (addClientBtn) {
       return;
     }
 
+    if (!currentBusiness?.id) {
+      showToast("Business profile not loaded yet", "error");
+      return;
+    }
+
+async function loadClients() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("clients")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load clients", "error");
+    return;
+  }
+
+  clients = data || [];
+  renderClients();
+  renderClientDropdown();
+}
+    
     const newClient = {
+      business_id: currentBusiness.id,
       name,
       phone: clientPhone.value.trim(),
       email: clientEmail.value.trim(),
       address: clientAddress.value.trim()
     };
 
-    clients.push(newClient);
+    const { data, error } = await supabaseClient
+      .from("clients")
+      .insert(newClient)
+      .select()
+      .single();
 
-    saveClients();
+    if (error) {
+      console.error(error);
+      showToast("Could not save client", "error");
+      return;
+    }
+
+    clients.unshift(data);
+
     renderClients();
 
     clientName.value = "";
     clientPhone.value = "";
     clientEmail.value = "";
     clientAddress.value = "";
+
+    showToast("Client saved!");
   });
 }
 
@@ -1983,15 +2078,82 @@ function deleteInvoice(index) {
   showToast("Invoice deleted!");
 }
 
+const connectGmailBtn = document.getElementById("connectGmailBtn");
+const gmailStatus = document.getElementById("gmailStatus");
+
+if (connectGmailBtn) {
+  connectGmailBtn.addEventListener("click", function() {
+    window.location.href = "/.netlify/functions/google-start";
+  });
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+
+if (urlParams.get("gmail") === "connected") {
+  if (gmailStatus) {
+    gmailStatus.textContent = "Gmail connected successfully.";
+    gmailStatus.style.color = "var(--brand-2)";
+  }
+
+  showToast("Gmail connected successfully!");
+}
+
+  async function loadQuotes() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("quotes")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load quotes", "error");
+    return;
+  }
+
+  savedQuotes = data || [];
+  renderQuotes();
+}
+
+  async function loadUserBusiness() {
+  const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+
+  if (userError || !userData.user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  currentUser = userData.user;
+
+  const { data: business, error: businessError } = await supabaseClient
+    .from("businesses")
+    .select("*")
+    .eq("owner_id", currentUser.id)
+    .single();
+
+  if (businessError) {
+    console.error(businessError);
+    showToast("Could not load business profile", "error");
+    return;
+  }
+
+  currentBusiness = business;
+}
+  
 loadInvoiceBranding();
   
-renderJobs();
-renderQuotes();
-renderInvoices();
-renderClients();
-renderClientDropdown();
-</script>
+async function initApp() {
+  await loadUserBusiness();
 
-  <div id="toast" class="toast"></div>
+  renderJobs();
+  renderInvoices();
+
+  await loadClients();
+  await loadQuotes();
+}
+  
+</script>
 </body>
 </html>
