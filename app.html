@@ -1346,7 +1346,7 @@ Thank you again!`;
 }
   
 if (convertQuoteBtn) {
-  convertQuoteBtn.addEventListener("click", function() {
+  convertQuoteBtn.addEventListener("click", async function() {
     const quote = getCurrentQuote();
 
     const job = {
@@ -1583,7 +1583,7 @@ Suggested Text:
   const saveQuoteBtn = document.getElementById("saveQuoteBtn");
 
 if (saveQuoteBtn) {
-  saveQuoteBtn.addEventListener("click", function() {
+  saveQuoteBtn.addEventListener("click", async function() {
     const quote = getCurrentQuote();
 
     if (!currentBusiness?.id) {
@@ -1854,20 +1854,6 @@ async function deleteClient(index) {
   showToast("Client deleted!");
 }
 
-if (addClientBtn) {
-  addClientBtn.addEventListener("click", async () => {
-    const name = clientName.value.trim();
-
-    if (!name) {
-      alert("Client name required");
-      return;
-    }
-
-    if (!currentBusiness?.id) {
-      showToast("Business profile not loaded yet", "error");
-      return;
-    }
-
 async function loadClients() {
   if (!currentBusiness?.id) return;
 
@@ -1887,6 +1873,20 @@ async function loadClients() {
   renderClients();
   renderClientDropdown();
 }
+  
+if (addClientBtn) {
+  addClientBtn.addEventListener("click", async () => {
+    const name = clientName.value.trim();
+
+    if (!name) {
+      alert("Client name required");
+      return;
+    }
+
+    if (!currentBusiness?.id) {
+      showToast("Business profile not loaded yet", "error");
+      return;
+    }
     
     const newClient = {
       business_id: currentBusiness.id,
@@ -2234,7 +2234,6 @@ async function initApp() {
   await loadClients();
   await loadQuotes();
   await loadJobs();
-}
 }
   
 </script>
