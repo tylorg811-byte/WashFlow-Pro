@@ -599,47 +599,93 @@ html[data-theme="light"] .map-preview {
   <div class="stats">
     <div class="stat-card">
       <span>Revenue This Month</span>
-      <strong id="dashRevenue">$0</strong>
-      <small id="dashRevenueSub">From paid invoices</small>
+      <strong>$0</strong>
+      <small>From paid invoices</small>
     </div>
 
     <div class="stat-card">
       <span>Open Quotes</span>
-      <strong id="dashOpenQuotes">0</strong>
-      <small id="dashOpenQuotesSub">$0 waiting</small>
+      <strong>0</strong>
+      <small>$0 waiting</small>
     </div>
 
     <div class="stat-card">
       <span>Active Jobs</span>
-      <strong id="dashActiveJobs">0</strong>
-      <small id="dashActiveJobsSub">Scheduled / in progress</small>
+      <strong>0</strong>
+      <small>Scheduled / in progress</small>
     </div>
 
     <div class="stat-card">
       <span>Unpaid Invoices</span>
-      <strong id="dashUnpaidInvoices">0</strong>
-      <small id="dashUnpaidInvoicesSub">$0 outstanding</small>
+      <strong>0</strong>
+      <small>$0 outstanding</small>
     </div>
   </div>
 
   <div class="dashboard-grid">
 
     <div class="card">
-      <h3>Upcoming / Active Jobs</h3>
-      <p>Real jobs created from saved quotes.</p>
-      <div class="list" id="dashboardJobsList"></div>
+      <h3>Get Started</h3>
+      <p>Set up your workspace and send your first quote.</p>
+
+      <div class="list">
+        <div class="list-item">
+          <div>
+            <strong>Add your first client</strong>
+            <small>Save customer name, phone, email, and address.</small>
+          </div>
+          <button class="btn btn-primary" type="button" onclick="showSection('clients')">Add Client</button>
+        </div>
+
+        <div class="list-item">
+          <div>
+            <strong>Create your first quote</strong>
+            <small>Build a quote and convert it into a job.</small>
+          </div>
+          <button class="btn btn-primary" type="button" onclick="showSection('quote')">Create Quote</button>
+        </div>
+
+        <div class="list-item">
+          <div>
+            <strong>Add payment options</strong>
+            <small>Let customers pay invoices from the email button.</small>
+          </div>
+          <button class="btn btn-soft" type="button" onclick="showSection('settings')">Set Up Payments</button>
+        </div>
+      </div>
     </div>
 
     <div class="card">
-      <h3>Recent Activity</h3>
-      <p>Latest quotes, jobs, and invoices.</p>
-      <div class="list" id="dashboardActivityList"></div>
+      <h3>Setup Checklist</h3>
+      <p>Recommended steps before sending invoices.</p>
+
+      <div class="list">
+        <div class="list-item">
+          <div>
+            <strong>Business profile</strong>
+            <small>Add company name, phone, service area, and review link.</small>
+          </div>
+        </div>
+
+        <div class="list-item">
+          <div>
+            <strong>Invoice branding</strong>
+            <small>Upload logo, brand color, and footer message.</small>
+          </div>
+        </div>
+
+        <div class="list-item">
+          <div>
+            <strong>Connect Gmail</strong>
+            <small>Send invoices from the business owner’s Gmail account.</small>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
 
 </section>
-
     <!-- MAP QUOTE -->
   <section id="quote" class="section">
 
