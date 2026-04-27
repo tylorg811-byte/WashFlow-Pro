@@ -1229,9 +1229,12 @@ function renderQuotes() {
 
       <div>
         <div class="amount">$${quote.total.toLocaleString()}</div>
-        <button class="btn btn-primary" onclick="convertSavedQuoteToJob(${index})" style="margin-top:8px;">Convert</button>
-        <button class="btn btn-soft" onclick="copySavedQuote(${index})" style="margin-top:8px;">Copy</button>
-        <button class="btn btn-soft" onclick="deleteSavedQuote(${index})" style="margin-top:8px;">Delete</button>
+  <button class="btn btn-primary" onclick="convertSavedQuoteToJob(${index})" style="margin-top:8px;">Convert</button>
+<button class="btn btn-soft" onclick="copySavedQuote(${index})" style="margin-top:8px;">Copy</button>
+<button class="btn btn-soft" onclick="smartQuoteMessage(${index})" style="margin-top:8px;">AI Message</button>
+<button class="btn btn-soft" onclick="smartQuoteFollowUp(${index})" style="margin-top:8px;">AI Follow-Up</button>
+<button class="btn btn-soft" onclick="smartQuoteUpsells(${index})" style="margin-top:8px;">AI Upsells</button>
+<button class="btn btn-soft" onclick="deleteSavedQuote(${index})" style="margin-top:8px;">Delete</button>
       </div>
     `;
 
@@ -1283,6 +1286,84 @@ function deleteSavedQuote(index) {
   saveQuotes();
   renderQuotes();
   showToast("Quote deleted!");
+}
+
+  function showQuoteAIResult(title, text) {
+  let box = document.getElementById("quoteAIResultBox");
+
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "quoteAIResultBox";
+    box.className = "card";
+    box.style.marginTop = "16px";
+
+    box.innerHTML = `
+      <h3 id="quoteAIResultTitle">✨ Quote AI</h3>
+      <p id="quoteAIResultText" style="white-space:pre-line; color:var(--text); font-weight:600; line-height:1.6;"></p>
+      <button class="btn btn-soft" type="button" onclick="copyQuoteAIResult()">Copy AI Result</button>
+    `;
+
+    document.getElementById("quotes").appendChild(box);
+  }
+
+  document.getElementById("quoteAIResultTitle").textContent = title;
+  document.getElementById("quoteAIResultText").textContent = text;
+}
+
+function copyQuoteAIResult() {
+  const text = document.getElementById("quoteAIResultText")?.innerText || "";
+  navigator.clipboard.writeText(text);
+  showToast("AI quote result copied!");
+}
+
+function smartQuoteMessage(index) {
+  const quote = savedQuotes[index];
+
+  const message = `Hey ${quote.customer},
+
+I put together your quote for ${quote.service}.
+
+The estimated total is $${quote.total.toLocaleString()}.
+
+This includes the measured area of about ${quote.sqft.toLocaleString()} sqft at ${quote.address || "your property"}.
+
+${quote.notes ? "Notes: " + quote.notes : ""}
+
+If everything looks good, I can get you scheduled.`;
+
+  showQuoteAIResult("✨ AI Quote Message", message);
+  showToast("AI quote message created!");
+}
+
+function smartQuoteFollowUp(index) {
+  const quote = savedQuotes[index];
+
+  const message = `Hey ${quote.customer}, just wanted to follow up on the quote I sent over for ${quote.service}.
+
+The total came out to $${quote.total.toLocaleString()}.
+
+No pressure at all — I just wanted to see if you had any questions or wanted to get on the schedule.`;
+
+  showQuoteAIResult("✨ AI Follow-Up Message", message);
+  showToast("AI follow-up created!");
+}
+
+function smartQuoteUpsells(index) {
+  const quote = savedQuotes[index];
+
+  const message = `Smart Upsell Suggestions for ${quote.customer}:
+
+• Offer a discounted sidewalk or entryway cleaning while already on-site.
+• Bundle another service to increase the ticket without making the customer feel pressured.
+• Mention before-and-after photos as added value.
+• Offer a maintenance plan every 3–6 months.
+• If they hesitate on price, add value instead of immediately lowering the quote.
+
+Suggested Text:
+"Since we’ll already be there, I can also include the front walkway/entry area for a discounted add-on if you’d like."`;
+
+  showQuoteAIResult("✨ AI Upsell Suggestions", message);
+  showToast("AI upsells created!");
 }
   const saveQuoteBtn = document.getElementById("saveQuoteBtn");
 
