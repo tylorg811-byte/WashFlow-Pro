@@ -2211,11 +2211,7 @@ function renderInvoices() {
         </button>
       </div>
     `;
-
-<button class="btn btn-primary" onclick="sendInvoiceEmail(${index})" style="margin-top:8px;">
-  Send Email
-</button>
-    
+   
     invoiceList.appendChild(div);
   });
 }
@@ -2494,7 +2490,7 @@ async function saveBusinessSettings() {
     driveway_rate: Number(drivewayRate.value || 0),
     house_wash_rate: Number(houseWashRate.value || 0),
     roof_wash_rate: Number(roofWashRate.value || 0),
-    minimum_job_price: Number(minimumJobPriceSetting.value || 0)
+    minimum_job_price: Number(minimumJobPriceSetting.value || 0),
     payment_method: paymentMethod.value,
 payment_link: paymentLink.value.trim(),
 paypal_link: paypalLink.value.trim(),
