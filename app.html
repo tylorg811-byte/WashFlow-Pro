@@ -1555,33 +1555,33 @@ let savedJobs = [];
 let savedInvoices = [];
 
 function updateChecklist() {
-  // Business profile
- const companyInput = document.getElementById("businessCompanyName");
-const phoneInput = document.getElementById("businessPhone");
-const areaInput = document.getElementById("businessServiceArea");
+  const companyInput = document.getElementById("businessCompanyName");
+  const phoneInput = document.getElementById("businessPhone");
+  const areaInput = document.getElementById("businessServiceArea");
 
-const hasBusiness =
-  companyInput?.value &&
-  phoneInput?.value &&
-  areaInput?.value;;
+  const invoiceFooterInput = document.getElementById("invoiceFooter");
+  const invoiceLogoPreview = document.getElementById("invoiceLogoPreview");
 
-  // Invoice branding
+  const hasBusiness =
+    companyInput?.value.trim() &&
+    phoneInput?.value.trim() &&
+    areaInput?.value.trim();
+
   const hasBranding =
-    invoiceBranding.logo || invoiceBranding.footer;
+    invoiceFooterInput?.value.trim() ||
+    invoiceLogoPreview?.src;
 
-  // Payments
   const hasPayments =
-    document.getElementById("paymentLink")?.value ||
-    document.getElementById("paypalLink")?.value ||
-    document.getElementById("cashappTag")?.value ||
-    document.getElementById("venmoHandle")?.value ||
-    document.getElementById("squareLink")?.value ||
-    document.getElementById("stripeLink")?.value;
+    document.getElementById("paymentLink")?.value.trim() ||
+    document.getElementById("paypalLink")?.value.trim() ||
+    document.getElementById("cashappTag")?.value.trim() ||
+    document.getElementById("venmoHandle")?.value.trim() ||
+    document.getElementById("squareLink")?.value.trim() ||
+    document.getElementById("stripeLink")?.value.trim();
 
-  // First client
-  const hasClient = clients.length > 0;
+  const hasClient =
+    Array.isArray(clients) && clients.length > 0;
 
-  // Update UI helper
   function setStatus(id, done) {
     const el = document.querySelector(`#${id} .status`);
     if (!el) return;
