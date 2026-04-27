@@ -696,6 +696,17 @@ html[data-theme="light"] .map-preview {
       </div>
     </div>
 
+    <div class="card">
+  <h3>Recent Activity</h3>
+  <p>Latest actions across quotes, jobs, and invoices.</p>
+
+  <div class="list" id="dashboardActivityList">
+    <div class="list-item">
+      <small>No recent activity yet.</small>
+    </div>
+  </div>
+</div>
+
   </div>
 
 </section>
@@ -2702,8 +2713,10 @@ async function sendInvoiceEmail(index) {
 }
 
  function renderDashboardHome() {
-  updateDashboardStats();
+ updateDashboardStats();
   updateSetupChecklist();
+  renderDashboardActivity();
+   
 }
 
 function updateSetupChecklist() {
@@ -2737,6 +2750,48 @@ function updateSetupChecklist() {
   );
 
   setCheck("checkFirstClient", clients.length > 0);
+}
+
+  function renderDashboardActivity() {
+  const list = document.getElementById("dashboardActivityList");
+  if (!list) return;
+
+  const activity = [
+    ...savedQuotes.map(q => ({
+      title: "Quote created",
+      text: `${q.customer || "Customer"} · $${Number(q.total || 0).toLocaleString()}`
+    })),
+    ...savedJobs.map(j => ({
+      title: "Job created",
+      text: `${j.customer || "Customer"} · ${j.status || "Scheduled"}`
+    })),
+    ...savedInvoices.map(i => ({
+      title: `Invoice ${i.status || "created"}`,
+      text: `${i.customer || "Customer"} · $${Number(i.total || 0).toLocaleString()}`
+    }))
+  ];
+
+  list.innerHTML = "";
+
+  if (activity.length === 0) {
+    list.innerHTML = `
+      <div class="list-item">
+        <small>No recent activity yet.</small>
+      </div>
+    `;
+    return;
+  }
+
+  activity.slice(0, 6).forEach(item => {
+    list.innerHTML += `
+      <div class="list-item">
+        <div>
+          <strong>${item.title}</strong>
+          <small>${item.text}</small>
+        </div>
+      </div>
+    `;
+  });
 }
 
 async function initApp() {
