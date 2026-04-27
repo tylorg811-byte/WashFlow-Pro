@@ -994,6 +994,10 @@ html[data-theme="light"] .map-preview {
       <p>Satellite measuring will connect to Google Maps later. This is the quote workflow UI.</p>
 
       <div id="quoteMap" class="map-preview"></div>
+      <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+  <button class="btn btn-primary" type="button" id="startDrawBtn">Draw Area</button>
+  <button class="btn btn-soft" type="button" id="clearMapBtn">Clear Drawing</button>
+</div>
 
       <div style="margin-top:10px; display:flex; gap:10px;">
   <button class="btn btn-soft" type="button" id="clearMapBtn">Clear Drawing</button>
@@ -2414,9 +2418,22 @@ document.querySelectorAll("[data-ai-action]").forEach(button => {
   });
 });
 const clearMapBtn = document.getElementById("clearMapBtn");
+const startDrawBtn = document.getElementById("startDrawBtn");
 
 if (clearMapBtn) {
   clearMapBtn.addEventListener("click", clearMapDrawing);
+}
+
+if (startDrawBtn) {
+  startDrawBtn.addEventListener("click", function() {
+    if (!quoteDrawingManager) {
+      showToast("Map not ready yet", "error");
+      return;
+    }
+
+    quoteDrawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+    showToast("Click points to draw your area");
+  });
 }
 const clientName = document.getElementById("clientName");
 const clientAddress = document.getElementById("clientAddress");
