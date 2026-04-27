@@ -893,6 +893,11 @@ html[data-theme="light"] .map-preview {
     flex: 1 1 100%;
   }
 }
+
+    .list-item.overdue {
+  border: 1px solid rgba(245,158,11,0.4);
+  box-shadow: 0 0 12px rgba(245,158,11,0.25);
+}
     
   </style>
 </head>
@@ -2537,19 +2542,36 @@ function renderLeads() {
 
   savedLeads.forEach((lead, index) => {
     const div = document.createElement("div");
-    div.className = "list-item";
+    div.className = "list-item" + (isOverdue ? " overdue" : "");
 
-    const statusClass =
-      lead.status === "Ready to Book" ? "green" :
-      lead.status === "Lost" ? "orange" :
-      "";
+    let statusClass = "";
 
+if (lead.status === "Ready to Book") statusClass = "green";
+if (lead.status === "Lost") statusClass = "orange";
+
+// NEW: overdue follow-up detection
+let isOverdue = false;
+
+if (lead.follow_up_date) {
+  const today = new Date();
+  const followUp = new Date(lead.follow_up_date);
+
+  today.setHours(0,0,0,0);
+  followUp.setHours(0,0,0,0);
+
+  if (followUp < today && lead.status !== "Lost") {
+    isOverdue = true;
+    statusClass = "orange";
+  }
+}
     div.innerHTML = `
       <div>
         <strong>${lead.name || "Unnamed Lead"}</strong>
         <small>${lead.service || "Service needed"} · ${lead.source || "Unknown source"}</small>
         <br>
-        <span class="status ${statusClass}">${lead.status || "New Lead"}</span>
+        <span class="status ${statusClass}">
+  ${isOverdue ? "Overdue Follow-Up" : (lead.status || "New Lead")}
+</span>
         <br>
 <small>Priority: ${lead.priority || "Normal"} · Follow-up: ${lead.follow_up_date || "Not set"}</small>
 <br>
