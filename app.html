@@ -2424,13 +2424,47 @@ WashFlow Pro`;
   document.getElementById("sendQuoteEmailBody").value = upgradedMessage;
 }
 
-function sendQuoteEmail() {
+async function sendQuoteEmail() {
   if (activeQuoteIndex === null) return;
 
-  const subject = encodeURIComponent(document.getElementById("sendQuoteSubject").value);
-  const body = encodeURIComponent(document.getElementById("sendQuoteEmailBody").value);
+  const quote = savedQuotes[activeQuoteIndex];
 
-  window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  const subject = document.getElementById("sendQuoteSubject").value;
+  const body = document.getElementById("sendQuoteEmailBody").value;
+
+  if (!quote.email) {
+    showToast("Client email is missing", "error");
+    return;
+  }
+
+  try {
+    const res = await fetch("/.netlify/functions/send-invoices", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        business_id: currentBusiness.id,
+        to: quote.email,
+        subject,
+        html: body.replace(/\n/g, "<br>")
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      showToast("Quote sent successfully 🚀", "success");
+      closeSendQuoteModal();
+    } else {
+      console.error(data);
+      showToast("Failed to send quote", "error");
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast("Error sending quote", "error");
+  }
 }
 
   function editQuote(index) {
