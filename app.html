@@ -2880,47 +2880,6 @@ function updateSetupChecklist() {
   });
 }
 
-  @media (max-width: 900px) {
-  .app {
-    display: block;
-  }
-
-  .sidebar {
-    position: sticky;
-    top: 0;
-    height: auto;
-    padding: 10px;
-    z-index: 1000;
-    border-right: none;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .brand,
-  #themeToggle,
-  #logoutBtn {
-    display: none;
-  }
-
-  .nav {
-    display: flex;
-    flex-direction: row;
-    gap: 6px;
-    overflow-x: auto;
-    width: 100%;
-  }
-
-  .nav button {
-    min-width: 82px;
-    text-align: center;
-    font-size: 0.66rem;
-    padding: 9px 6px;
-    white-space: nowrap;
-  }
-
-  .main {
-    padding: 16px;
-  }
-}
 
 async function initApp() {
   await loadUserBusiness();
