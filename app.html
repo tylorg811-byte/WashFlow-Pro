@@ -49,11 +49,11 @@
     }
 
     body {
-      font-family: Inter, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+  font-family: Inter, Arial, sans-serif;
+  background: #0b1220; /* force dark background for app launch */
+  color: var(--text);
+  min-height: 100vh;
+}
 
     button, input {
       font: inherit;
@@ -2800,6 +2800,44 @@ function updateSetupChecklist() {
     `;
   });
 }
+
+  @media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    flex-direction: row;
+    justify-content: space-around;
+    border-top: 1px solid var(--line);
+    border-right: none;
+    padding: 10px;
+    z-index: 1000;
+  }
+
+  .nav {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .nav button {
+    flex: 1;
+    font-size: 0.75rem;
+    text-align: center;
+    padding: 6px;
+  }
+
+  .main {
+    padding-bottom: 90px;
+  }
+
+  }
 
 async function initApp() {
   await loadUserBusiness();
