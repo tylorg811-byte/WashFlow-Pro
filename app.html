@@ -1064,6 +1064,15 @@ html[data-theme="light"] .map-preview {
           <label for="minimum">Minimum Job Price</label>
           <input id="minimum" type="number" value="125" min="0">
         </div>
+        <div class="field">
+  <label for="customQuotePrice">Custom Quote Price</label>
+  <input id="customQuotePrice" type="number" min="0" placeholder="Leave blank to use calculated price">
+</div>
+
+<div class="field">
+  <label for="customQuoteReason">Custom Price Note</label>
+  <input id="customQuoteReason" placeholder="Friend discount, special promo, manual adjustment, etc.">
+</div>
 
         <div class="field">
           <label for="notes">Notes</label>
@@ -1574,19 +1583,23 @@ const serviceType = document.getElementById("serviceType");
 const sqft = document.getElementById("sqft");
 const minimum = document.getElementById("minimum");
 const quoteTotal = document.getElementById("quoteTotal");
+const customQuotePrice = document.getElementById("customQuotePrice");
+const customQuoteReason = document.getElementById("customQuoteReason");
 
   function updateQuoteTotal() {
   const rate = Number(serviceType.value || 0);
   const area = Number(sqft.value || 0);
   const min = Number(minimum.value || 0);
+  const custom = Number(customQuotePrice?.value || 0);
 
-  const total = Math.max(min, area * rate);
+  const calculatedTotal = Math.max(min, area * rate);
+  const total = custom > 0 ? custom : calculatedTotal;
 
   if (quoteTotal) {
     quoteTotal.textContent = `$${Math.round(total).toLocaleString()}`;
   }
 }
-  [serviceType, sqft, minimum].forEach(el => {
+  [serviceType, sqft, minimum, customQuotePrice].forEach(el => {
   if (!el) return;
   el.addEventListener("input", updateQuoteTotal);
 });
@@ -1862,7 +1875,9 @@ function getCurrentQuote() {
   const rate = Number(serviceType.value || 0);
   const area = Number(sqft.value || 0);
   const min = Number(minimum.value || 0);
-  const total = Math.max(min, area * rate);
+  const custom = Number(customQuotePrice?.value || 0);
+  const calculatedTotal = Math.max(min, area * rate);
+  const total = custom > 0 ? custom : calculatedTotal;
 
   return {
     customer: customerName.value.trim() || "Unnamed Customer",
@@ -1874,6 +1889,8 @@ function getCurrentQuote() {
     total: Math.round(total),
     notes: notes.value.trim(),
     polygon: getPolygonCoords()
+    custom_price: Number(customQuotePrice?.value || 0) || null,
+    custom_price_reason: customQuoteReason?.value.trim() || "",
   };
 }
 
