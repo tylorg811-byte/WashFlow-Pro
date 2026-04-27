@@ -2557,14 +2557,39 @@ function convertLeadToQuote(index) {
   if (!lead) return;
 
   customerName.value = lead.name || "";
-jobAddress.value = lead.address || "";
-notes.value = lead.notes || "";
+  jobAddress.value = lead.address || "";
+  notes.value = lead.notes || "";
 
-if (lead.address) {
+  if (lead.service && serviceType) {
+    const serviceText = lead.service.toLowerCase();
+
+    for (let i = 0; i < serviceType.options.length; i++) {
+      const optionText = serviceType.options[i].text.toLowerCase();
+
+      if (
+        optionText.includes(serviceText) ||
+        serviceText.includes("driveway") && optionText.includes("driveway") ||
+        serviceText.includes("house") && optionText.includes("house") ||
+        serviceText.includes("roof") && optionText.includes("roof") ||
+        serviceText.includes("paver") && optionText.includes("paver") ||
+        serviceText.includes("pool") && optionText.includes("pool")
+      ) {
+        serviceType.selectedIndex = i;
+        break;
+      }
+    }
+  }
+
+  updateQuoteTotal();
+  showSection("quote");
+
   setTimeout(() => {
-    moveMapToAddress(lead.address);
-  }, 300);
-}
+    customerName?.focus();
+
+    if (lead.address && lead.address.trim().length > 6) {
+      moveMapToAddress(lead.address);
+    }
+  }, 500);
 
   showToast("Lead moved into quote tool");
 }
