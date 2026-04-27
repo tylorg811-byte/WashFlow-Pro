@@ -1682,32 +1682,31 @@ function initQuoteMap() {
 
   const addressInput = document.getElementById("jobAddress");
 
-if (addressInput) {
-  const autocomplete = new google.maps.places.Autocomplete(addressInput);
+  if (addressInput) {
+    const autocomplete = new google.maps.places.Autocomplete(addressInput);
 
-  autocomplete.addListener("place_changed", function () {
-  const place = autocomplete.getPlace();
+    autocomplete.addListener("place_changed", function () {
+      const place = autocomplete.getPlace();
 
-  if (!place.geometry) {
-    showToast("Address not found", "error");
-    return;
+      if (!place.geometry) {
+        showToast("Address not found", "error");
+        return;
+      }
+
+      if (place.geometry.viewport) {
+        quoteMap.fitBounds(place.geometry.viewport);
+      } else {
+        quoteMap.setCenter(place.geometry.location);
+      }
+
+      setTimeout(() => {
+        quoteMap.setZoom(21);
+      }, 200);
+    });
   }
-
-  // Use Google's suggested bounds first
-  if (place.geometry.viewport) {
-    quoteMap.fitBounds(place.geometry.viewport);
-  } else {
-    quoteMap.setCenter(place.geometry.location);
-  }
-
-  // Then FORCE close zoom after Google finishes
-  setTimeout(() => {
-    quoteMap.setZoom(21);
-  }, 200);
-});
 
   quoteDrawingManager = new google.maps.drawing.DrawingManager({
-    drawingMode: google.maps.drawing.OverlayType.POLYGON,
+    drawingMode: null,
     drawingControl: true,
     drawingControlOptions: {
       position: google.maps.ControlPosition.TOP_CENTER,
@@ -1731,7 +1730,8 @@ if (addressInput) {
 
     quotePolygon = event.overlay;
     quoteDrawingManager.setDrawingMode(null);
-showToast("Shape drawn. Adjust points if needed.");
+
+    showToast("Shape drawn. Adjust points if needed.");
 
     updateSqftFromPolygon();
 
