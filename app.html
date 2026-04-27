@@ -1234,47 +1234,68 @@ html[data-theme="light"] .map-preview {
 </section>
     
     <!-- LEADS -->
-    <section id="leads" class="section">
-
+   <section id="leads" class="section">
   <div class="card">
     <h3>Leads</h3>
     <p>Track new opportunities, follow-ups, quote status, and where each lead came from.</p>
 
-    <div class="list">
-
-      <div class="list-item">
-        <div>
-          <strong>Sarah Miller</strong>
-          <small>House wash · Facebook lead · Needs estimate</small>
-          <br>
-          <span class="status orange">New Lead</span>
-        </div>
-        <div class="amount">Follow up</div>
+    <div class="field-group" style="margin-bottom:16px;">
+      <div class="field">
+        <label>Lead Name</label>
+        <input id="leadName" placeholder="Sarah Miller">
       </div>
 
-      <div class="list-item">
-        <div>
-          <strong>Crystal Bay HOA</strong>
-          <small>Commercial flatwork · Website form · Quote sent</small>
-          <br>
-          <span class="status">Quoted</span>
-        </div>
-        <div class="amount">$760</div>
+      <div class="field">
+        <label>Phone</label>
+        <input id="leadPhone" placeholder="(555) 555-5555">
       </div>
 
-      <div class="list-item">
-        <div>
-          <strong>Robinson Home</strong>
-          <small>Roof wash · Referral · Wants service this week</small>
-          <br>
-          <span class="status green">Ready to Book</span>
-        </div>
-        <div class="amount">$480</div>
+      <div class="field">
+        <label>Email</label>
+        <input id="leadEmail" placeholder="lead@email.com">
       </div>
 
+      <div class="field">
+        <label>Service Needed</label>
+        <input id="leadService" placeholder="Driveway cleaning, house wash, roof wash...">
+      </div>
+
+      <div class="field">
+        <label>Lead Source</label>
+        <select id="leadSource">
+          <option value="Facebook">Facebook</option>
+          <option value="Website">Website</option>
+          <option value="Google">Google</option>
+          <option value="Referral">Referral</option>
+          <option value="Repeat Customer">Repeat Customer</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Status</label>
+        <select id="leadStatus">
+          <option value="New Lead">New Lead</option>
+          <option value="Contacted">Contacted</option>
+          <option value="Quote Needed">Quote Needed</option>
+          <option value="Quote Sent">Quote Sent</option>
+          <option value="Ready to Book">Ready to Book</option>
+          <option value="Lost">Lost</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Notes</label>
+        <textarea id="leadNotes" placeholder="Customer asked for pricing, wants service this week, needs follow-up..."></textarea>
+      </div>
+
+      <button class="btn btn-primary" type="button" id="addLeadBtn">
+        + Add Lead
+      </button>
     </div>
-  </div>
 
+    <div class="list" id="leadList"></div>
+  </div>
 </section>
 
     <!-- CLIENTS -->
