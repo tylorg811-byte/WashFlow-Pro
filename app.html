@@ -1461,6 +1461,29 @@ if (quickQuoteBtn) {
     }, 100);
   });
 }
+
+  function addActivity(text) {
+  const list = document.getElementById("dashboardActivityList");
+  if (!list) return;
+
+  // remove empty state
+  if (list.children.length === 1 && list.children[0].innerText.includes("No activity")) {
+    list.innerHTML = "";
+  }
+
+  const item = document.createElement("div");
+  item.className = "list-item";
+
+  item.innerHTML = `
+    <div>
+      <strong>${text}</strong>
+      <small>Just now</small>
+    </div>
+    <span class="status green">New</span>
+  `;
+
+  list.prepend(item);
+}
     
   function setTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
