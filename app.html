@@ -1167,9 +1167,19 @@ if (logoutBtn) {
 };
 
   function showSection(sectionId) {
-  sections.forEach(section => {
-    section.classList.toggle("active", section.id === sectionId);
+  const mainSections = document.querySelectorAll("main > section.section");
+
+  mainSections.forEach(section => {
+    section.classList.remove("active");
+    section.style.display = "none";
   });
+
+  const target = document.getElementById(sectionId);
+
+  if (target) {
+    target.classList.add("active");
+    target.style.display = "block";
+  }
 
   navButtons.forEach(button => {
     button.classList.toggle("active", button.dataset.section === sectionId);
