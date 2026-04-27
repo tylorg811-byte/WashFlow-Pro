@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="mobile-web-app-capable" content="yes">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_QIfgD3CEd5W5pMXW6vCzEed1Acfcu4I&libraries=places,drawing,geometry"></script>
   <link rel="manifest" href="manifest.json">
 
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -992,11 +993,11 @@ html[data-theme="light"] .map-preview {
       <h3>Map Quote Tool</h3>
       <p>Satellite measuring will connect to Google Maps later. This is the quote workflow UI.</p>
 
-      <div class="map-preview">
-        <div class="draw-area"></div>
-        <div class="map-note">
-          Draw around a driveway, roof, patio, pool deck, or flatwork area to calculate square footage.
-        </div>
+      <div id="quoteMap" class="map-preview"></div>
+
+<div class="map-note" style="position:relative; left:auto; right:auto; bottom:auto; margin-top:12px;">
+  Search the address, then draw around the driveway, roof, patio, or pool deck to calculate square footage.
+</div>
       </div>
     </div>
 
@@ -1472,6 +1473,9 @@ if (logoutBtn) {
   if (sectionId === "dashboard" && typeof updateDashboardGreeting === "function") {
     updateDashboardGreeting();
   }
+    if (sectionId === "quote" && typeof initQuoteMap === "function" && !quoteMap) {
+  setTimeout(initQuoteMap, 200);
+}
 }
 
 document.querySelectorAll(".nav button").forEach(button => {
