@@ -1888,9 +1888,9 @@ function getCurrentQuote() {
     minimum: min,
     total: Math.round(total),
     notes: notes.value.trim(),
-    polygon: getPolygonCoords()
-    custom_price: Number(customQuotePrice?.value || 0) || null,
-    custom_price_reason: customQuoteReason?.value.trim() || "",
+    polygon: getPolygonCoords(), // ✅ THIS COMMA WAS MISSING
+    custom_price: custom || null,
+    custom_price_reason: customQuoteReason?.value.trim() || ""
   };
 }
 
