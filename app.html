@@ -566,6 +566,7 @@ function renderClients() {
       </div>
     `;
     return;
+    renderClientDropdown();
   }
 
   clients.forEach((client, index) => {
@@ -600,10 +601,11 @@ if (addClientBtn) {
     }
 
     const newClient = {
-      name,
-      phone: clientPhone.value.trim(),
-      email: clientEmail.value.trim()
-    };
+  name,
+  phone: clientPhone.value.trim(),
+  email: clientEmail.value.trim(),
+  address: clientAddress.value.trim()
+};
 
     clients.push(newClient);
 
@@ -613,6 +615,7 @@ if (addClientBtn) {
     clientName.value = "";
     clientPhone.value = "";
     clientEmail.value = "";
+    clientAddress.value = "";
   });
 }
 
@@ -815,6 +818,13 @@ renderClients();
       <p>Change the square footage or service type and the quote updates automatically.</p>
 
       <form class="quote-form" id="quoteForm" onsubmit="return false;">
+       <div class="field">
+  <label for="quoteClientSelect">Select Saved Client</label>
+  <select id="quoteClientSelect">
+    <option value="">Choose a client...</option>
+  </select>
+</div>
+        
         <div class="field">
           <label for="customerName">Customer Name</label>
           <input id="customerName" value="Johnson Residence">
@@ -943,6 +953,11 @@ renderClients();
         <input id="clientEmail" placeholder="john@email.com">
       </div>
 
+<div class="field">
+  <label>Address</label>
+  <input id="clientAddress" placeholder="123 Main Street">
+</div>
+      
       <button class="btn btn-primary" type="button" id="addClientBtn">
         + Add Client
       </button>
@@ -1308,6 +1323,39 @@ function showToast(message, type = "success") {
     toast.className = "toast";
   }, 2000);
 }
+
+  const quoteClientSelect = document.getElementById("quoteClientSelect");
+
+function renderClientDropdown() {
+  if (!quoteClientSelect) return;
+
+  quoteClientSelect.innerHTML = `<option value="">Choose a client...</option>`;
+
+  clients.forEach((client, index) => {
+    const option = document.createElement("option");
+    option.value = index;
+    option.textContent = client.name;
+    quoteClientSelect.appendChild(option);
+  });
+}
+
+if (quoteClientSelect) {
+  quoteClientSelect.addEventListener("change", function() {
+    const selectedIndex = quoteClientSelect.value;
+
+    if (selectedIndex === "") return;
+
+    const client = clients[selectedIndex];
+
+    if (customerName) customerName.value = client.name || "";
+if (jobAddress) jobAddress.value = client.address || "";
+    }
+  });
+
+  const clientAddress = document.getElementById("clientAddress");
+}
+
+renderClientDropdown();
 </script>
 
   <div id="toast" class="toast"></div>
