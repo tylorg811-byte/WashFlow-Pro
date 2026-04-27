@@ -958,7 +958,8 @@ html[data-theme="light"] .map-preview {
 </section>
 
     <!-- SETTINGS -->
-    <section id="settings" class="section">
+    <!-- SETTINGS -->
+<section id="settings" class="section">
 
   <div class="settings-grid">
 
@@ -969,22 +970,22 @@ html[data-theme="light"] .map-preview {
       <div class="field-group">
         <div class="field">
           <label>Company Name</label>
-<input id="businessCompanyName" value="Your Pressure Washing Co.">
+          <input id="businessCompanyName" value="Your Pressure Washing Co.">
         </div>
 
         <div class="field">
           <label>Phone Number</label>
-<input id="businessPhone" value="(555) 555-5555">
+          <input id="businessPhone" value="(555) 555-5555">
         </div>
 
         <div class="field">
           <label>Service Area</label>
-<input id="businessServiceArea" value="Citrus County, FL">
+          <input id="businessServiceArea" value="Citrus County, FL">
         </div>
 
         <div class="field">
           <label>Google Review Link</label>
-<input id="businessReviewLink" placeholder="Paste your Google review link">
+          <input id="businessReviewLink" placeholder="Paste your Google review link">
         </div>
       </div>
     </div>
@@ -996,123 +997,124 @@ html[data-theme="light"] .map-preview {
       <div class="field-group">
         <div class="field">
           <label>Driveway / sqft</label>
-<input id="drivewayRate" value="0.18">
+          <input id="drivewayRate" value="0.18">
         </div>
 
         <div class="field">
           <label>House Wash / sqft</label>
-<input id="houseWashRate" value="0.22">
+          <input id="houseWashRate" value="0.22">
         </div>
 
         <div class="field">
           <label>Roof Wash / sqft</label>
-<input id="roofWashRate" value="0.30">
+          <input id="roofWashRate" value="0.30">
         </div>
 
         <div class="field">
           <label>Minimum Job Price</label>
-<input id="minimumJobPriceSetting" value="125">
+          <input id="minimumJobPriceSetting" value="125">
         </div>
       </div>
     </div>
 
+    <div class="card">
+      <h3>Invoice Branding</h3>
+      <p>Customize how your invoices look for your business.</p>
+
+      <div class="field-group">
+        <div class="field">
+          <label>Upload Business Logo</label>
+          <input id="invoiceLogoUpload" type="file" accept="image/*">
+        </div>
+
+        <div id="invoiceLogoPreviewWrap" style="display:none; margin-top:10px;">
+          <img id="invoiceLogoPreview" style="max-width:160px; max-height:90px; border-radius:12px; border:1px solid var(--line); background:white; padding:8px;">
+        </div>
+
+        <div class="field">
+          <label>Brand Color</label>
+          <input id="invoiceColor" type="color" value="#22d3ee">
+        </div>
+
+        <div class="field">
+          <label>Invoice Footer Message</label>
+          <textarea id="invoiceFooter">Thank you for supporting our business!</textarea>
+        </div>
+
+        <button class="btn btn-primary" type="button" id="saveInvoiceBrandingBtn">
+          Save Invoice Branding
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Payment Options</h3>
+      <p>Choose how customers can pay invoices.</p>
+
+      <div class="field-group">
+        <div class="field">
+          <label>Preferred Payment Method</label>
+          <select id="paymentMethod">
+            <option value="custom">Custom Payment Link</option>
+            <option value="paypal">PayPal</option>
+            <option value="cashapp">Cash App</option>
+            <option value="venmo">Venmo</option>
+            <option value="square">Square</option>
+            <option value="stripe">Stripe</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Custom Payment Link</label>
+          <input id="paymentLink" placeholder="https://your-payment-link.com">
+        </div>
+
+        <div class="field">
+          <label>PayPal Link</label>
+          <input id="paypalLink" placeholder="https://paypal.me/yourbusiness">
+        </div>
+
+        <div class="field">
+          <label>Cash App Tag</label>
+          <input id="cashappTag" placeholder="$YourCashTag">
+        </div>
+
+        <div class="field">
+          <label>Venmo Handle</label>
+          <input id="venmoHandle" placeholder="@yourbusiness">
+        </div>
+
+        <div class="field">
+          <label>Square Payment Link</label>
+          <input id="squareLink" placeholder="https://square.link/u/...">
+        </div>
+
+        <div class="field">
+          <label>Stripe Payment Link</label>
+          <input id="stripeLink" placeholder="https://buy.stripe.com/...">
+        </div>
+
+        <button class="btn btn-primary" type="button" id="saveBusinessSettingsBtn">
+          Save Business & Payment Settings
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Email Sending</h3>
+      <p>Connect Gmail so invoices can be sent from your own email account.</p>
+
+      <button class="btn btn-primary" type="button" id="connectGmailBtn">
+        Connect Gmail
+      </button>
+
+      <p id="gmailStatus" style="margin-top:12px; color:var(--muted); font-weight:700;">
+        Gmail not connected yet.
+      </p>
+    </div>
+
   </div>
 
-<div class="card">
-  <h3>Invoice Branding</h3>
-  <p>Customize how your invoices look for your business.</p>
-
-  <div class="field">
-  <label>Upload Business Logo</label>
-  <input id="invoiceLogoUpload" type="file" accept="image/*">
-</div>
-
-<div id="invoiceLogoPreviewWrap" style="display:none; margin-top:10px;">
-  <img id="invoiceLogoPreview" style="max-width:160px; max-height:90px; border-radius:12px; border:1px solid var(--line); background:white; padding:8px;">
-</div>
-
-    <div class="field">
-      <label>Brand Color</label>
-      <input id="invoiceColor" type="color" value="#22d3ee">
-    </div>
-
-    <div class="field">
-      <label>Invoice Footer Message</label>
-      <textarea id="invoiceFooter">Thank you for supporting our business!</textarea>
-    </div>
-
-    <button class="btn btn-primary" type="button" id="saveInvoiceBrandingBtn">
-      Save Invoice Branding
-    </button>
-  </div>
-</div>
-
-      <div class="card">
-  <h3>Payment Options</h3>
-  <p>Choose how customers can pay invoices.</p>
-
-  <div class="field-group">
-    <div class="field">
-      <label>Preferred Payment Method</label>
-      <select id="paymentMethod">
-        <option value="custom">Custom Payment Link</option>
-        <option value="paypal">PayPal</option>
-        <option value="cashapp">Cash App</option>
-        <option value="venmo">Venmo</option>
-        <option value="square">Square</option>
-        <option value="stripe">Stripe</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label>Custom Payment Link</label>
-      <input id="paymentLink" placeholder="https://your-payment-link.com">
-    </div>
-
-    <div class="field">
-      <label>PayPal Link</label>
-      <input id="paypalLink" placeholder="https://paypal.me/yourbusiness">
-    </div>
-
-    <div class="field">
-      <label>Cash App Tag</label>
-      <input id="cashappTag" placeholder="$YourCashTag">
-    </div>
-
-    <div class="field">
-      <label>Venmo Handle</label>
-      <input id="venmoHandle" placeholder="@yourbusiness">
-    </div>
-
-    <div class="field">
-      <label>Square Payment Link</label>
-      <input id="squareLink" placeholder="https://square.link/u/...">
-    </div>
-
-    <div class="field">
-      <label>Stripe Payment Link</label>
-      <input id="stripeLink" placeholder="https://buy.stripe.com/...">
-    </div>
-  </div>
-</div>
-
-      <button class="btn btn-primary" type="button" id="saveBusinessSettingsBtn" style="margin-top:14px;">
-  Save Payment Settings
-</button>
-
-<div class="card">
-  <h3>Email Sending</h3>
-  <p>Connect Gmail so invoices can be sent from your own email account.</p>
-
-  <button class="btn btn-primary" type="button" id="connectGmailBtn">
-    Connect Gmail
-  </button>
-
-  <p id="gmailStatus" style="margin-top:12px; color:var(--muted); font-weight:700;">
-    Gmail not connected yet.
-  </p>
-</div>
-      
 </section>
 
 
