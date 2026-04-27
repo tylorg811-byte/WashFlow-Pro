@@ -1637,6 +1637,14 @@ document.querySelectorAll(".nav button").forEach(button => {
 const quickClientBtn = document.getElementById("quickClientBtn");
 const quickQuoteBtn = document.getElementById("quickQuoteBtn");
 
+  const connectGmailBtn = document.getElementById("connectGmailBtn");
+
+if (connectGmailBtn) {
+  connectGmailBtn.addEventListener("click", function () {
+    window.location.href = "/.netlify/functions/google-auth-start";
+  });
+}
+
 if (quickClientBtn) {
   quickClientBtn.addEventListener("click", function() {
     showSection("clients");
