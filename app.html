@@ -556,21 +556,7 @@ html[data-theme="light"] .map-preview {
     .app {
       grid-template-columns: 1fr;
     }
-
-    .sidebar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      top: auto;
-      height: 74px;
-      padding: 8px;
-      z-index: 1000;
-      border-right: none;
-      border-top: 1px solid var(--line);
-      flex-direction: row;
-      align-items: center;
-    }
+}
 
     .brand,
     #themeToggle,
@@ -741,6 +727,58 @@ html[data-theme="light"] .map-preview {
 #dashboardActivityList .list-item,
 #dashboardChecklist .list-item {
   padding-left: 18px;
+}
+
+    .main {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.dashboard-grid {
+  align-items: start;
+}
+
+@media (min-width: 901px) {
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  }
+
+  .dashboard-grid > .card:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 900px) {
+  .app {
+    display: block;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: auto;
+    padding: 10px;
+    z-index: 1000;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .main {
+    padding: 14px;
+    max-width: 100%;
+  }
+
+  .stats,
+  .dashboard-grid,
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
 }
   </style>
 </head>
