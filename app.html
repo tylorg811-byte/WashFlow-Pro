@@ -2320,9 +2320,39 @@ async function loadJobs() {
     .single();
 
   if (existingBusiness) {
-    currentBusiness = existingBusiness;
-    return;
+  const meta = currentUser.user_metadata || {};
+
+  const updates = {};
+
+  if (!existingBusiness.company_name && meta.business_name) {
+    updates.company_name = meta.business_name;
   }
+
+  if (!existingBusiness.phone && meta.phone) {
+    updates.phone = meta.phone;
+  }
+
+  if (!existingBusiness.plan && meta.plan) {
+    updates.plan = meta.plan;
+  }
+
+  if (Object.keys(updates).length > 0) {
+    const { data: updatedBusiness, error: updateError } = await supabaseClient
+      .from("businesses")
+      .update(updates)
+      .eq("id", existingBusiness.id)
+      .select()
+      .single();
+
+    if (!updateError && updatedBusiness) {
+      currentBusiness = updatedBusiness;
+      return;
+    }
+  }
+
+  currentBusiness = existingBusiness;
+  return;
+}
 
   // 👇 CREATE BUSINESS FROM SIGNUP DATA
   const meta = currentUser.user_metadata || {};
