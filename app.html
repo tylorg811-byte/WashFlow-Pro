@@ -1686,19 +1686,25 @@ if (addressInput) {
   const autocomplete = new google.maps.places.Autocomplete(addressInput);
 
   autocomplete.addListener("place_changed", function () {
-    const place = autocomplete.getPlace();
+  const place = autocomplete.getPlace();
 
-    if (!place.geometry) {
-      showToast("Address not found", "error");
-      return;
-    }
+  if (!place.geometry) {
+    showToast("Address not found", "error");
+    return;
+  }
 
-    const location = place.geometry.location;
+  // Use Google's suggested bounds first
+  if (place.geometry.viewport) {
+    quoteMap.fitBounds(place.geometry.viewport);
+  } else {
+    quoteMap.setCenter(place.geometry.location);
+  }
 
-    quoteMap.setCenter(location);
-    quoteMap.setZoom(22);
-  });
-}
+  // Then FORCE close zoom after Google finishes
+  setTimeout(() => {
+    quoteMap.setZoom(21);
+  }, 200);
+});
 
   quoteDrawingManager = new google.maps.drawing.DrawingManager({
     drawingMode: google.maps.drawing.OverlayType.POLYGON,
