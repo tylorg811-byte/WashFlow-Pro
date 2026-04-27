@@ -1159,21 +1159,22 @@ if (logoutBtn) {
 };
 
   function showSection(sectionId) {
-    sections.forEach(section => {
-      section.classList.toggle("active", section.id === sectionId);
-    });
-
-    navButtons.forEach(button => {
-      button.classList.toggle("active", button.dataset.section === sectionId);
-    });
-
-    if (sectionId === "dashboard") {
-  updateDashboardGreeting();
-} else {
-  pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
-  }
+  sections.forEach(section => {
+    section.classList.toggle("active", section.id === sectionId);
+  });
 
   navButtons.forEach(button => {
+    button.classList.toggle("active", button.dataset.section === sectionId);
+  });
+
+  if (sectionId === "dashboard") {
+    updateDashboardGreeting();
+  } else {
+    pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
+  }
+}
+
+navButtons.forEach(button => {
     button.addEventListener("click", () => {
       showSection(button.dataset.section);
     });
