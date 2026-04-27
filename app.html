@@ -2200,58 +2200,64 @@ function renderJobs() {
 
   jobList.innerHTML = "";
 
-  if (savedJobs.length === 0) {
-  jobList.innerHTML = `
-    <div class="list-item">
-      <div>
-        <strong>No jobs yet</strong>
-        <small>Convert a quote into a job when the customer approves it.</small>
+  if (!savedJobs.length) {
+    jobList.innerHTML = `
+      <div class="list-item">
+        <div>
+          <strong>No jobs yet</strong>
+          <small>Convert a quote into a job when the customer approves it.</small>
+        </div>
+        <button class="btn btn-primary" type="button" onclick="showSection('quote')">
+          Create Quote
+        </button>
       </div>
-      <button class="btn btn-primary" type="button" onclick="showSection('quote')">
-        Create Quote
-      </button>
-    </div>
-  `;
-  return;
-}
+    `;
+    return;
+  }
 
   savedJobs.forEach((job, index) => {
     const div = document.createElement("div");
-    div.className = "list-item";
 
-    const statusClass = job.status === "Completed" ? "green" : "orange";
+    const statusClass =
+      job.status === "Completed" ? "green" :
+      job.status === "In Progress" ? "orange" :
+      "";
+
+    div.className = "list-item";
 
     div.innerHTML = `
       <div>
-        <strong>${job.customer}</strong>
-        <small>${job.service} · ${job.sqft} sqft · ${job.address || "No address"}</small>
+        <strong>${job.customer || "Unnamed Job"}</strong>
+        <small>${job.service || "Service"} · ${job.sqft || 0} sqft · ${job.address || "No address"}</small>
         <br>
-        <span class="status ${statusClass}">${job.status}</span>
+        <span class="status ${statusClass}">${job.status || "Scheduled"}</span>
+        <br>
+        <small>Scheduled: ${job.scheduled_date || "Not scheduled"}</small>
         <br>
         <small>${job.notes || "No job notes added."}</small>
       </div>
 
-      <div>
-        <div class="amount">$${job.total.toLocaleString()}</div>
+      <div class="quote-actions">
+        <div class="amount">$${Number(job.total || 0).toLocaleString()}</div>
 
-        <button class="btn btn-primary" onclick="completeJob(${index})" style="margin-top:8px;">
+        <button class="btn btn-soft" onclick="openScheduleJob(${index})">
+          Schedule
+        </button>
+
+        <button class="btn btn-primary" onclick="startJob(${index})">
+          Start
+        </button>
+
+        <button class="btn btn-soft" onclick="completeJob(${index})">
           Complete
         </button>
 
-        <button class="btn btn-soft" onclick="createInvoiceFromJob(${index})" style="margin-top:8px;">
-          Create Invoice
+        <button class="btn btn-soft" onclick="createInvoiceFromJob(${index})">
+          Invoice
         </button>
 
-        <button class="btn btn-soft" onclick="smartJobSummary(${index})" style="margin-top:8px;">
+        <button class="btn btn-soft" onclick="smartJobSummary(${index})">
           AI Summary
-        </button>
-
-        <button class="btn btn-soft" onclick="smartJobCompleteMessage(${index})" style="margin-top:8px;">
-          AI Complete Msg
-        </button>
-
-        <button class="btn btn-soft" onclick="smartReviewRequest(${index})" style="margin-top:8px;">
-          AI Review
         </button>
       </div>
     `;
@@ -2260,6 +2266,100 @@ function renderJobs() {
   });
 }
 
+function openScheduleJob(index) {
+  const job = savedJobs[index];
+  if (!job) return;
+
+  const date = prompt("Enter scheduled date (YYYY-MM-DD):", job.scheduled_date || "");
+
+  if (date === null) return;
+
+  savedJobs[index].scheduled_date = date;
+  saveJobs();
+  renderJobs();
+
+  if (job.id) {
+    supabaseClient
+      .from("jobs")
+      .update({ scheduled_date: date })
+      .eq("id", job.id)
+      .then(({ error }) => {
+        if (error) {
+          console.error(error);
+          showToast("Could not save schedule", "error");
+        }
+      });
+  }
+
+  showToast("Job scheduled");
+}
+
+async function startJob(index) {
+  const job = savedJobs[index];
+  if (!job) return;
+
+  const startedAt = new Date().toISOString();
+
+  savedJobs[index].status = "In Progress";
+  savedJobs[index].started_at = startedAt;
+
+  if (job.id) {
+    const { error } = await supabaseClient
+      .from("jobs")
+      .update({
+        status: "In Progress",
+        started_at: startedAt
+      })
+      .eq("id", job.id);
+
+    if (error) {
+      console.error(error);
+      showToast("Could not start job", "error");
+      return;
+    }
+  }
+
+  saveJobs();
+  renderJobs();
+  updateDashboardStats();
+
+  showToast("Job started");
+  addActivity("Job started");
+}
+
+async function completeJob(index) {
+  const job = savedJobs[index];
+  if (!job) return;
+
+  const completedAt = new Date().toISOString();
+
+  savedJobs[index].status = "Completed";
+  savedJobs[index].completed_at = completedAt;
+
+  if (job.id) {
+    const { error } = await supabaseClient
+      .from("jobs")
+      .update({
+        status: "Completed",
+        completed_at: completedAt
+      })
+      .eq("id", job.id);
+
+    if (error) {
+      console.error(error);
+      showToast("Could not complete job", "error");
+      return;
+    }
+  }
+
+  saveJobs();
+  renderJobs();
+  updateDashboardStats();
+
+  showToast("Job completed");
+  addActivity("Job completed");
+}
+  
 async function completeJob(index) {
   const job = savedJobs[index];
   if (!job?.id) return;
@@ -2413,10 +2513,13 @@ if (convertQuoteBtn) {
     const { data, error } = await supabaseClient
       .from("jobs")
       .insert({
-        ...quote,
-        business_id: currentBusiness.id,
-        status: "Scheduled"
-      })
+  ...quote,
+  business_id: currentBusiness.id,
+  status: "Scheduled",
+  scheduled_date: "",
+  started_at: null,
+  completed_at: null
+})
       .select()
       .single();
 
