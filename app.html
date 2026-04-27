@@ -1772,7 +1772,7 @@ function getPolygonCoords() {
   return coords;
 }
   
-  function loadPolygon(coords) {
+ function loadPolygon(coords) {
   if (!coords || !quoteMap || !window.google) return;
 
   if (quotePolygon) {
@@ -1793,6 +1793,10 @@ function getPolygonCoords() {
   const bounds = new google.maps.LatLngBounds();
   coords.forEach(c => bounds.extend(c));
   quoteMap.fitBounds(bounds);
+
+  setTimeout(() => {
+    quoteMap.setZoom(21);
+  }, 200);
 
   updateSqftFromPolygon();
 }
