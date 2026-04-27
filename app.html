@@ -1281,10 +1281,13 @@ if (logoutBtn) {
   });
 
   if (sectionId === "dashboard") {
+  pageTitle.textContent = "Dashboard";
+
+  if (typeof updateDashboardGreeting === "function") {
     updateDashboardGreeting();
-  } else {
-    pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
   }
+} else {
+  pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
 }
 
 navButtons.forEach(button => {
@@ -2882,7 +2885,7 @@ function updateSetupChecklist() {
 
   @media (max-width: 900px) {
   .app {
-    grid-template-columns: 1fr;
+    display: block;
   }
 
   .sidebar {
@@ -2890,33 +2893,60 @@ function updateSetupChecklist() {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 70px;
-    flex-direction: row;
-    justify-content: space-around;
-    border-top: 1px solid var(--line);
+    top: auto;
+    height: 78px;
+    padding: 8px;
+    z-index: 99999;
     border-right: none;
-    padding: 10px;
-    z-index: 1000;
+    border-top: 1px solid var(--line);
+    flex-direction: row;
+    align-items: center;
+    background: var(--panel);
+  }
+
+  .brand,
+  #themeToggle,
+  #logoutBtn {
+    display: none;
   }
 
   .nav {
-    flex-direction: row;
     width: 100%;
-    justify-content: space-around;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
   }
 
   .nav button {
-    flex: 1;
-    font-size: 0.75rem;
+    min-width: 82px;
     text-align: center;
-    padding: 6px;
+    font-size: 0.66rem;
+    padding: 9px 6px;
+    border-radius: 12px;
+    white-space: nowrap;
+    pointer-events: auto;
   }
 
   .main {
-    padding-bottom: 90px;
+    padding: 16px;
+    padding-bottom: 105px;
   }
 
+  .topbar {
+    align-items: flex-start;
+    gap: 12px;
   }
+
+  .topbar h1 {
+    font-size: 1.7rem;
+  }
+
+  .topbar > div:last-child {
+    display: flex;
+    gap: 8px;
+  }
+}
 
 async function initApp() {
   await loadUserBusiness();
