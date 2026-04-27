@@ -2193,43 +2193,60 @@ function renderQuotes() {
   quoteList.innerHTML = "";
 
   if (savedQuotes.length === 0) {
-  quoteList.innerHTML = `
-    <div class="list-item">
-      <div>
-        <strong>No saved quotes yet</strong>
-        <small>Create your first quote from the Map Quote Tool.</small>
+    quoteList.innerHTML = `
+      <div class="list-item">
+        <div>
+          <strong>No saved quotes yet</strong>
+          <small>Create your first quote from the Map Quote Tool.</small>
+        </div>
+        <button class="btn btn-primary" type="button" onclick="showSection('quote')">
+          Create Quote
+        </button>
       </div>
-      <button class="btn btn-primary" type="button" onclick="showSection('quote')">
-        Create Quote
-      </button>
-    </div>
-  `;
-  return;
-}
+    `;
+    return;
+  }
 
   savedQuotes.forEach((quote, index) => {
     const div = document.createElement("div");
     div.className = "list-item";
+    div.style.alignItems = "stretch";
+
+    const isCustom = quote.custom_price || quote.custom_price_reason;
 
     div.innerHTML = `
-      <div>
+      <div style="flex:1;">
         <strong>${quote.customer}</strong>
-        <small>${quote.service} · ${quote.sqft} sqft · ${quote.address || "No address"}</small>
-        <br>
-        <span class="status">Saved Quote</span>
+        <small>${quote.service} · ${Number(quote.sqft || 0).toLocaleString()} sqft</small>
+        <small style="display:block; margin-top:4px;">${quote.address || "No address"}</small>
+
+        <div style="margin-top:8px;">
+          <span class="status">Saved Quote</span>
+          ${isCustom ? `<span class="status orange">Custom Price</span>` : ""}
+        </div>
+
+        ${quote.custom_price_reason ? `
+          <small style="display:block; margin-top:8px;">
+            Note: ${quote.custom_price_reason}
+          </small>
+        ` : ""}
       </div>
 
-      <div>
-        <div class="amount">$${quote.total.toLocaleString()}</div>
-      <button class="btn btn-primary" onclick="convertSavedQuoteToJob(${index})" style="margin-top:8px;">Convert</button>
-    <button class="btn btn-soft" onclick="copySavedQuote(${index})" style="margin-top:8px;">Copy</button>
-    <button class="btn btn-soft" onclick="smartQuoteMessage(${index})" style="margin-top:8px;">AI Message</button>
-    <button class="btn btn-soft" onclick="smartQuoteFollowUp(${index})" style="margin-top:8px;">AI Follow-Up</button>
-    <button class="btn btn-soft" onclick="smartQuoteUpsells(${index})" style="margin-top:8px;">AI Upsells</button>
-    <button class="btn btn-soft" onclick="editQuote(${index})" style="margin-top:8px;">Edit</button>
-    <button class="btn btn-soft" onclick="deleteSavedQuote(${index})" style="margin-top:8px;">Delete</button>
-  </div>
-`;
+      <div style="min-width:220px;">
+        <div class="amount" style="font-size:1.5rem; margin-bottom:10px;">
+          $${Number(quote.total || 0).toLocaleString()}
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <button class="btn btn-primary" onclick="convertSavedQuoteToJob(${index})">Convert</button>
+          <button class="btn btn-soft" onclick="editQuote(${index})">Edit</button>
+          <button class="btn btn-soft" onclick="copySavedQuote(${index})">Copy</button>
+          <button class="btn btn-soft" onclick="smartQuoteMessage(${index})">AI Msg</button>
+          <button class="btn btn-soft" onclick="smartQuoteFollowUp(${index})">Follow-Up</button>
+          <button class="btn btn-soft" onclick="deleteSavedQuote(${index})">Delete</button>
+        </div>
+      </div>
+    `;
 
     quoteList.appendChild(div);
   });
