@@ -995,6 +995,10 @@ html[data-theme="light"] .map-preview {
 
       <div id="quoteMap" class="map-preview"></div>
 
+      <div style="margin-top:10px; display:flex; gap:10px;">
+  <button class="btn btn-soft" type="button" id="clearMapBtn">Clear Drawing</button>
+</div>
+
 <div class="map-note" style="position:relative; left:auto; right:auto; bottom:auto; margin-top:12px;">
   Search the address, then draw around the driveway, roof, patio, or pool deck to calculate square footage.
 </div>
@@ -1701,6 +1705,7 @@ if (addressInput) {
 
     quotePolygon = event.overlay;
     quoteDrawingManager.setDrawingMode(null);
+showToast("Shape drawn. Adjust points if needed.");
 
     updateSqftFromPolygon();
 
@@ -2405,9 +2410,14 @@ Thank you again for trusting us with your property.`;
 document.querySelectorAll("[data-ai-action]").forEach(button => {
   button.addEventListener("click", function() {
     runSmartAssist(button.dataset.aiAction);
+    
   });
 });
-  
+const clearMapBtn = document.getElementById("clearMapBtn");
+
+if (clearMapBtn) {
+  clearMapBtn.addEventListener("click", clearMapDrawing);
+}
 const clientName = document.getElementById("clientName");
 const clientAddress = document.getElementById("clientAddress");
 const clientPhone = document.getElementById("clientPhone");
