@@ -2886,19 +2886,13 @@ function updateSetupChecklist() {
   }
 
   .sidebar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: auto;
-    height: 78px;
-    padding: 8px;
-    z-index: 99999;
+    position: sticky;
+    top: 0;
+    height: auto;
+    padding: 10px;
+    z-index: 1000;
     border-right: none;
-    border-top: 1px solid var(--line);
-    flex-direction: row;
-    align-items: center;
-    background: var(--panel);
+    border-bottom: 1px solid var(--line);
   }
 
   .brand,
@@ -2908,11 +2902,11 @@ function updateSetupChecklist() {
   }
 
   .nav {
-    width: 100%;
     display: flex;
+    flex-direction: row;
     gap: 6px;
     overflow-x: auto;
-    padding-bottom: 4px;
+    width: 100%;
   }
 
   .nav button {
@@ -2920,28 +2914,11 @@ function updateSetupChecklist() {
     text-align: center;
     font-size: 0.66rem;
     padding: 9px 6px;
-    border-radius: 12px;
     white-space: nowrap;
-    pointer-events: auto;
   }
 
   .main {
     padding: 16px;
-    padding-bottom: 105px;
-  }
-
-  .topbar {
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .topbar h1 {
-    font-size: 1.7rem;
-  }
-
-  .topbar > div:last-child {
-    display: flex;
-    gap: 8px;
   }
 }
 
