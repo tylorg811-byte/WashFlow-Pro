@@ -1453,10 +1453,6 @@ function renderJobs() {
   });
 }
 
-  renderDashboard();
-  renderDashboardHome();
-  updateDashboardStats();
-
 async function completeJob(index) {
   const job = savedJobs[index];
   if (!job?.id) return;
@@ -1679,9 +1675,6 @@ function renderQuotes() {
   });
 }
 
-  renderDashboard();
-  renderDashboardHome();
-  updateDashboardStats();
 
 async function convertSavedQuoteToJob(index) {
   const quote = savedQuotes[index];
@@ -2398,10 +2391,6 @@ function renderInvoices() {
     invoiceList.appendChild(div);
   });
 }
-
-  renderDashboard();
-  renderDashboardHome();
-  updateDashboardStats();
 
 async function markInvoicePaid(index) {
   const invoice = savedInvoices[index];
