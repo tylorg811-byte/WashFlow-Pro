@@ -1755,6 +1755,31 @@ function updateSqftFromPolygon() {
   showToast(`Measured ${areaSqft.toLocaleString()} sqft`);
 }
 
+  function loadPolygon(coords) {
+  if (!coords || !quoteMap || !window.google) return;
+
+  if (quotePolygon) {
+    quotePolygon.setMap(null);
+  }
+
+  quotePolygon = new google.maps.Polygon({
+    paths: coords,
+    fillColor: "#22d3ee",
+    fillOpacity: 0.25,
+    strokeColor: "#34d399",
+    strokeWeight: 3,
+    editable: true
+  });
+
+  quotePolygon.setMap(quoteMap);
+
+  const bounds = new google.maps.LatLngBounds();
+  coords.forEach(c => bounds.extend(c));
+  quoteMap.fitBounds(bounds);
+
+  updateSqftFromPolygon();
+}
+
   function clearMapDrawing() {
   if (quotePolygon) {
     quotePolygon.setMap(null);
@@ -1805,6 +1830,17 @@ function getCurrentQuote() {
     minimum: min,
     total: Math.round(total),
     notes: notes.value.trim(),
+    return {
+  customer: customerName.value.trim() || "Unnamed Customer",
+  email: getSelectedClientEmail(),
+  address: jobAddress.value.trim(),
+  service: serviceType.options[serviceType.selectedIndex].text,
+  sqft: area,
+  minimum: min,
+  total: Math.round(total),
+  notes: notes.value.trim(),
+  polygon: getPolygonCoords()
+};
   };
 }
 
