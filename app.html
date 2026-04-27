@@ -588,8 +588,8 @@ html[data-theme="light"] .map-preview {
       </div>
 
       <div>
-        <button class="btn btn-soft">+ Client</button>
-        <button class="btn btn-primary">+ Quote</button>
+        <button class="btn btn-soft" type="button" id="quickClientBtn">+ Client</button>
+<button class="btn btn-primary" type="button" id="quickQuoteBtn">+ Quote</button>
       </div>
     </div>
 
@@ -1179,6 +1179,29 @@ if (logoutBtn) {
     });
   });
 
+const quickClientBtn = document.getElementById("quickClientBtn");
+const quickQuoteBtn = document.getElementById("quickQuoteBtn");
+
+if (quickClientBtn) {
+  quickClientBtn.addEventListener("click", function() {
+    showSection("clients");
+
+    setTimeout(() => {
+      document.getElementById("clientName")?.focus();
+    }, 100);
+  });
+}
+
+if (quickQuoteBtn) {
+  quickQuoteBtn.addEventListener("click", function() {
+    showSection("quote");
+
+    setTimeout(() => {
+      document.getElementById("quoteClientSelect")?.focus();
+    }, 100);
+  });
+}
+    
   function setTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("washflow-theme", theme);
