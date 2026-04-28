@@ -82,9 +82,9 @@ const SUPABASE_ANON_KEY = "sb_publishable_8XCfgwdnx0ZghIB4ndS_bw_DXHvQeV0";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const params = new URLSearchParams(window.location.search);
-const quoteId = params.get("id");
-const action = params.get("action");
-
+const quoteId = params.get("quote");
+console.log("Quote ID:", quoteId);  // Should log the ID passed in URL
+  
 const badge = document.getElementById("badge");
 const title = document.getElementById("title");
 const message = document.getElementById("message");
