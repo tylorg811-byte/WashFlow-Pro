@@ -1983,6 +1983,118 @@ function updateChecklist() {
   statSubs[3].textContent = `$${unpaidInvoices.reduce((s,i)=>s+Number(i.total||0),0).toLocaleString()} unpaid`;
 }
 
+  function saveQuotes() {
+  return;
+}
+
+async function saveJobs() {
+  return;
+}
+
+async function saveInvoices() {
+  return;
+}
+
+/* =========================
+   LOADERS
+========================= */
+
+async function loadQuotes() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("quotes")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load quotes", "error");
+    return;
+  }
+
+  savedQuotes = data || [];
+  renderQuotes();
+}
+
+async function loadJobs() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("jobs")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load jobs", "error");
+    return;
+  }
+
+  savedJobs = data || [];
+  renderJobs();
+}
+
+async function loadInvoices() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("invoices")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load invoices", "error");
+    return;
+  }
+
+  savedInvoices = data || [];
+  renderInvoices();
+}
+
+async function loadClients() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("clients")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load clients", "error");
+    return;
+  }
+
+  clients = data || [];
+  renderClients();
+  renderClientDropdown();
+}
+
+async function loadLeads() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("leads")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load leads", "error");
+    return;
+  }
+
+  savedLeads = data || [];
+  renderLeads();
+}
+
   let quoteMap = null;
 let quoteDrawingManager = null;
 let quotePolygon = null;
