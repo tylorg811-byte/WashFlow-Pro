@@ -339,7 +339,10 @@
 .status.viewed { background: rgba(168,85,247,.16); color: #c084fc; }
 .status.accepted { background: rgba(16,185,129,.16); color: #34d399; }
 .status.declined { background: rgba(239,68,68,.16); color: #f87171; }
-
+.status.converted {
+  background: rgba(59,130,246,.16);
+  color: #60a5fa;
+}
 .quote-timeline {
   margin-top: 10px;
   color: var(--muted);
@@ -2840,6 +2843,7 @@ renderJobs();
 function getQuoteStatusClass(status) {
   const clean = (status || "Saved Quote").toLowerCase();
 
+  if (clean.includes("converted")) return "converted";
   if (clean.includes("accepted")) return "accepted";
   if (clean.includes("declined")) return "declined";
   if (clean.includes("viewed")) return "viewed";
