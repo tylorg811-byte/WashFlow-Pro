@@ -2535,10 +2535,11 @@ function renderJobs() {
   savedJobs.forEach((job, index) => {
     const div = document.createElement("div");
 
-    const statusClass =
-      job.status === "Completed" ? "green" :
-      job.status === "In Progress" ? "orange" :
-      "";
+    cconst statusClass =
+  job.status === "Completed" ? "green" :
+  job.status === "In Progress" ? "orange" :
+  job.quote_id && !job.scheduled_date ? "orange" :
+  "";
 
     div.className = "list-item";
 
@@ -2549,7 +2550,9 @@ function renderJobs() {
         <br>
         <span class="status ${statusClass}">${job.status || "Scheduled"}</span>
         <br>
-        <small>Scheduled: ${job.scheduled_date || "Not scheduled"}</small>
+       <small>
+  ${job.quote_id && !job.scheduled_date ? "🔥 Ready to Schedule" : `Scheduled: ${job.scheduled_date || "Not scheduled"}`}
+</small>
         <br>
         <small>${job.notes || "No job notes added."}</small>
       </div>
