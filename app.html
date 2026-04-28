@@ -2209,14 +2209,12 @@ const customQuoteReason = document.getElementById("customQuoteReason");
       return;
     }
 
-    savedQuotes.unshift(data);
-    saveQuotes();
-    renderQuotes();
-    updateDashboardStats();
+    await loadQuotes();
+    await reloadAppData();
 
-    showToast("Quote saved!");
-    addActivity("Quote saved");
-    showSection("quotes");
+showToast("Quote saved!");
+addActivity("Quote saved");
+showSection("quotes");
   });
 }
 
@@ -2336,16 +2334,15 @@ function updateChecklist() {
   statSubs[3].textContent = `$${unpaidInvoices.reduce((s,i)=>s+Number(i.total||0),0).toLocaleString()} unpaid`;
 }
 
-  function saveQuotes() {
-  return;
-}
+async function reloadAppData() {
+  await loadClients();
+  await loadLeads();
+  await loadQuotes();
+  await loadJobs();
+  await loadInvoices();
 
-async function saveJobs() {
-  return;
-}
-
-async function saveInvoices() {
-  return;
+  updateDashboardStats();
+  updateChecklist();
 }
 
 /* =========================
@@ -2507,6 +2504,8 @@ async function autoConvertAcceptedQuotesToJobs(quotes) {
 
     addActivity(`Job created from accepted quote: ${quote.customer || "Customer"}`);
   }
+
+  await reloadAppData();
 }
   
 function startLiveQuoteStatusTracking() {
@@ -2959,7 +2958,6 @@ function openScheduleJob(index) {
   if (date === null) return;
 
   savedJobs[index].scheduled_date = date;
-  saveJobs();
   renderJobs();
 
   if (job.id) {
@@ -3003,7 +3001,6 @@ async function startJob(index) {
     }
   }
 
-  saveJobs();
   renderJobs();
   updateDashboardStats();
 
@@ -3036,7 +3033,7 @@ async function completeJob(index) {
     }
   }
 
-  saveJobs();
+  
   renderJobs();
   updateDashboardStats();
 
@@ -3352,11 +3349,7 @@ function renderQuotes() {
 
 if (newStatus === "Accepted") {
   await autoConvertAcceptedQuotesToJobs(savedQuotes);
-  await loadJobs();
-  await loadQuotes();
-}
-
-updateDashboardStats();
+  await reloadAppData();
 }
 
   const leadName = document.getElementById("leadName");
@@ -3826,6 +3819,7 @@ async function convertSavedQuoteToJob(index) {
 
   showToast("Quote converted to job!");
   showSection("jobs");
+  await reloadAppData();
 }
 
 function copySavedQuote(index) {
@@ -3868,9 +3862,8 @@ async function deleteSavedQuote(index) {
     }
   }
 
-  await loadQuotes();
-  updateDashboardStats();
-  showToast("Quote deleted", "success");
+ await reloadAppData();
+showToast("Quote deleted", "success");
 }
 
   function showQuoteAIResult(title, text) {
