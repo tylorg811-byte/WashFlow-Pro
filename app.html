@@ -1901,6 +1901,11 @@ document.querySelectorAll(".nav button").forEach(button => {
 });
 
 const quickClientBtn = document.getElementById("quickClientBtn");
+
+function connectGmail() {
+  showToast("Gmail connection will be enabled after Netlify deployment.", "error");
+  console.log("Gmail connect clicked, but backend OAuth is not deployed yet.");
+}
   
 document.addEventListener("DOMContentLoaded", function() {
   const connectGmailBtn = document.getElementById("connectGmailBtn");
