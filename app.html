@@ -2778,74 +2778,62 @@ function renderLeads() {
       <div class="list-item">
         <div>
           <strong>No leads yet</strong>
-          <small>Add your first lead from Facebook, Google, your website, or referrals.</small>
+          <small>Add a lead when someone asks for a quote.</small>
         </div>
-        <span class="status">Ready</span>
       </div>
     `;
     return;
   }
 
   savedLeads.forEach((lead, index) => {
+    let statusClass = "";
+    let isOverdue = false;
+
+    if (lead.status === "Ready to Book") statusClass = "green";
+    if (lead.status === "Lost") statusClass = "orange";
+
+    if (lead.follow_up_date) {
+      const today = new Date();
+      const followUp = new Date(lead.follow_up_date);
+
+      today.setHours(0,0,0,0);
+      followUp.setHours(0,0,0,0);
+
+      if (followUp < today && lead.status !== "Lost") {
+        isOverdue = true;
+        statusClass = "orange";
+      }
+    }
+
     const div = document.createElement("div");
     div.className = "list-item" + (isOverdue ? " overdue" : "");
 
-    let statusClass = "";
-
-if (lead.status === "Ready to Book") statusClass = "green";
-if (lead.status === "Lost") statusClass = "orange";
-
-// NEW: overdue follow-up detection
-let isOverdue = false;
-
-if (lead.follow_up_date) {
-  const today = new Date();
-  const followUp = new Date(lead.follow_up_date);
-
-  today.setHours(0,0,0,0);
-  followUp.setHours(0,0,0,0);
-
-  if (followUp < today && lead.status !== "Lost") {
-    isOverdue = true;
-    statusClass = "orange";
-  }
-}
     div.innerHTML = `
       <div>
         <strong>${lead.name || "Unnamed Lead"}</strong>
         <small>${lead.service || "Service needed"} · ${lead.source || "Unknown source"}</small>
         <br>
         <span class="status ${statusClass}">
-  ${isOverdue ? "Overdue Follow-Up" : (lead.status || "New Lead")}
-</span>
+          ${isOverdue ? "Overdue Follow-Up" : (lead.status || "New Lead")}
+        </span>
         <br>
-<small>Priority: ${lead.priority || "Normal"} · Follow-up: ${lead.follow_up_date || "Not set"}</small>
-<br>
-<small>Last contacted: ${lead.last_contacted || "Never"}</small>
+        <small>Priority: ${lead.priority || "Normal"} · Follow-up: ${lead.follow_up_date || "Not set"}</small>
         <br>
-       <small>${lead.phone || "No phone"} · ${lead.email || "No email"}</small>
-<br>
-<small>${lead.address || "No address"}</small>
+        <small>Last contacted: ${lead.last_contacted || "Never"}</small>
+        <br>
+        <small>${lead.phone || "No phone"} · ${lead.email || "No email"}</small>
+        <br>
+        <small>${lead.address || "No address"}</small>
         <br>
         <small>${lead.notes || "No notes yet."}</small>
       </div>
 
       <div class="quote-actions">
-        <button class="btn btn-primary" type="button" onclick="convertLeadToQuote(${index})">
-  Quote
-</button>
-        <button class="btn btn-soft" onclick="convertLeadToClient(${index})">
-  Client
-</button>
-        <button class="btn btn-soft" onclick="markLeadContacted(${index})">
-          Contacted
-        </button>
-        <button class="btn btn-soft" onclick="smartLeadFollowUp(${index})">
-  AI Follow-Up
-</button>
-        <button class="btn btn-soft" onclick="deleteLead(${index})">
-          Delete
-        </button>
+        <button class="btn btn-primary" type="button" onclick="convertLeadToQuote(${index})">Quote</button>
+        <button class="btn btn-soft" type="button" onclick="convertLeadToClient(${index})">Client</button>
+        <button class="btn btn-soft" type="button" onclick="markLeadContacted(${index})">Contacted</button>
+        <button class="btn btn-soft" type="button" onclick="smartLeadFollowUp(${index})">AI Follow-Up</button>
+        <button class="btn btn-soft" type="button" onclick="deleteLead(${index})">Delete</button>
       </div>
     `;
 
