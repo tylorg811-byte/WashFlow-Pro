@@ -83,7 +83,8 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const params = new URLSearchParams(window.location.search);
 const quoteId = params.get("quote");
-console.log("Quote ID:", quoteId);  // Should log the ID passed in URL
+const action = params.get("action");
+console.log("Quote ID:", quoteId, "Action:", action);  // Ensure this logs the action
   
 const badge = document.getElementById("badge");
 const title = document.getElementById("title");
