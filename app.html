@@ -1282,7 +1282,7 @@ html[data-theme="light"] .map-preview {
 <section id="quotes" class="section">
   <div class="card">
     <h3>Saved Quotes</h3>
-    <p>View, manage, and convert your saved quotes.</p>
+    <p>View, manage, and convert your saved quotes. Status updates refresh live every few seconds.</p>
 
     <div class="list" id="quoteList"></div>
   </div>
@@ -2058,6 +2058,43 @@ async function loadQuotes() {
 
   savedQuotes = data || [];
   renderQuotes();
+}
+
+  let quoteStatusRefreshTimer = null;
+
+async function refreshQuoteStatuses() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("quotes")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Quote status refresh failed:", error);
+    return;
+  }
+
+  savedQuotes = data || [];
+  renderQuotes();
+  updateDashboardStats();
+}
+
+function startLiveQuoteStatusTracking() {
+  if (quoteStatusRefreshTimer) return;
+
+  quoteStatusRefreshTimer = setInterval(() => {
+    const quotesSection = document.getElementById("quotes");
+    const dashboardSection = document.getElementById("dashboard");
+
+    const isQuotesOpen = quotesSection?.classList.contains("active");
+    const isDashboardOpen = dashboardSection?.classList.contains("active");
+
+    if (isQuotesOpen || isDashboardOpen) {
+      refreshQuoteStatuses();
+    }
+  }, 8000);
 }
 
 async function loadJobs() {
@@ -4456,6 +4493,7 @@ async function initApp() {
   renderInvoices();
   renderDashboardHome();
   updateChecklist();
+  startLiveQuoteStatusTracking();
   loadLeads();
 renderLeads();
 }
