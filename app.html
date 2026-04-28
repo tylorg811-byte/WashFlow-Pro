@@ -987,25 +987,27 @@ html[data-theme="light"] .map-preview {
 }
 
 #notificationBell {
-    position: relative;
-    padding: 10px;
+  position: relative;
+  padding: 10px;
+  cursor: pointer;
 }
 
 #notificationCount {
-    margin-left: 4px;
-    background: #ef4444;
-    color: white;
-    font-size: 0.7rem;
-    padding: 2px 6px;
-    border-radius: 999px;
-    font-weight: bold;
+  margin-left: 4px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-weight: bold;
 }
+
 .notification-dropdown {
   display: none;
   position: absolute;
   right: 0;
   top: 48px;
-  width: 330px;
+  width: 300px;
   max-height: 420px;
   overflow-y: auto;
   background: var(--panel);
@@ -1020,17 +1022,12 @@ html[data-theme="light"] .map-preview {
   display: block;
 }
 
-.notification-list {
-  display: grid;
-  gap: 10px;
-  margin-top: 12px;
-}
-
 .notification-item {
   padding: 12px;
   border-radius: 14px;
   background: var(--panel-soft);
   border: 1px solid var(--line);
+  margin-bottom: 10px;
 }
 
 .notification-item.unread {
@@ -1039,12 +1036,14 @@ html[data-theme="light"] .map-preview {
 
 .notification-item strong {
   display: block;
-  margin-bottom: 4px;
 }
 
 .notification-item small {
   color: var(--muted);
-  font-weight: 700;
+}
+
+#notificationBell:focus {
+  outline: none;
 }
 
 @media (max-width: 700px) {
