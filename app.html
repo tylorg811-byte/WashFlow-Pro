@@ -306,6 +306,39 @@
   gap: 16px;
 }
 
+    .clean-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.clean-actions .btn {
+  min-height: auto;
+  padding: 9px 13px;
+  border-radius: 12px;
+}
+
+.quote-card {
+  align-items: center;
+}
+
+@media (max-width: 800px) {
+  .quote-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .clean-actions {
+    justify-content: flex-start;
+  }
+
+  .clean-actions .btn {
+    flex: 1 1 46%;
+  }
+}
+
     .quote-card {
   align-items: stretch;
   background:
