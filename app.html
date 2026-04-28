@@ -1857,16 +1857,16 @@ if (logoutBtn) {
   settings: "Settings"
 };
 
- function showSection(sectionId) {
+function showSection(sectionId) {
   document.querySelectorAll(".section").forEach(section => {
     section.classList.remove("active");
-    section.style.display = "none"; // Hide all sections first
+    section.style.display = "none";  // Hide all sections first
   });
 
   const target = document.getElementById(sectionId);  // Get the target section
   if (target) {
     target.classList.add("active");
-    target.style.display = "block"; // Show the target section
+    target.style.display = "block";  // Show the target section
   }
 
   // Toggle active class on buttons
