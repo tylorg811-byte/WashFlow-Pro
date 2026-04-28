@@ -2522,9 +2522,9 @@ async function loadInvoices() {
   renderInvoices();
 }
 
-async function loadClients() {
-  if (!currentBusiness?.id) return;
+let clients = [];
 
+async function loadClients() {
   const { data, error } = await supabaseClient
     .from("clients")
     .select("*")
@@ -2537,9 +2537,23 @@ async function loadClients() {
     return;
   }
 
-  clients = data || [];
-  renderClients();
-  renderClientDropdown();
+  clients = data || [];  // Ensure this array is populated with client data
+  populateQuoteClientSelect();  // Function to populate the dropdown with clients
+}
+
+function populateQuoteClientSelect() {
+  const quoteClientSelect = document.getElementById("quoteClientSelect");
+  if (!quoteClientSelect) return;
+
+  // Clear previous options
+  quoteClientSelect.innerHTML = '<option value="">Choose a client...</option>';
+  
+  clients.forEach(client => {
+    const option = document.createElement("option");
+    option.value = client.id;
+    option.textContent = client.name;
+    quoteClientSelect.appendChild(option);
+  });
 }
 
 async function loadLeads() {
