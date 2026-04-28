@@ -1816,9 +1816,9 @@ async function loadBusiness() {
     const { data: newBusiness, error: createError } = await supabaseClient
       .from("businesses")
       .insert({
-  owner_id: currentUser.id,
-  company_name: "My Pressure Washing Business"
-})
+        owner_id: currentUser.id,
+        company_name: "My Pressure Washing Business"
+      })
       .select()
       .single();
 
@@ -2473,7 +2473,7 @@ async function autoConvertAcceptedQuotesToJobs(quotes) {
         total: quote.total || 0,
         notes: quote.notes || "",
         status: "Scheduled",
-        scheduled_date: null,
+        date: null,
         started_at: null,
         completed_at: null
       })
@@ -3174,7 +3174,7 @@ if (convertQuoteBtn) {
   ...quote,
   business_id: currentBusiness.id,
   status: "Scheduled",
-  scheduled_date: "",
+  scheduled_date: null,
   started_at: null,
   completed_at: null
 })
