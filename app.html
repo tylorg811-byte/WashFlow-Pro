@@ -1614,11 +1614,20 @@ html[data-theme="light"] .map-preview {
         </div>
       </div>
 
-      <div class="photo-card upload-card">
-        <div>
-          + Upload Photos
-          <span>Attach photos to a job</span>
-        </div>
+     <!-- Photo Upload Section -->
+<div class="upload-card">
+  <!-- File input for photo selection -->
+  <input type="file" id="photoUploadInput" accept="image/*" onchange="previewPhoto(event)">
+  
+  <!-- Photo preview will be shown here -->
+  <div id="photoPreviewContainer"></div>
+
+  <!-- Progress bar for upload -->
+  <progress id="uploadProgressBar" value="0" max="100"></progress>
+
+  <!-- Upload Button -->
+  <button class="btn btn-primary" onclick="handleUploadClick()">Upload Photo</button>
+</div>
       </div>
 
     </div>
