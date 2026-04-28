@@ -1879,19 +1879,31 @@ if (logoutBtn) {
 function showSection(sectionId) {
   document.querySelectorAll(".section").forEach(section => {
     section.classList.remove("active");
-    section.style.display = "none";  // Hide all sections first
+    section.style.display = "none";
   });
 
-  const target = document.getElementById(sectionId);  // Get the target section
+  const target = document.getElementById(sectionId);
+
   if (target) {
     target.classList.add("active");
-    target.style.display = "block";  // Show the target section
+    target.style.display = "block";
   }
 
-  // Toggle active class on buttons
   document.querySelectorAll(".nav button").forEach(button => {
     button.classList.toggle("active", button.dataset.section === sectionId);
   });
+
+  if (sectionId === "quote" && typeof initQuoteMap === "function") {
+    setTimeout(() => {
+      initQuoteMap();
+
+      if (quoteMap && window.google) {
+        google.maps.event.trigger(quoteMap, "resize");
+        quoteMap.setCenter({ lat: 28.8674, lng: -82.5186 });
+        quoteMap.setZoom(21);
+      }
+    }, 300);
+  }
 }
 
 document.querySelectorAll(".nav button").forEach(button => {
