@@ -1858,25 +1858,21 @@ if (logoutBtn) {
 };
 
  function showSection(sectionId) {
-  document.querySelectorAll("main > section.section").forEach(section => {
+  document.querySelectorAll(".section").forEach(section => {
     section.classList.remove("active");
-    section.style.display = "none";  // Hides all sections first
+    section.style.display = "none"; // Hide all sections first
   });
 
-  const target = document.getElementById(sectionId);  // Target the section
-
+  const target = document.getElementById(sectionId);  // Get the target section
   if (target) {
     target.classList.add("active");
-    target.style.display = "block";  // Show the clicked section
+    target.style.display = "block"; // Show the target section
   }
 
+  // Toggle active class on buttons
   document.querySelectorAll(".nav button").forEach(button => {
-    button.classList.toggle("active", button.dataset.section === sectionId);  // Toggle active class on buttons
+    button.classList.toggle("active", button.dataset.section === sectionId);
   });
-
-  if (pageTitle) {
-    pageTitle.textContent = pageTitles[sectionId] || "Dashboard";  // Update the page title
-  }
 }
 
 document.querySelectorAll(".nav button").forEach(button => {
@@ -3157,6 +3153,7 @@ renderJobs();
 
   const quoteList = document.getElementById("quoteList");
 
+// This function determines the correct status class for a quote.
 function getQuoteStatusClass(status) {
   const clean = (status || "Saved Quote").toLowerCase();
 
@@ -3168,7 +3165,7 @@ function getQuoteStatusClass(status) {
 
   return "saved";
 }
-
+  
 function formatQuoteDate(value) {
   if (!value) return "";
   return new Date(value).toLocaleString([], {
