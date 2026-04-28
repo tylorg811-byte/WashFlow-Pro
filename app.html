@@ -1764,6 +1764,25 @@ html[data-theme="light"] .map-preview {
 <div id="toast" class="toast"></div>
   
 <script>
+
+  function initializeQuoteClientSelect() {
+    const quoteClientSelect = document.getElementById("quoteClientSelect");
+
+    // Early return if the element is not found
+    if (!quoteClientSelect) return;
+
+    // Add event listener if element exists
+    quoteClientSelect.addEventListener("change", function() {
+      console.log("Client selected:", quoteClientSelect.value);
+    });
+  }
+
+  // Call the function when the DOM is loaded
+  document.addEventListener("DOMContentLoaded", function() {
+    initializeQuoteClientSelect();
+  });
+
+  // Other initialization code can go below this
   const SUPABASE_URL = "https://ehckicrcukzdbdhbgkhe.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_8XCfgwdnx0ZghIB4ndS_bw_DXHvQeV0";
 
@@ -3866,9 +3885,6 @@ function showToast(message, type = "success") {
   }, 2000);
 }
 
-  const quoteClientSelect = document.getElementById("quoteClientSelect");
-
-if (!quoteClientSelect) return;  // Early return if the element is not found
 
 // Populate quoteClientSelect dynamically with data
 clients.forEach(client => {
