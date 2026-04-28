@@ -3780,7 +3780,7 @@ async function sendQuoteEmail() {
     return;
   }
 
-  const quoteLink = `${window.location.origin}${window.location.pathname.replace("app.html", "quote-response.html")}?quote=${quote.id}`;
+ const quoteLink = `${window.location.origin}${window.location.pathname.replace("app.html", "quote-response.html")}?quote=${quote.id}&action=accepted`;
 
   const finalMessage = `
 ${message}
