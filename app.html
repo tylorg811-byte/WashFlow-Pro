@@ -1063,6 +1063,17 @@ html[data-theme="light"] .map-preview {
 
 <body>
 
+<!-- Notification Bell and Count -->
+<div id="bell-container" style="position: fixed; top: 10px; right: 20px; z-index: 9999;">
+  <span id="notificationCount">0</span>
+  <img src="bell-icon.svg" id="bell-icon" alt="Notifications" style="cursor: pointer;">
+</div>
+
+<!-- Notification Dropdown -->
+<div id="notificationListContainer" style="display:none; position: fixed; top: 50px; right: 20px; background: #fff; color: #000; padding: 10px; border-radius: 8px; width: 250px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+  <div id="notificationList"></div>
+</div>
+  
 <div class="app">
 
   <!-- SIDEBAR -->
@@ -2159,16 +2170,19 @@ function renderNotifications() {
 
   if (!count || !list) return;
 
+  // Count unread notifications
   const unread = notifications.filter(n => n.status === "unread").length;
   count.textContent = unread;
 
+  // If no notifications, display a message
   if (!notifications.length) {
     list.innerHTML = `<small>No notifications yet.</small>`;
     return;
   }
 
+  // Render notifications
   list.innerHTML = notifications.map(n => `
-    <div class="notification-item ${n.status === "unread" ? "unread" : ""}">
+    <div class="notification-item ${n.status === "unread" ? "unread" : ""}" onclick="markNotificationAsRead(${n.id})">
       <strong>${n.title}</strong>
       <small>${n.message}</small><br>
       <small>${new Date(n.created_at).toLocaleString()}</small>
@@ -5051,5 +5065,75 @@ initApp();
     </div>
   </div>
 </div>
+
+        <script>
+  // Function to fetch notifications from the database
+  async function fetchNotifications() {
+    if (!currentBusiness?.id) return;
+
+    // Fetch unread notifications from Supabase
+    const { data, error } = await supabaseClient
+      .from("notifications")
+      .select("*")
+      .eq("business_id", currentBusiness.id)
+      .order("created_at", { ascending: false })
+      .limit(25);  // Adjust the limit as necessary
+
+    if (error) {
+      console.error("Could not load notifications:", error);
+      return;
+    }
+
+    notifications = data || [];
+    renderNotifications();
+  }
+
+  // Function to render notifications on the page
+  function renderNotifications() {
+    const count = document.getElementById("notificationCount");
+    const list = document.getElementById("notificationList");
+
+    if (!count || !list) return;
+
+    const unread = notifications.filter(n => n.status === "unread").length;
+    count.textContent = unread;
+
+    if (!notifications.length) {
+      list.innerHTML = `<small>No notifications yet.</small>`;
+      return;
+    }
+
+    list.innerHTML = notifications.map(n => `
+      <div class="notification-item ${n.status === "unread" ? "unread" : ""}">
+        <strong>${n.title}</strong>
+        <small>${n.message}</small><br>
+        <small>${new Date(n.created_at).toLocaleString()}</small>
+      </div>
+    `).join("");
+  }
+
+  // Function to mark notification as read when clicked
+  async function markNotificationAsRead(notificationId) {
+    const { error } = await supabaseClient
+      .from("notifications")
+      .update({ status: "read" })
+      .eq("id", notificationId);
+
+    if (error) {
+      console.error("Error marking notification as read:", error);
+    }
+
+    // Optionally, update the notification list in the UI
+    fetchNotifications();
+  }
+
+  // Event listener for the bell icon to show notifications when clicked
+  document.getElementById("bell-icon").addEventListener("click", async () => {
+    await fetchNotifications();
+    const listContainer = document.getElementById("notificationListContainer");
+    listContainer.style.display = listContainer.style.display === "none" ? "block" : "none";
+  });
+
+</script>
 </body>
 </html>
