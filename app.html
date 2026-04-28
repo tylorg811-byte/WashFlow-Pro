@@ -1629,6 +1629,67 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
 let currentBusiness = null;
+
+  async function loadUser() {
+  const { data: { user }, error } = await supabaseClient.auth.getUser();
+
+  if (error || !user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  currentUser = user;
+  console.log("User loaded:", currentUser.id);
+
+  await loadBusiness();
+}
+
+async function loadBusiness() {
+  const { data, error } = await supabaseClient
+    .from("businesses")
+    .select("*")
+    .eq("user_id", currentUser.id)
+    .single();
+
+  if (error || !data) {
+    const { data: newBusiness, error: createError } = await supabaseClient
+      .from("businesses")
+      .insert({
+        user_id: currentUser.id,
+        name: "My Pressure Washing Business"
+      })
+      .select()
+      .single();
+
+    if (createError) {
+      console.error(createError);
+      showToast("Could not create business", "error");
+      return;
+    }
+
+    currentBusiness = newBusiness;
+  } else {
+    currentBusiness = data;
+  }
+
+  console.log("Business loaded:", currentBusiness.id);
+
+  await initApp();
+}
+
+async function initApp() {
+  await loadClients();
+  await loadLeads();
+  await loadQuotes();
+  await loadJobs();
+  await loadInvoices();
+
+  updateDashboardStats();
+  updateChecklist();
+}
+
+loadUser();
+  
   const navButtons = document.querySelectorAll(".nav button");
   const sections = document.querySelectorAll(".section");
   const pageTitle = document.getElementById("pageTitle");
@@ -1923,15 +1984,153 @@ function updateChecklist() {
 }
 
 function saveQuotes() {
-  localStorage.setItem("washflow-quotes", JSON.stringify(savedQuotes));
+  return;
+}
+
+  async function loadQuotes() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("quotes")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load quotes", "error");
+    return;
+  }
+
+  savedQuotes = data || [];
+  renderQuotes();
 }
 
 async function saveJobs() {
   return;
 }
 
+  async function loadJobs() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("jobs")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load jobs", "error");
+    return;
+  }
+
+  savedJobs = data || [];
+  renderJobs();
+}
+
   async function saveInvoices() {
   return;
+}
+
+  async function loadQuotes() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("quotes")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load quotes", "error");
+    return;
+  }
+
+  savedQuotes = data || [];
+  renderQuotes();
+}
+
+async function loadJobs() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("jobs")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load jobs", "error");
+    return;
+  }
+
+  savedJobs = data || [];
+  renderJobs();
+}
+
+async function loadInvoices() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("invoices")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load invoices", "error");
+    return;
+  }
+
+  savedInvoices = data || [];
+  renderInvoices();
+}
+
+async function loadClients() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("clients")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load clients", "error");
+    return;
+  }
+
+  clients = data || [];
+  renderClients();
+  renderClientDropdown();
+}
+
+async function loadLeads() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("leads")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    showToast("Could not load leads", "error");
+    return;
+  }
+
+  savedLeads = data || [];
+  renderLeads();
+}
+
+  savedInvoices = data || [];
+  renderInvoices();
 }
 
   let quoteMap = null;
@@ -2360,25 +2559,6 @@ async function completeJob(index) {
   addActivity("Job completed");
 }
   
-async function completeJob(index) {
-  const job = savedJobs[index];
-  if (!job?.id) return;
-
-  const { error } = await supabaseClient
-    .from("jobs")
-    .update({ status: "Completed" })
-    .eq("id", job.id);
-
-  if (error) {
-    console.error(error);
-    showToast("Could not complete job", "error");
-    return;
-  }
-
-  savedJobs[index].status = "Completed";
-  renderJobs();
-  showToast("Job completed!");
-}
 
 function showJobAIResult(title, text) {
   let box = document.getElementById("jobAIResultBox");
