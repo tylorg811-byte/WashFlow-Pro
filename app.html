@@ -942,6 +942,88 @@ html[data-theme="light"] .map-preview {
   border: 1px solid rgba(245,158,11,0.4);
   box-shadow: 0 0 12px rgba(245,158,11,0.25);
 }
+
+.top-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.notification-wrap {
+  position: relative;
+}
+
+#notificationBell {
+  position: relative;
+}
+
+#notificationCount {
+  margin-left: 4px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+
+.notification-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 48px;
+  width: 330px;
+  max-height: 420px;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 14px;
+  z-index: 9999;
+}
+
+.notification-dropdown.show {
+  display: block;
+}
+
+.notification-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.notification-item {
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+}
+
+.notification-item.unread {
+  border-left: 4px solid var(--brand-2);
+}
+
+.notification-item strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.notification-item small {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .top-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .notification-dropdown {
+    right: -90px;
+    width: 300px;
+  }
+}
     
   </style>
 </head>
@@ -988,10 +1070,23 @@ html[data-theme="light"] .map-preview {
         <h1 id="pageTitle">Dashboard</h1>
       </div>
 
-      <div>
-        <button class="btn btn-soft" type="button" id="quickClientBtn">+ Client</button>
-<button class="btn btn-primary" type="button" id="quickQuoteBtn">+ Quote</button>
+      <div class="top-actions">
+  <div class="notification-wrap">
+    <button class="btn btn-soft" type="button" id="notificationBell">
+      🔔 <span id="notificationCount">0</span>
+    </button>
+
+    <div id="notificationDropdown" class="notification-dropdown">
+      <strong>Notifications</strong>
+      <div id="notificationList" class="notification-list">
+        <small>No notifications yet.</small>
       </div>
+    </div>
+  </div>
+
+  <button class="btn btn-soft" type="button" id="quickClientBtn">+ Client</button>
+  <button class="btn btn-primary" type="button" id="quickQuoteBtn">+ Quote</button>
+</div>
     </div>
 
     <!-- DASHBOARD -->
@@ -1865,7 +1960,88 @@ if (quickQuoteBtn) {
 
   if (error) {
     console.error("Notification failed:", error);
+    return;
   }
+
+  await loadNotifications();
+
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification(title, {
+      body: message,
+      icon: "icon-192.png"
+    });
+  }
+}
+  let notifications = [];
+
+async function loadNotifications() {
+  if (!currentBusiness?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from("notifications")
+    .select("*")
+    .eq("business_id", currentBusiness.id)
+    .order("created_at", { ascending: false })
+    .limit(25);
+
+  if (error) {
+    console.error("Could not load notifications:", error);
+    return;
+  }
+
+  notifications = data || [];
+  renderNotifications();
+}
+
+function renderNotifications() {
+  const count = document.getElementById("notificationCount");
+  const list = document.getElementById("notificationList");
+
+  if (!count || !list) return;
+
+  const unread = notifications.filter(n => n.status === "unread").length;
+  count.textContent = unread;
+
+  if (!notifications.length) {
+    list.innerHTML = `<small>No notifications yet.</small>`;
+    return;
+  }
+
+  list.innerHTML = notifications.map(n => `
+    <div class="notification-item ${n.status === "unread" ? "unread" : ""}">
+      <strong>${n.title}</strong>
+      <small>${n.message}</small><br>
+      <small>${new Date(n.created_at).toLocaleString()}</small>
+    </div>
+  `).join("");
+}
+
+async function markNotificationsRead() {
+  if (!currentBusiness?.id) return;
+
+  await supabaseClient
+    .from("notifications")
+    .update({ status: "read" })
+    .eq("business_id", currentBusiness.id)
+    .eq("status", "unread");
+
+  notifications = notifications.map(n => ({ ...n, status: "read" }));
+  renderNotifications();
+}
+
+function setupNotificationBell() {
+  const bell = document.getElementById("notificationBell");
+  const dropdown = document.getElementById("notificationDropdown");
+
+  if (!bell || !dropdown) return;
+
+  bell.addEventListener("click", async function () {
+    dropdown.classList.toggle("show");
+
+    if (dropdown.classList.contains("show")) {
+      await markNotificationsRead();
+    }
+  });
 }
     
   function setTheme(theme) {
@@ -4642,10 +4818,13 @@ async function initApp() {
   renderJobs();
   renderInvoices();
   renderDashboardHome();
+  updateDashboardStats();
   updateChecklist();
   startLiveQuoteStatusTracking();
+  setupNotificationBell();
+  await loadNotifications();
   loadLeads();
-renderLeads();
+  renderLeads();
 }
 
 initApp();
@@ -4654,6 +4833,10 @@ initApp();
   navigator.serviceWorker.register("sw.js")
     .then(() => console.log("Service Worker Registered"))
     .catch(err => console.error("SW failed", err));
+}
+
+  if ("Notification" in window && Notification.permission !== "granted") {
+  Notification.requestPermission();
 }
   
 </script>
