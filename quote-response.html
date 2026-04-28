@@ -1,112 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quote Response</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quote Response</title>
 
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background:
-        radial-gradient(circle at top, rgba(34,211,238,.18), transparent 35%),
-        #0b1220;
-      color: #fff;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-    }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    .card {
-      width: 100%;
-      max-width: 560px;
-      background: rgba(17,24,39,.94);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 24px;
-      padding: 28px;
-      text-align: center;
-      box-shadow: 0 30px 80px rgba(0,0,0,.45);
-    }
+<style>
+body {
+  margin:0;
+  min-height:100vh;
+  font-family:Arial;
+  background:radial-gradient(circle at top, rgba(34,211,238,.18), transparent 35%), #0b1220;
+  color:#fff;
+  display:grid;
+  place-items:center;
+  padding:20px;
+}
 
-    .badge {
-      display: inline-block;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-weight: 900;
-      margin-bottom: 14px;
-      background: rgba(34,211,238,.14);
-      color: #22d3ee;
-    }
+.card{
+  width:100%;
+  max-width:560px;
+  background:rgba(17,24,39,.94);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:24px;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 30px 80px rgba(0,0,0,.45);
+}
 
-    h1 {
-      margin: 0 0 10px;
-      font-size: 2rem;
-    }
+.badge{
+  display:inline-block;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:900;
+  margin-bottom:14px;
+  background:rgba(34,211,238,.14);
+  color:#22d3ee;
+}
 
-    p {
-      color: #94a3b8;
-      line-height: 1.6;
-      font-weight: 700;
-    }
+.total{
+  font-size:2.2rem;
+  font-weight:900;
+  color:#34d399;
+  margin:14px 0;
+}
 
-    .success {
-      color: #34d399;
-    }
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:20px;
+}
 
-    .declined {
-      color: #f59e0b;
-    }
+button{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  font-weight:900;
+  cursor:pointer;
+}
 
-    .error {
-      color: #ef4444;
-    }
+.accept{ background:#34d399; color:#021; }
+.decline{ background:#f59e0b; color:#021; }
 
-    .actions button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
-    .actions .btn-success {
-      background-color: #34d399;
-      color: white;
-    }
-
-    .actions .btn-danger {
-      background-color: #f59e0b;
-      color: white;
-    }
-  </style>
+.success{ color:#34d399; }
+.declined{ color:#f59e0b; }
+.error{ color:#ef4444; }
+</style>
 </head>
 
 <body>
 
-  <div class="card">
-    <div class="badge" id="badge">Processing</div>
-    <h1 id="title">Updating quote...</h1>
-    <p id="message">Please wait while we save your response.</p>
+<div class="card">
+  <div class="badge" id="badge">Quote</div>
 
-    <div class="quote-info">
-      <h3 id="quoteService">Service</h3>
-      <p id="quoteAddress">Address</p>
-      <p id="quoteNotes"></p>
-      <div class="total">
-        <span id="quoteTotal">$0</span>
-      </div>
-    </div>
+  <h1 id="title">Loading...</h1>
+  <p id="message">Please wait</p>
 
-    <div class="actions">
-      <button id="acceptButton" class="btn btn-success">Accept Quote</button>
-      <button id="declineButton" class="btn btn-danger">Decline Quote</button>
-    </div>
-
-    <div class="status" id="statusMessage"></div>
+  <div id="quoteBlock" style="display:none;">
+    <div id="quoteService"></div>
+    <div id="quoteAddress" style="opacity:.7;"></div>
+    <div class="total" id="quoteTotal">$0</div>
   </div>
+
+  <div class="actions" id="actions" style="display:none;">
+    <button class="accept" onclick="respond('Accepted')">Accept Quote</button>
+    <button class="decline" onclick="respond('Declined')">Decline Quote</button>
+  </div>
+</div>
 
 <script>
 const SUPABASE_URL = "https://ehckicrcukzdbdhbgkhe.supabase.co";
@@ -116,116 +99,90 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const params = new URLSearchParams(window.location.search);
 const quoteId = params.get("quote");
-const action = params.get("action");
-
-console.log("Quote ID:", quoteId, "Action:", action);  // Should log both
 
 const badge = document.getElementById("badge");
 const title = document.getElementById("title");
 const message = document.getElementById("message");
 
-function setScreen(type, heading, text, badgeText) {
-  badge.textContent = badgeText;
+const quoteBlock = document.getElementById("quoteBlock");
+const actions = document.getElementById("actions");
+
+let quoteData = null;
+
+function setScreen(type, heading, text){
   title.textContent = heading;
   message.textContent = text;
-
-  title.classList.remove("success", "declined", "error");
-
-  if (type) {
-    title.classList.add(type);
-  }
+  title.className = type || "";
 }
 
-async function handleQuoteResponse(action) {
-  if (!quoteId || !action) {
-    setScreen(
-      "error",
-      "Invalid quote link",
-      "This quote response link is missing required information.",
-      "Error"
-    );
+async function loadQuote(){
+  if(!quoteId){
+    setScreen("error","Invalid link","Missing quote ID");
     return;
   }
 
-  const cleanAction = action.toLowerCase();
-
-  let newStatus = "";
-
-  if (cleanAction === "accepted") {
-    newStatus = "Accepted";
-  } else if (cleanAction === "declined") {
-    newStatus = "Declined";
-  } else {
-    setScreen(
-      "error",
-      "Invalid response",
-      "This quote response is not recognized.",
-      "Error"
-    );
-    return;
-  }
-
-  const { data: quote, error: quoteError } = await supabaseClient
+  const { data, error } = await supabaseClient
     .from("quotes")
     .select("*")
     .eq("id", quoteId)
     .single();
 
-  if (quoteError || !quote) {
-    console.error(quoteError);
-    setScreen(
-      "error",
-      "Quote not found",
-      "We could not find this quote. Please contact the business owner.",
-      "Error"
-    );
+  if(error || !data){
+    console.error(error);
+    setScreen("error","Quote not found","Contact the business");
     return;
   }
 
-  const { error: updateError } = await supabaseClient
-    .from("quotes")
-    .update({
-      status: newStatus,
-      response_action: cleanAction,
-      responded_at: new Date().toISOString()
-    })
-    .eq("id", quoteId);
+  quoteData = data;
 
-  if (updateError) {
-    console.error(updateError);
-    setScreen(
-      "error",
-      "Could not save response",
-      "Your response could not be saved. Please contact the business owner directly.",
-      "Error"
-    );
-    return;
-  }
+  document.getElementById("quoteService").textContent = data.service || "Service";
+  document.getElementById("quoteAddress").textContent = data.address || "";
+  document.getElementById("quoteTotal").textContent = "$" + Number(data.total || 0).toLocaleString();
 
-  if (newStatus === "Accepted") {
-    setScreen(
-      "success",
-      "Quote accepted!",
-      "Thank you. The business owner has been notified and can follow up with scheduling.",
-      "Accepted"
-    );
-  } else {
-    setScreen(
-      "declined",
-      "Quote declined",
-      "Thank you for the update. The business owner will see that this quote was declined.",
-      "Declined"
-    );
+  quoteBlock.style.display = "block";
+  actions.style.display = "flex";
+
+  setScreen("", "Review Your Quote", "Choose Accept or Decline");
+
+  // mark viewed
+  if(!data.viewed_at){
+    await supabaseClient
+      .from("quotes")
+      .update({
+        status:"Viewed",
+        viewed_at:new Date().toISOString()
+      })
+      .eq("id", quoteId);
   }
 }
 
-document.getElementById("acceptButton").addEventListener("click", function() {
-  handleQuoteResponse("accepted");
-});
+async function respond(status){
+  if(!quoteData) return;
 
-document.getElementById("declineButton").addEventListener("click", function() {
-  handleQuoteResponse("declined");
-});
+  const { error } = await supabaseClient
+    .from("quotes")
+    .update({
+      status,
+      responded_at:new Date().toISOString()
+    })
+    .eq("id", quoteId);
+
+  if(error){
+    console.error(error);
+    setScreen("error","Error","Could not save response");
+    return;
+  }
+
+  if(status === "Accepted"){
+    setScreen("success","Quote Accepted 🎉","We’ll be in touch soon");
+  }else{
+    setScreen("declined","Quote Declined","Thanks for letting us know");
+  }
+
+  actions.style.display = "none";
+}
+
+loadQuote();
 </script>
 
 </body>
