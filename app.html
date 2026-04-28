@@ -306,6 +306,47 @@
   gap: 16px;
 }
 
+    .quote-card {
+  align-items: stretch;
+  background:
+    radial-gradient(circle at top left, rgba(34,211,238,0.12), transparent 30%),
+    var(--panel-soft);
+}
+
+.quote-main {
+  flex: 1;
+}
+
+.quote-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.quote-pill {
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.status.saved { background: rgba(148,163,184,.15); color: #cbd5e1; }
+.status.sent { background: rgba(34,211,238,.15); color: #22d3ee; }
+.status.viewed { background: rgba(168,85,247,.16); color: #c084fc; }
+.status.accepted { background: rgba(16,185,129,.16); color: #34d399; }
+.status.declined { background: rgba(239,68,68,.16); color: #f87171; }
+
+.quote-timeline {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 700;
+}
+
 .map-preview {
   min-height: 520px;
   border-radius: 22px;
@@ -2685,7 +2726,29 @@ renderJobs();
 
   const quoteList = document.getElementById("quoteList");
 
+function getQuoteStatusClass(status) {
+  const clean = (status || "Saved Quote").toLowerCase();
+
+  if (clean.includes("accepted")) return "accepted";
+  if (clean.includes("declined")) return "declined";
+  if (clean.includes("viewed")) return "viewed";
+  if (clean.includes("sent")) return "sent";
+
+  return "saved";
+}
+
+function formatQuoteDate(value) {
+  if (!value) return "";
+  return new Date(value).toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  });
+}
+
 function renderQuotes() {
+  const quoteList = document.getElementById("quoteList");
   if (!quoteList) return;
 
   quoteList.innerHTML = "";
@@ -2697,7 +2760,7 @@ function renderQuotes() {
           <strong>No saved quotes yet</strong>
           <small>Create your first quote from the Map Quote Tool.</small>
         </div>
-        <button class="btn btn-primary" onclick="showSection('quote')">
+        <button class="btn btn-primary" type="button" onclick="showSection('quote')">
           Create Quote
         </button>
       </div>
@@ -2706,38 +2769,52 @@ function renderQuotes() {
   }
 
   savedQuotes.forEach((quote, index) => {
+    const status = quote.status || "Saved Quote";
+    const statusClass = getQuoteStatusClass(status);
+
+    const sentText = quote.sent_at ? `Sent ${formatQuoteDate(quote.sent_at)}` : "";
+    const viewedText = quote.viewed_at ? `Viewed ${formatQuoteDate(quote.viewed_at)}` : "";
+    const respondedText = quote.responded_at ? `Responded ${formatQuoteDate(quote.responded_at)}` : "";
+
     const div = document.createElement("div");
     div.className = "list-item quote-card";
 
-    const address = quote.address || "No address";
-    const amount = `$${Number(quote.total || 0).toLocaleString()}`;
-
     div.innerHTML = `
-      <div>
+      <div class="quote-main">
         <strong>${quote.customer || "Unnamed Customer"}</strong>
-        <small>${quote.service || "Service"} · ${quote.sqft || 0} sqft · ${address}</small>
-        <br>
-        <span class="status ${quote.status === "Sent" ? "green" : ""}">
-  ${quote.status || "Saved Quote"}
-</span>
+        <small>${quote.service || "Service"} · ${Number(quote.sqft || 0).toLocaleString()} sqft · ${quote.address || "No address"}</small>
+
+        <div class="quote-meta">
+          <span class="status ${statusClass}">${status}</span>
+          <span class="quote-pill">$${Number(quote.total || 0).toLocaleString()}</span>
+          ${quote.email ? `<span class="quote-pill">📧 ${quote.email}</span>` : `<span class="quote-pill">No email</span>`}
+        </div>
+
+        <div class="quote-timeline">
+          ${sentText || "Not sent yet"}
+          ${viewedText ? ` · ${viewedText}` : ""}
+          ${respondedText ? ` · ${respondedText}` : ""}
+        </div>
       </div>
 
       <div class="quote-actions">
-        <div class="amount">${amount}</div>
-
-        <button class="btn btn-primary" onclick="openSendQuoteModal(${index})">
-          Send Quote
+        <button class="btn btn-primary" type="button" onclick="openSendQuoteModal(${index})">
+          Send
         </button>
 
-        <button class="btn btn-soft" onclick="convertSavedQuoteToJob(${index})">
-          Convert
-        </button>
-
-        <button class="btn btn-soft" onclick="editQuote(${index})">
+        <button class="btn btn-soft" type="button" onclick="editQuote(${index})">
           Edit
         </button>
 
-        <button class="btn btn-soft" onclick="deleteSavedQuote(${index})">
+        <button class="btn btn-soft" type="button" onclick="copySavedQuote(${index})">
+          Copy
+        </button>
+
+        <button class="btn btn-soft" type="button" onclick="convertSavedQuoteToJob(${index})">
+          Convert
+        </button>
+
+        <button class="btn btn-soft" type="button" onclick="deleteSavedQuote(${index})">
           Delete
         </button>
       </div>
