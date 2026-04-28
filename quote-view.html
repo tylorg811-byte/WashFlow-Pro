@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>View Quote</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0b1220;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: #111827;
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .status {
+      margin-top: 12px;
+      font-weight: bold;
+      color: #22d3ee;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Loading Quote...</h2>
+  <p id="statusText">Please wait</p>
+</div>
+
+<script>
+const SUPABASE_URL = "https://ehckicrcukzdbdhbgkhe.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_8XCfgwdnx0ZghIB4ndS_bw_DXHvQeV0";
+
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const params = new URLSearchParams(window.location.search);
+const quoteId = params.get("id");
+
+async function loadQuote() {
+  if (!quoteId) {
+    document.getElementById("statusText").textContent = "Invalid quote link.";
+    return;
+  }
+
+  const { data: quote, error } = await supabase
+    .from("quotes")
+    .select("*")
+    .eq("id", quoteId)
+    .single();
+
+  if (error || !quote) {
+    document.getElementById("statusText").textContent = "Quote not found.";
+    return;
+  }
+
+  // Only update if not already accepted/declined
+  if (!["Accepted", "Declined"].includes(quote.status)) {
+    await supabase
+      .from("quotes")
+      .update({
+        status: "Viewed",
+        viewed_at: new Date().toISOString()
+      })
+      .eq("id", quoteId);
+  }
+
+  document.querySelector("h2").textContent = quote.customer;
+  document.getElementById("statusText").innerHTML = `
+    ${quote.service}<br><br>
+    <strong>$${quote.total}</strong><br><br>
+    ${quote.address || ""}
+  `;
+}
+
+loadQuote();
+</script>
+
+</body>
+</html>
