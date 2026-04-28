@@ -3846,6 +3846,21 @@ function showToast(message, type = "success") {
 
   const quoteClientSelect = document.getElementById("quoteClientSelect");
 
+if (!quoteClientSelect) return;  // Early return if the element is not found
+
+// Populate quoteClientSelect dynamically with data
+clients.forEach(client => {
+  const option = document.createElement("option");
+  option.value = client.id;
+  option.textContent = client.name;
+  quoteClientSelect.appendChild(option);
+});
+
+// Attach event listener after ensuring it is populated
+quoteClientSelect.addEventListener("change", function() {
+  // Your logic for client selection
+});
+
   function getSelectedClientEmail() {
   const index = quoteClientSelect?.value;
   if (index === "" || index == null) return "";
