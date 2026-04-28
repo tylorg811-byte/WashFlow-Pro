@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quote Response</title>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -64,6 +63,24 @@
     .error {
       color: #ef4444;
     }
+
+    .actions button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .actions .btn-success {
+      background-color: #34d399;
+      color: white;
+    }
+
+    .actions .btn-danger {
+      background-color: #f59e0b;
+      color: white;
+    }
   </style>
 </head>
 
@@ -73,6 +90,22 @@
     <div class="badge" id="badge">Processing</div>
     <h1 id="title">Updating quote...</h1>
     <p id="message">Please wait while we save your response.</p>
+
+    <div class="quote-info">
+      <h3 id="quoteService">Service</h3>
+      <p id="quoteAddress">Address</p>
+      <p id="quoteNotes"></p>
+      <div class="total">
+        <span id="quoteTotal">$0</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="acceptButton" class="btn btn-success">Accept Quote</button>
+      <button id="declineButton" class="btn btn-danger">Decline Quote</button>
+    </div>
+
+    <div class="status" id="statusMessage"></div>
   </div>
 
 <script>
@@ -84,8 +117,9 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const params = new URLSearchParams(window.location.search);
 const quoteId = params.get("quote");
 const action = params.get("action");
-console.log("Quote ID:", quoteId, "Action:", action);  // Ensure this logs the action
-  
+
+console.log("Quote ID:", quoteId, "Action:", action);  // Should log both
+
 const badge = document.getElementById("badge");
 const title = document.getElementById("title");
 const message = document.getElementById("message");
@@ -192,8 +226,6 @@ document.getElementById("acceptButton").addEventListener("click", function() {
 document.getElementById("declineButton").addEventListener("click", function() {
   handleQuoteResponse("declined");
 });
-
-handleQuoteResponse();
 </script>
 
 </body>
