@@ -1847,6 +1847,26 @@ if (quickQuoteBtn) {
 
   list.prepend(item);
 }
+
+  async function createNotification({ type, title, message, quote_id = null, job_id = null }) {
+  if (!currentBusiness?.id) return;
+
+  const { error } = await supabaseClient
+    .from("notifications")
+    .insert({
+      business_id: currentBusiness.id,
+      quote_id,
+      job_id,
+      type,
+      title,
+      message,
+      status: "unread"
+    });
+
+  if (error) {
+    console.error("Notification failed:", error);
+  }
+}
     
   function setTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
