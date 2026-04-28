@@ -2135,6 +2135,16 @@ const minimum = document.getElementById("minimum");
 const quoteTotal = document.getElementById("quoteTotal");
 const customQuoteToggle = document.getElementById("customQuoteToggle");
 const customQuoteBox = document.getElementById("customQuoteBox");
+
+if (customQuoteToggle) {
+  customQuoteToggle.addEventListener("change", function() {
+    if (customQuoteToggle.checked) {
+      customQuoteBox.style.display = "grid";
+    } else {
+      customQuoteBox.style.display = "none";
+    }
+  });
+}
 const customQuotePrice = document.getElementById("customQuotePrice");
 const customQuoteReason = document.getElementById("customQuoteReason");
 
@@ -3942,96 +3952,21 @@ function copyAIResult() {
   showToast("AI result copied!");
 }
 
-function runSmartAssist(action) {
+async function runSmartAssist(action) {
   const quote = getCurrentQuote();
-  const output = getAIOutputBox();
-
-  let result = "";
-
-  if (action === "addons") {
-    result = `Suggested Add-ons for ${quote.customer}:
-
-• Add sidewalk cleaning while driveway equipment is already set up.
-• Offer a house wash bundle for a cleaner full-property look.
-• Recommend sealing if concrete or pavers are older or stained.
-• Offer before-and-after photos as proof of work.
-• Suggest a maintenance plan every 3–6 months.
-
-Upsell Angle:
-"Since we’ll already be there, I can also clean the sidewalk/front entry for a discounted add-on price."`;
+  if (!quote) {
+    showToast("No quote data available", "error");
+    return;
   }
 
-  if (action === "quote") {
-    result = `Hey ${quote.customer},
-
-I put together your quote for ${quote.service} at ${quote.address || "your property"}.
-
-Estimated total: $${quote.total.toLocaleString()}
-
-This includes the measured area of about ${quote.sqft.toLocaleString()} sqft and covers the cleaning service discussed.
-
-Notes:
-${quote.notes || "No extra notes added."}
-
-If this looks good, I can get you scheduled.`;
-  }
-
-  if (action === "price") {
-    const pricePerSqft = quote.sqft > 0 ? quote.total / quote.sqft : 0;
-
-    result = `Price Check:
-
-Customer: ${quote.customer}
-Service: ${quote.service}
-Square Feet: ${quote.sqft.toLocaleString()} sqft
-Total: $${quote.total.toLocaleString()}
-Approx. Price Per Sqft: $${pricePerSqft.toFixed(2)}
-
-AI Recommendation:
-${quote.total <= quote.minimum
-  ? "This job is hitting your minimum price. Make sure the drive time and setup are worth it."
-  : "This quote looks reasonable based on the service rate and measured square footage."}
-
-Suggested Note:
-Don’t discount too quickly. If the customer hesitates, offer a small add-on or bundle instead of lowering the base price.`;
-  }
-
+  // Proceed with the action if the quote data exists
   if (action === "summary") {
-    result = `Job Summary:
-
-Completed exterior cleaning for ${quote.customer}. The service helped improve curb appeal, remove buildup, and leave the property looking cleaner and better maintained.
-
-Good for:
-• Invoice notes
-• Customer follow-up
-• Job history
-• Internal records`;
+    generateQuoteSummary(quote);
+  } else if (action === "social") {
+    generateSocialPost(quote);
+  } else if (action === "proof") {
+    generateProofMessage(quote);
   }
-
-  if (action === "social") {
-    result = `Social Caption:
-
-Another property cleaned up and looking fresh 💦
-
-We helped this customer improve curb appeal with professional exterior cleaning.
-
-Need your driveway, house, roof, or patio cleaned?
-Message us today for a quote.`;
-  }
-
-  if (action === "proof") {
-    result = `Customer Proof Message:
-
-Hey ${quote.customer},
-
-The job is complete and everything came out great. I also took before-and-after photos so you can see the difference clearly.
-
-Thank you again for trusting us with your property.`;
-  }
-
-  output.textContent = result;
-  showToast("AI Smart Assist generated!");
-  showSection("quote");
 }
 
 document.querySelectorAll("[data-ai-action]").forEach(button => {
