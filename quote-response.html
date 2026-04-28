@@ -102,7 +102,7 @@ function setScreen(type, heading, text, badgeText) {
   }
 }
 
-async function handleQuoteResponse() {
+async function handleQuoteResponse(action) {
   if (!quoteId || !action) {
     setScreen(
       "error",
@@ -184,6 +184,14 @@ async function handleQuoteResponse() {
     );
   }
 }
+
+document.getElementById("acceptButton").addEventListener("click", function() {
+  handleQuoteResponse("accepted");
+});
+
+document.getElementById("declineButton").addEventListener("click", function() {
+  handleQuoteResponse("declined");
+});
 
 handleQuoteResponse();
 </script>
