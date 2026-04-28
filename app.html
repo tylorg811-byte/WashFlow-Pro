@@ -1795,6 +1795,32 @@ html[data-theme="light"] .map-preview {
 </div>
 
 <div id="toast" class="toast"></div>
+
+        <div id="sendQuoteModal" class="quote-modal">
+  <div class="quote-modal-card">
+    <button class="modal-close" type="button" onclick="closeSendQuoteModal()">×</button>
+
+    <h3>Send Quote</h3>
+    <p style="color:#94a3b8; font-weight:700; margin-top:6px;">
+      Send this quote to your customer with a professional message.
+    </p>
+
+    <label>Customer Email</label>
+    <input id="sendQuoteEmailInput" type="email" placeholder="customer@email.com">
+
+    <label>Message</label>
+    <textarea id="sendQuoteMessageInput" rows="6"></textarea>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" type="button" onclick="sendQuoteEmail()">
+        Send Quote
+      </button>
+      <button class="btn btn-soft" type="button" onclick="closeSendQuoteModal()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
   
 <script>
 
@@ -3334,6 +3360,39 @@ function renderQuotes() {
   });
 }
 
+  let activeQuoteIndex = null;
+
+function openSendQuoteModal(index) {
+  activeQuoteIndex = index;
+
+  const quote = savedQuotes[index];
+  const modal = document.getElementById("sendQuoteModal");
+  const emailInput = document.getElementById("sendQuoteEmailInput");
+  const messageInput = document.getElementById("sendQuoteMessageInput");
+
+  if (!quote || !modal || !emailInput || !messageInput) return;
+
+  emailInput.value = quote.email || "";
+
+  messageInput.value = `Hi ${quote.customer || "there"},
+
+Here is your quote for ${quote.service || "your service"}.
+
+Total: $${Number(quote.total || 0).toLocaleString()}
+
+You can review and respond to the quote using the buttons in the email.
+
+Thank you!`;
+
+  modal.classList.add("show");
+}
+
+function closeSendQuoteModal() {
+  const modal = document.getElementById("sendQuoteModal");
+  if (modal) modal.classList.remove("show");
+  activeQuoteIndex = null;
+}
+
   async function updateSavedQuoteStatus(index, newStatus) {
   const quote = savedQuotes[index];
 
@@ -3710,59 +3769,39 @@ async function sendQuoteEmail() {
   if (activeQuoteIndex === null) return;
 
   const quote = savedQuotes[activeQuoteIndex];
+  const email = document.getElementById("sendQuoteEmailInput")?.value.trim();
+  const message = document.getElementById("sendQuoteMessageInput")?.value.trim();
 
-  if (!quote) {
-    showToast("Quote not found", "error");
+  if (!quote?.id) {
+    showToast("Quote must be saved before sending", "error");
     return;
   }
 
-  if (!quote.id) {
-    showToast("Save this quote first before sending", "error");
+  if (!email) {
+    showToast("Customer email is required", "error");
     return;
   }
 
-  if (!quote.email) {
-    showToast("Client email is missing", "error");
+  const { error } = await supabaseClient
+    .from("quotes")
+    .update({
+      email,
+      status: "Sent",
+      sent_at: new Date().toISOString()
+    })
+    .eq("id", quote.id)
+    .eq("business_id", currentBusiness.id);
+
+  if (error) {
+    console.error(error);
+    showToast("Could not mark quote as sent", "error");
     return;
   }
 
-  if (!currentBusiness?.id) {
-    showToast("Business not loaded", "error");
-    return;
-  }
+  closeSendQuoteModal();
+  await reloadAppData();
 
-  try {
-    showToast("Sending quote...");
-
-    const res = await fetch("/.netlify/functions/send-invoices", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        business_id: currentBusiness.id,
-        quote_id: quote.id
-      })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok || !data.success) {
-      console.error(data);
-      showToast(data.error || "Failed to send quote", "error");
-      return;
-    }
-
-    await updateSavedQuoteStatus(activeQuoteIndex, "Sent");
-
-    showToast("Quote sent with accept/decline buttons 🚀", "success");
-    closeSendQuoteModal();
-    addActivity("Quote sent to customer");
-
-  } catch (err) {
-    console.error(err);
-    showToast("Error sending quote", "error");
-  }
+  showToast("Quote marked as sent. Email backend comes next.", "success");
 }
 
   function editQuote(index) {
