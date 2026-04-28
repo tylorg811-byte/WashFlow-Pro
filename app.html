@@ -2447,10 +2447,7 @@ async function refreshQuoteStatuses() {
 async function autoConvertAcceptedQuotesToJobs(quotes) {
   if (!currentBusiness?.id || !Array.isArray(quotes)) return;
 
-  const acceptedQuotes = quotes.filter(q =>
-    q.id &&
-    q.status === "Accepted"
-  );
+  const acceptedQuotes = quotes.filter(q => q.status === "Accepted" && q.id);
 
   for (const quote of acceptedQuotes) {
     const { data: existingJob, error: checkError } = await supabaseClient
@@ -2465,27 +2462,30 @@ async function autoConvertAcceptedQuotesToJobs(quotes) {
       continue;
     }
 
-    if (existingJob) {
-      continue;
-    }
+    if (existingJob) continue;
 
-    const { error: jobError } = await supabaseClient
+    const { data: newJob, error: jobError } = await supabaseClient
       .from("jobs")
       .insert({
         business_id: currentBusiness.id,
         quote_id: quote.id,
         customer: quote.customer || "Unnamed Customer",
+        email: quote.email || "",
         address: quote.address || "",
         service: quote.service || "",
         sqft: quote.sqft || 0,
+        minimum: quote.minimum || 0,
         total: quote.total || 0,
         notes: quote.notes || "",
-        status: "Scheduled"
-      });
+        status: "Scheduled",
+        started_at: null,
+        completed_at: null
+      })
+      .select()
+      .single();
 
     if (jobError) {
-      console.error("Could not auto-create job:", jobError);
-      showToast("Quote accepted, but job could not be created", "error");
+      console.error("Could not auto-convert quote:", jobError);
       continue;
     }
 
@@ -2495,14 +2495,8 @@ async function autoConvertAcceptedQuotesToJobs(quotes) {
       .eq("id", quote.id)
       .eq("business_id", currentBusiness.id);
 
-    await createNotification({
-      type: "job_auto_created",
-      title: "Job Created Automatically",
-      message: `${quote.customer || "Customer"} accepted their quote and a job was created`,
-      quote_id: quote.id
-    });
-
-    addActivity(`Job created from accepted quote: ${quote.customer || "Customer"}`);
+    showToast(`Accepted quote converted to job: ${quote.customer || "Customer"}`, "success");
+    addActivity("Accepted quote auto-converted to job");
   }
 
   await reloadAppData();
