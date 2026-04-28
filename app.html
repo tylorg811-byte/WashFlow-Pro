@@ -4350,7 +4350,11 @@ function updateSetupChecklist() {
   if (activity.length === 0) {
     list.innerHTML = `
       <div class="list-item">
-        <small>No recent activity yet.</small>
+        <div>
+          <strong>No activity yet</strong>
+          <small>Your quotes, jobs, invoices, and client updates will show here.</small>
+        </div>
+        <span class="status">Ready</span>
       </div>
     `;
     return;
@@ -4363,6 +4367,7 @@ function updateSetupChecklist() {
           <strong>${item.title}</strong>
           <small>${item.text}</small>
         </div>
+        <span class="status green">New</span>
       </div>
     `;
   });
