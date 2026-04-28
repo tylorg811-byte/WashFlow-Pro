@@ -3780,7 +3780,8 @@ async function sendQuoteEmail() {
     return;
   }
 
- const quoteLink = `${window.location.origin}${window.location.pathname.replace("app.html", "quote-response.html")}?quote=${quote.id}&action=accepted`;
+ const action = "accepted"; // You can change this to "declined" depending on the status of the quote
+const quoteLink = `${window.location.origin}${window.location.pathname.replace("app.html", "quote-response.html")}?quote=${quote.id}&action=${action}`;
 
   const finalMessage = `
 ${message}
