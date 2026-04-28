@@ -1975,7 +1975,8 @@ let savedJobs = [];
 let savedInvoices = [];
 let savedLeads = [];
 let clients = [];
-
+let lastQuoteSnapshot = [];
+  
 function updateChecklist() {
   const companyInput = document.getElementById("businessCompanyName");
   const phoneInput = document.getElementById("businessPhone");
@@ -2099,16 +2100,64 @@ async function refreshQuoteStatuses() {
     return;
   }
 
-  savedQuotes = data || [];
+  const newQuotes = data || [];
 
-await autoConvertAcceptedQuotesToJobs(savedQuotes);
+  // 🔥 Detect changes
+  for (const quote of newQuotes) {
+    const old = lastQuoteSnapshot.find(q => q.id === quote.id);
 
-await loadJobs();
+    if (!old) continue;
 
-await loadQuotes();
+    // 👀 Viewed
+    if (quote.viewed_at && !old.viewed_at) {
+      createNotification({
+        type: "quote_viewed",
+        title: "Quote Viewed",
+        message: `${quote.customer} viewed their quote`,
+        quote_id: quote.id
+      });
+    }
 
-renderQuotes();
-updateDashboardStats();
+    // 💰 Accepted
+    if (quote.status === "Accepted" && old.status !== "Accepted") {
+      createNotification({
+        type: "quote_accepted",
+        title: "Quote Accepted 💰",
+        message: `${quote.customer} accepted their quote`,
+        quote_id: quote.id
+      });
+    }
+
+    // ❌ Declined
+    if (quote.status === "Declined" && old.status !== "Declined") {
+      createNotification({
+        type: "quote_declined",
+        title: "Quote Declined",
+        message: `${quote.customer} declined their quote`,
+        quote_id: quote.id
+      });
+    }
+
+    // 🔁 Converted
+    if (quote.status === "Converted" && old.status !== "Converted") {
+      createNotification({
+        type: "quote_converted",
+        title: "Job Created",
+        message: `${quote.customer} was converted into a job`,
+        quote_id: quote.id
+      });
+    }
+  }
+
+  lastQuoteSnapshot = JSON.parse(JSON.stringify(newQuotes));
+
+  savedQuotes = newQuotes;
+
+  await autoConvertAcceptedQuotesToJobs(savedQuotes);
+  await loadJobs();
+
+  renderQuotes();
+  updateDashboardStats();
 }
 
 async function autoConvertAcceptedQuotesToJobs(quotes) {
