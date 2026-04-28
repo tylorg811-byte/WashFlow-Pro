@@ -2868,7 +2868,7 @@ function renderJobs() {
   savedJobs.forEach((job, index) => {
     const div = document.createElement("div");
 
-    cconst statusClass =
+    const statusClass =
   job.status === "Completed" ? "green" :
   job.status === "In Progress" ? "orange" :
   job.quote_id && !job.scheduled_date ? "orange" :
