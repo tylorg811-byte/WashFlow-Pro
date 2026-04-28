@@ -127,12 +127,12 @@
     }
 
     .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;  /* Adjust gap between the title and buttons */
+}
     .btn {
       padding: 10px 14px;
       border-radius: 12px;
@@ -987,18 +987,19 @@ html[data-theme="light"] .map-preview {
 }
 
 #notificationBell {
-  position: relative;
+    position: relative;
+    padding: 10px;
 }
 
 #notificationCount {
-  margin-left: 4px;
-  background: #ef4444;
-  color: white;
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 999px;
+    margin-left: 4px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-weight: bold;
 }
-
 .notification-dropdown {
   display: none;
   position: absolute;
