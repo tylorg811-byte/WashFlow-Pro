@@ -3237,45 +3237,46 @@ function renderQuotes() {
   savedQuotes.forEach((quote, index) => {
     const status = quote.status || "Saved Quote";
     const statusClass = getQuoteStatusClass(status);
+    const total = Number(quote.total || 0);
 
-    const sentText = quote.sent_at ? `Sent ${formatQuoteDate(quote.sent_at)}` : "Not sent yet";
-    const viewedText = quote.viewed_at ? ` · Viewed ${formatQuoteDate(quote.viewed_at)}` : "";
-    const respondedText = quote.responded_at ? ` · Responded ${formatQuoteDate(quote.responded_at)}` : "";
+    const sentText = quote.sent_at ? `Sent ${formatQuoteDate(quote.sent_at)}` : "Not sent";
+    const viewedText = quote.viewed_at ? `Viewed ${formatQuoteDate(quote.viewed_at)}` : "Not viewed";
+    const respondedText = quote.responded_at ? `Responded ${formatQuoteDate(quote.responded_at)}` : "";
 
     const div = document.createElement("div");
     div.className = "list-item quote-card";
 
     div.innerHTML = `
       <div class="quote-main">
-        <strong>${quote.customer || "Unnamed Customer"}</strong>
-        <small>${quote.service || "Service"} · ${Number(quote.sqft || 0).toLocaleString()} sqft · ${quote.address || "No address"}</small>
+        <div style="display:flex; justify-content:space-between; gap:14px; align-items:flex-start;">
+          <div>
+            <strong>${quote.customer || "Unnamed Customer"}</strong>
+            <small>
+              ${quote.service || "Service"} · ${Number(quote.sqft || 0).toLocaleString()} sqft
+              <br>
+              ${quote.address || "No address"}
+            </small>
+          </div>
 
-        <div class="quote-meta">
-          <span class="status ${statusClass}">${status}</span>
-          <span class="quote-pill">$${Number(quote.total || 0).toLocaleString()}</span>
-          ${quote.email ? `<span class="quote-pill">📧 ${quote.email}</span>` : `<span class="quote-pill">No email</span>`}
+          <div style="text-align:right;">
+            <div style="font-size:1.45rem; font-weight:900; color:var(--brand-2);">
+              $${total.toLocaleString()}
+            </div>
+            <span class="status ${statusClass}">${status}</span>
+          </div>
         </div>
 
-        <div class="quote-timeline">
-          ${sentText}${viewedText}${respondedText}
+        <div class="quote-meta">
+          <span class="quote-pill">📧 ${quote.email || "No email"}</span>
+          <span class="quote-pill">${sentText}</span>
+          <span class="quote-pill">${viewedText}</span>
+          ${respondedText ? `<span class="quote-pill">${respondedText}</span>` : ""}
         </div>
       </div>
 
-      <div class="quote-actions">
+      <div class="quote-actions clean-actions">
         <button class="btn btn-primary" type="button" onclick="openSendQuoteModal(${index})">
           Send
-        </button>
-
-        <button class="btn btn-soft" type="button" onclick="updateSavedQuoteStatus(${index}, 'Viewed')">
-          Viewed
-        </button>
-
-        <button class="btn btn-soft" type="button" onclick="updateSavedQuoteStatus(${index}, 'Accepted')">
-          Accept
-        </button>
-
-        <button class="btn btn-soft" type="button" onclick="updateSavedQuoteStatus(${index}, 'Declined')">
-          Decline
         </button>
 
         <button class="btn btn-soft" type="button" onclick="editQuote(${index})">
