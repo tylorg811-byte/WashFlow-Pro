@@ -1857,33 +1857,26 @@ if (logoutBtn) {
   settings: "Settings"
 };
 
-  function showSection(sectionId) {
+ function showSection(sectionId) {
   document.querySelectorAll("main > section.section").forEach(section => {
     section.classList.remove("active");
-    section.style.display = "none";
+    section.style.display = "none";  // Hides all sections first
   });
 
-  const target = document.getElementById(sectionId);
+  const target = document.getElementById(sectionId);  // Target the section
 
   if (target) {
     target.classList.add("active");
-    target.style.display = "block";
+    target.style.display = "block";  // Show the clicked section
   }
 
   document.querySelectorAll(".nav button").forEach(button => {
-    button.classList.toggle("active", button.dataset.section === sectionId);
+    button.classList.toggle("active", button.dataset.section === sectionId);  // Toggle active class on buttons
   });
 
   if (pageTitle) {
-    pageTitle.textContent = pageTitles[sectionId] || "Dashboard";
+    pageTitle.textContent = pageTitles[sectionId] || "Dashboard";  // Update the page title
   }
-
-  if (sectionId === "dashboard" && typeof updateDashboardGreeting === "function") {
-    updateDashboardGreeting();
-  }
-    if (sectionId === "quote" && typeof initQuoteMap === "function" && !quoteMap) {
-  setTimeout(initQuoteMap, 200);
-}
 }
 
 document.querySelectorAll(".nav button").forEach(button => {
