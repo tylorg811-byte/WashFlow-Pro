@@ -3780,12 +3780,24 @@ async function sendQuoteEmail() {
     return;
   }
 
+  const quoteLink = `${window.location.origin}${window.location.pathname.replace("app.html", "quote-response.html")}?quote=${quote.id}`;
+
+  const finalMessage = `
+${message}
+
+Review your quote here:
+${quoteLink}
+`;
+
+  console.log("Customer quote link:", quoteLink);
+
   const { error } = await supabaseClient
     .from("quotes")
     .update({
       email,
       status: "Sent",
-      sent_at: new Date().toISOString()
+      sent_at: new Date().toISOString(),
+      quote_message: finalMessage
     })
     .eq("id", quote.id)
     .eq("business_id", currentBusiness.id);
@@ -3799,7 +3811,7 @@ async function sendQuoteEmail() {
   closeSendQuoteModal();
   await reloadAppData();
 
-  showToast("Quote marked as sent. Email backend comes next.", "success");
+  showToast("Quote marked as sent. Check console for customer link.", "success");
 }
 
   function editQuote(index) {
