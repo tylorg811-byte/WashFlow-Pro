@@ -3332,11 +3332,14 @@ function renderQuotes() {
 
   showToast(`Quote marked ${newStatus}`, "success");
 
- await loadQuotes();
+await loadQuotes();
 
 if (newStatus === "Accepted") {
   await autoConvertAcceptedQuotesToJobs(savedQuotes);
   await reloadAppData();
+}
+
+await reloadAppData();
 }
 
   const leadName = document.getElementById("leadName");
