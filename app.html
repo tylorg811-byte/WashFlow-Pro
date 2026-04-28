@@ -3082,15 +3082,29 @@ async function sendQuoteEmail() {
 
   const quote = savedQuotes[activeQuoteIndex];
 
-  const subject = document.getElementById("sendQuoteSubject").value;
-  const body = document.getElementById("sendQuoteEmailBody").value;
+  if (!quote) {
+    showToast("Quote not found", "error");
+    return;
+  }
+
+  if (!quote.id) {
+    showToast("Save this quote first before sending", "error");
+    return;
+  }
 
   if (!quote.email) {
     showToast("Client email is missing", "error");
     return;
   }
 
+  if (!currentBusiness?.id) {
+    showToast("Business not loaded", "error");
+    return;
+  }
+
   try {
+    showToast("Sending quote...");
+
     const res = await fetch("/.netlify/functions/send-invoices", {
       method: "POST",
       headers: {
@@ -3098,38 +3112,25 @@ async function sendQuoteEmail() {
       },
       body: JSON.stringify({
         business_id: currentBusiness.id,
-        to: quote.email,
-        subject,
-        html: body.replace(/\n/g, "<br>")
+        quote_id: quote.id
       })
     });
 
     const data = await res.json();
 
-    if (!data.success) {
+    if (!res.ok || !data.success) {
       console.error(data);
-      showToast("Failed to send quote", "error");
+      showToast(data.error || "Failed to send quote", "error");
       return;
     }
 
     savedQuotes[activeQuoteIndex].status = "Sent";
     savedQuotes[activeQuoteIndex].sent_at = new Date().toISOString();
 
-    if (quote.id) {
-      await supabaseClient
-        .from("quotes")
-        .update({
-          status: "Sent",
-          sent_at: new Date().toISOString()
-        })
-        .eq("id", quote.id);
-    }
-
-    saveQuotes();
     renderQuotes();
     updateDashboardStats();
 
-    showToast("Quote sent successfully 🚀", "success");
+    showToast("Quote sent with accept/decline buttons 🚀", "success");
     closeSendQuoteModal();
     addActivity("Quote sent to customer");
 
